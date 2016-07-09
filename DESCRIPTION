@@ -1,0 +1,15 @@
+Package: UGP
+Type: Package
+Title: Universal Gaussian process modeling
+Version: 0.1.0
+Authors@R: person("Collin", "Erickson", email = "collinberickson@gmail.com",
+    role = c("aut", "cre"))
+Description: Creates a Gaussian process model from one of the specified R
+    packages. Makes it easy to try different packages in same code.
+    Essentially a wrapper for the models.
+License: GPL-3
+LazyData: TRUE
+Suggests:
+    GPfit,
+    laGP,
+    mlegp
