@@ -9,7 +9,8 @@ UGP <- setRefClass("UGP",
     .predict.se = "function",
     .predict.var = "function",
     .delete = "function",
-    mod = "list"
+    mod = "list",
+    mod.extra = "list" # list to store additional data needed for model
   ),
   methods = list(
     initialize = function(...) {#browser()
@@ -21,10 +22,21 @@ UGP <- setRefClass("UGP",
         .predict <<- function(XX){GPfit::predict.GP(mod[[1]], XX)$Y_hat}
         .delete <<- function(){mod <<- list()}
       } else if (package=="laGP") {
-        .init <<- function() {laGP::newGPsep(X=X, Z=Z, d=p, g=1e-8)}
-        .update <<- function() {laGP::updateGPsep(gpsepi=mod, X=X, Z=Z);return(mod)}
-        .predict <<- function(XX){laGP::predGPsep(mod, matrix(XX, 1, p))$mean}
-        .delete <<- laGP::deleteGPsep
+        .init <<- function() {
+          da <- laGP::darg(list(mle=TRUE), X=X)
+          ga <- laGP::garg(list(mle=TRUE), y=Z)
+          mod.extra <<- list(da=da, ga=ga) # store extra data for update
+          #laGP::newGPsep(X=X, Z=Z, d=p, g=1e-8)
+          laGP::newGPsep(X=X, Z=Z, d=da$start, g=ga$start, dK = TRUE)
+          }
+        .update <<- function() {#browser()
+          da <- mod.extra$da
+          ga <- mod.extra$ga
+          #laGP::updateGPsep(gpsepi=mod[[1]], X=X, Z=Z)
+          mle <- laGP::jmleGPsep(gpsepi = mod[[1]], drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da$ab, gab=ga$ab, verb=1)
+          }
+        .predict <<- function(XX){laGP::predGPsep(mod, XX, lite=TRUE)$mean}
+        .delete <<- function() {laGP::deleteGPsep(mod[[1]]);mod <<- list()}
       } else if (package=="mlegp") {
         .init <<- function() {mlegp::mlegp(X=X, Z=Z, verbose=0)}
         .update <<- function() {mod <<- list(mlegp::mlegp(X=X, Z=Z, verbose=0))}
@@ -51,11 +63,11 @@ UGP <- setRefClass("UGP",
       mod <<- list(.init())
       print('done')
     }, # end init
-    update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL) {
+    update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL) {#browser()
       if (!is.null(Xall)) {X <<- Xall}
       if (!is.null(Zall)) {Z <<- Zall}
       if (!is.null(Xnew)) {X <<- rbind(X, Xnew)}
-      if (!is.null(Znew)) {X <<- c(Z, Znew)}
+      if (!is.null(Znew)) {Z <<- c(Z, Znew)}
       .update()
     }, # end update
     predict = function(XX) {
