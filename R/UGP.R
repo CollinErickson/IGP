@@ -16,10 +16,14 @@ UGP <- setRefClass("UGP",
     initialize = function(...) {#browser()
       callSuper(...)
 
-      if (package == "GPfit") {
+      if (length(package)==0) {
+        message("No package specified Error # 579238572")
+      } else if (package == "GPfit") {
         .init <<- function() {GPfit::GP_fit(X, Z)}
         .update <<- function(){mod <<- list(GPfit::GP_fit(X, Z))}
         .predict <<- function(XX){GPfit::predict.GP(mod[[1]], XX)$Y_hat}
+        .predict.se <<- function(XX) {sqrt(GPfit::predict.GP(object=mod[[1]], xnew=XX, se.fit=T)$MSE)}
+        .predict.var <<- function(XX) {GPfit::predict.GP(object=mod[[1]], xnew=XX, se.fit=T)$MSE}
         .delete <<- function(){mod <<- list()}
       } else if (package=="laGP") {
         .init <<- function() {
@@ -27,13 +31,17 @@ UGP <- setRefClass("UGP",
           ga <- laGP::garg(list(mle=TRUE), y=Z)
           mod.extra <<- list(da=da, ga=ga) # store extra data for update
           #laGP::newGPsep(X=X, Z=Z, d=p, g=1e-8)
-          laGP::newGPsep(X=X, Z=Z, d=da$start, g=ga$start, dK = TRUE)
-          }
+          mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=ga$start, dK = TRUE)
+          laGP::jmleGPsep(gpsepi = mod1, drange=c(da$min, da$max),
+                                 grange=c(ga$min, ga$max),
+                                 dab=da$ab, gab=ga$ab, verb=1, maxit=1000)
+          mod1
+        }
         .update <<- function() {#browser()
           da <- mod.extra$da
           ga <- mod.extra$ga
-          #laGP::updateGPsep(gpsepi=mod[[1]], X=X, Z=Z)
-          mle <- laGP::jmleGPsep(gpsepi = mod[[1]], drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da$ab, gab=ga$ab, verb=1)
+          laGP::updateGPsep(gpsepi=mod[[1]], X=X, Z=Z)
+          #mle <- laGP::jmleGPsep(gpsepi = mod[[1]], drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da$ab, gab=ga$ab, verb=1)
           }
         .predict <<- function(XX){laGP::predGPsep(mod, XX, lite=TRUE)$mean}
         .delete <<- function() {laGP::deleteGPsep(mod[[1]]);mod <<- list()}
@@ -50,9 +58,9 @@ UGP <- setRefClass("UGP",
       #  update.GP.SMED <- function(mod,X,Y) {}
       #  delete.GP.SMED <- function(mod){}
       } else {
-        stop("No package specified Error # 579238572")
+        message("Package not recognized Error # 1347344")
       }
-      if(length(X) != 0 & length(Z) != 0) {
+      if(length(X) != 0 & length(Z) != 0 & length(package) != 0) {
         init()
       }
     }, # end initialize
@@ -71,12 +79,15 @@ UGP <- setRefClass("UGP",
       .update()
     }, # end update
     predict = function(XX) {
+      if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
       .predict(XX)
     },
     predict.se = function(XX) {
+      if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
       .predict.se(XX)
     },
     predict.var = function(XX) {
+      if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
       .predict.var(XX)
     },
     delete = function() {
