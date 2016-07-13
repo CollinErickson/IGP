@@ -17,7 +17,7 @@ UGP <- setRefClass("UGP",
       callSuper(...)
 
       if (length(package)==0) {
-        message("No package specified Error # 579238572")
+        #message("No package specified Error # 579238572")
       } else if (package == "GPfit") {
         .init <<- function() {GPfit::GP_fit(X, Z)}
         .update <<- function(){mod <<- list(GPfit::GP_fit(X, Z))}
@@ -46,8 +46,14 @@ UGP <- setRefClass("UGP",
         .predict <<- function(XX){laGP::predGPsep(mod, XX, lite=TRUE)$mean}
         .delete <<- function() {laGP::deleteGPsep(mod[[1]]);mod <<- list()}
       } else if (package=="mlegp") {
-        .init <<- function() {mlegp::mlegp(X=X, Z=Z, verbose=0)}
-        .update <<- function() {mod <<- list(mlegp::mlegp(X=X, Z=Z, verbose=0))}
+        .init <<- function() {
+          co <- capture.output(m <- mlegp::mlegp(X=X, Z=Z, verbose=0))
+          m
+        }
+        .update <<- function() {
+          co <- capture.output(m <- mlegp::mlegp(X=X, Z=Z, verbose=0))
+          mod <<- list(m)
+        }
         .predict <<- function(XX) {mlegp::predict.gp(object=mod[[1]], newData=XX)}
         .predict.se <<- function(XX) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit}
         .predict.var <<- function(XX) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit^2}
