@@ -9,7 +9,7 @@ UGP <- setRefClass("UGP",
     .predict.se = "function",
     .predict.var = "function",
     .delete = "function",
-    mod = "list",
+    mod = "list", # First element is model
     mod.extra = "list" # list to store additional data needed for model
   ),
   methods = list(
@@ -31,19 +31,27 @@ UGP <- setRefClass("UGP",
           ga <- laGP::garg(list(mle=TRUE), y=Z)
           mod.extra <<- list(da=da, ga=ga) # store extra data for update
           #laGP::newGPsep(X=X, Z=Z, d=p, g=1e-8)
-          mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=ga$start, dK = TRUE)
+          #mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=ga$start, dK = TRUE)
+          mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=1e-6, dK = TRUE)
           laGP::jmleGPsep(gpsepi = mod1, drange=c(da$min, da$max),
                                  grange=c(ga$min, ga$max),
                                  dab=da$ab, gab=ga$ab, verb=1, maxit=1000)
           mod1
         }
-        .update <<- function() {#browser()
+        .update <<- function() {browser()
           da <- mod.extra$da
           ga <- mod.extra$ga
+          da <- laGP::darg(list(mle=TRUE), X=X)
+          ga <- laGP::garg(list(mle=TRUE), y=Z)
           laGP::updateGPsep(gpsepi=mod[[1]], X=X, Z=Z)
+          #laGP::jmleGPsep(gpsepi = mod[[1]], drange=c(da$min, da$max),
+          #                grange=c(ga$min, ga$max),
+          #                dab=da$ab, gab=ga$ab, verb=1, maxit=1000)
           #mle <- laGP::jmleGPsep(gpsepi = mod[[1]], drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da$ab, gab=ga$ab, verb=1)
           }
         .predict <<- function(XX){laGP::predGPsep(mod, XX, lite=TRUE)$mean}
+        .predict.se <<- function(XX) {sqrt(laGP::predGPsep(mod, XX, lite=TRUE)$s2)}
+        .predict.var <<- function(XX) {laGP::predGPsep(mod, XX, lite=TRUE)$s2}
         .delete <<- function() {laGP::deleteGPsep(mod[[1]]);mod <<- list()}
       } else if (package=="mlegp") {
         .init <<- function() {
