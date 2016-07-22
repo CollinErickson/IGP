@@ -1,4 +1,5 @@
-n <- 80
+set.seed(0)
+n <- 40
 d <- 2
 n2 <- 10
 f1 <- function(x) {sin(8*pi*x[1]) + sin(8*pi*x[2])}
@@ -7,19 +8,19 @@ Z1 <- apply(X1,1,f1)
 X2 <- matrix(runif(n2*d),n2,d)
 Z2 <- apply(X2,1,f1)
 Xall <- rbind(X1, X2)
-Zall <- rbind(Z1, Z2)
+Zall <- c(Z1, Z2)
 XX1 <- matrix(runif(10),5,2)
-u <- UGP$new(package='mlegp',X=X1,Z=Z1)
+u <- UGP$new(package='GPy',X=X1,Z=Z1)
 u$predict(XX1)
 #apply(XX1,1,u$predict.se)#(XX1)
 u$predict.se(XX1)
 #u$predict.se(XX1[1,])
-contourfilled::contourfilled.func(u$predict,batchmax = 100);points(X1)
+contourfilled::contourfilled.func(u$predict,batchmax = 100, pts=X1)
 u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
 #u$update()
 #laGP::updateGPsep(gpsepi=u$mod[[1]], X=u$X, Z=u$Z)
-contourfilled::contourfilled.func(u$predict,batchmax = 100);points(rbind(X1,X2))
+contourfilled::contourfilled.func(u$predict,batchmax = 100, pts=Xall)#;points(rbind(X1,X2))
 u$delete()
 contourfilled::contourfilled.func(function(xx)sin(8*pi*xx[1]) + sin(8*pi*xx[2]))
 contourfilled::contourfilled.data(X1,Z1)
@@ -98,3 +99,46 @@ points(Xall,pch=19)
 
 ## clean up
 deleteGPsep(gpi)
+
+
+
+# Try GPy
+library(rPython)
+python.exec('import sys')
+python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
+python.exec('print sys.path')
+python.exec('import numpy')
+python.exec('print numpy')
+python.exec('import numpy as np')
+python.exec('import scipy')
+python.exec('print scipy.__version__')
+python.exec('import GPy')
+python.exec('print GPy')
+
+python.assign("inputdim", ncol(X1))
+python.assign("X1", (X1))
+python.assign("y1", Z1)
+python.exec('X =  np.matrix(X1)')
+python.exec('y = np.matrix(y1).reshape((-1,1))')
+python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
+python.exec("gp = GPy.models.GPRegression(X,y,kernel,normalizer=True)")
+python.exec("gp.likelihood.variance = 1e-8")
+python.exec("gp.optimize(messages=False)")
+python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
+python.assign("xp1", XX1)
+python.exec("xp = np.asmatrix(xp1)")
+python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+unlist(python.get("y_pred.tolist()"))
+
+# update with new data
+
+python.assign("X1", (Xall))
+python.assign("y1", Zall)
+python.exec('X =  np.matrix(X1)')
+python.exec('y = np.matrix(y1).reshape((-1,1))')
+#try(python.exec("gp.set_Y(Y = y)"))
+#python.exec("gp.set_X(X = X)")
+#python.exec("gp.set_Y(Y = y)")
+python.exec("gp.set_XY(X = X, Y = y)")
+python.exec("gp.optimize(messages=False)")
+python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")

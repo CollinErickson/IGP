@@ -73,6 +73,68 @@ UGP <- setRefClass("UGP",
         .predict.se <<- function(XX) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit}
         .predict.var <<- function(XX) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit^2}
         .delete <<- function(){mod <<- list()}
+      } else if (package == "GPy") {
+        require("rPython")
+        .init <<- function() {
+          python.exec('import sys') # These first two lines need to go
+          python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
+          python.exec('import numpy as np')
+          python.exec('import GPy')
+
+          python.assign("inputdim", ncol(X))
+          python.assign("X1", (X))
+          python.assign("y1", Z)
+          python.exec('X =  np.matrix(X1)')
+          python.exec('y = np.matrix(y1).reshape((-1,1))')
+          python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
+          python.exec("gp = GPy.models.GPRegression(X,y,kernel,normalizer=True)")
+          python.exec("gp.likelihood.variance = 1e-8")
+          python.exec("gp.optimize(messages=False)")
+          python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
+
+          mod <<- list("GPy model is in Python")
+        }
+        .update <<- function() {
+          python.assign("X1", (X))
+          python.assign("y1", Z)
+          python.exec('X =  np.matrix(X1)')
+          python.exec('y = np.matrix(y1).reshape((-1,1))')
+          python.exec("gp.set_XY(X = X, Y = y)")
+          python.exec("gp.optimize(messages=False)")
+          python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
+        }
+        .predict <<- function(XX) {
+          python.assign("xp1", XX)
+          python.exec("xp = np.asmatrix(xp1)")
+          python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+          unlist(python.get("y_pred.tolist()"))
+        }
+        .predict.se <<- function(XX) {
+          python.assign("xp1", XX)
+          python.exec("xp = np.asmatrix(xp1)")
+          python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+          unlist(python.get("np.sqrt(sigma2_pred).tolist()"))
+        }
+        .predict.var <<- function(XX) {
+          python.assign("xp1", XX)
+          python.exec("xp = np.asmatrix(xp1)")
+          python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+          unlist(python.get("sigma2_pred.tolist()"))
+        }
+        .delete <<- function(){
+          python.exec('X =  None')
+          python.exec('y =  None')
+          python.exec('xp =  None')
+          python.exec('X1 =  None')
+          python.exec('y1 =  None')
+          python.exec('xp1 =  None')
+          python.exec('y_pred =  None')
+          python.exec('sigma2_pred =  None')
+          python.exec('gp =  None')
+          python.exec('kernel =  None')
+          python.exec('inputdim =  None')
+          mod <<- list()
+          }
       #} else if (GP.package=='exact') {
       #  predict.GP.SMED <- function(mod,xx) {f(xx)}
       #  init.GP.SMED <- function(X,Y) {}
