@@ -20,14 +20,21 @@ UGP <- setRefClass("UGP",
       if (length(package)==0) {
         #message("No package specified Error # 579238572")
       } else if (package == "GPfit") {
-        .init <<- function() {mod <<- list(GPfit::GP_fit(X, Z))}
-        .update <<- function(){mod <<- list(GPfit::GP_fit(X, Z))}
-        .predict <<- function(XX){GPfit::predict.GP(mod[[1]], XX)$Y_hat}
-        .predict.se <<- function(XX) {sqrt(GPfit::predict.GP(object=mod[[1]], xnew=XX, se.fit=T)$MSE)}
-        .predict.var <<- function(XX) {GPfit::predict.GP(object=mod[[1]], xnew=XX, se.fit=T)$MSE}
-        .delete <<- function(){mod <<- list()}
+        .init <<- function(...) {mod <<- list(GPfit::GP_fit(X, Z))}
+        .update <<- function(...){mod <<- list(GPfit::GP_fit(X, Z))}
+        .predict <<- function(XX, se.fit, ...){
+          if (se.fit) {
+            preds <- GPfit::predict.GP(mod[[1]], XX, se.fit=se.fit)
+            list(fit=preds$Y_hat, se.fit=sqrt(preds$MSE))
+          } else {
+            GPfit::predict.GP(mod[[1]], XX)$Y_hat
+          }
+        }
+        .predict.se <<- function(XX, ...) {sqrt(GPfit::predict.GP(object=mod[[1]], xnew=XX, se.fit=T)$MSE)}
+        .predict.var <<- function(XX, ...) {GPfit::predict.GP(object=mod[[1]], xnew=XX, se.fit=T)$MSE}
+        .delete <<- function(...){mod <<- list()}
       } else if (package=="laGP") {
-        .init <<- function() {
+        .init <<- function(...) {
           da <- laGP::darg(list(mle=TRUE), X=X)
           ga <- laGP::garg(list(mle=TRUE), y=Z)
           mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=ga$start, dK = TRUE)
@@ -37,7 +44,7 @@ UGP <- setRefClass("UGP",
                                  dab=da$ab, gab=ga$ab, verb=0, maxit=1000)
           mod <<- list(mod1)
         }
-        .update <<- function() {#browser()
+        .update <<- function(...) {#browser()
           da <- laGP::darg(list(mle=TRUE), X=X)
           ga <- laGP::garg(list(mle=TRUE), y=Z)
           n.since.last.update = nrow(X) - n.at.last.update
@@ -46,8 +53,8 @@ UGP <- setRefClass("UGP",
           } else {
             if (n.at.last.update < 10 || n.since.last.update > .25 * n.at.last.update) {
               # start over if too many
-              .delete()
-              .init()
+              .delete(...=...)
+              .init(...=...)
             } else {
               laGP::updateGPsep(gpsepi=mod[[1]], X=X[-(1:n.at.last.update),], Z=Z[-(1:n.at.last.update)])
             }
@@ -56,83 +63,97 @@ UGP <- setRefClass("UGP",
                           grange=c(ga$min, ga$max),
                           dab=da$ab, gab=ga$ab, verb=0, maxit=1000)
           }
-        .predict <<- function(XX){laGP::predGPsep(mod, XX, lite=TRUE)$mean}
-        .predict.se <<- function(XX) {sqrt(laGP::predGPsep(mod, XX, lite=TRUE)$s2)}
-        .predict.var <<- function(XX) {laGP::predGPsep(mod, XX, lite=TRUE)$s2}
-        .delete <<- function() {laGP::deleteGPsep(mod[[1]]);mod <<- list()}
+        .predict <<- function(XX, se.fit, ...){
+          if (se.fit) {
+            preds <- laGP::predGPsep(mod, XX, lite=TRUE)
+            list(fit=preds$mean, se.fit=sqrt(preds$s2))
+          } else {
+            laGP::predGPsep(mod, XX, lite=TRUE)$mean
+          }
+        }
+        .predict.se <<- function(XX, ...) {sqrt(laGP::predGPsep(mod, XX, lite=TRUE)$s2)}
+        .predict.var <<- function(XX, ...) {laGP::predGPsep(mod, XX, lite=TRUE)$s2}
+        .delete <<- function(...) {laGP::deleteGPsep(mod[[1]]);mod <<- list()}
       } else if (package=="mlegp") {
-        .init <<- function() {
+        .init <<- function(...) {
           co <- capture.output(m <- mlegp::mlegp(X=X, Z=Z, verbose=0))
           mod <<- list(m)
         }
-        .update <<- function() {
+        .update <<- function(...) {
           co <- capture.output(m <- mlegp::mlegp(X=X, Z=Z, verbose=0))
           mod <<- list(m)
         }
-        .predict <<- function(XX) {mlegp::predict.gp(object=mod[[1]], newData=XX)}
-        .predict.se <<- function(XX) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit}
-        .predict.var <<- function(XX) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit^2}
-        .delete <<- function(){mod <<- list()}
+        .predict <<- function(XX, se.fit, ...) {
+          mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit = se.fit)
+        }
+        .predict.se <<- function(XX, ...) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit}
+        .predict.var <<- function(XX, ...) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit^2}
+        .delete <<- function(...){mod <<- list()}
       } else if (package == "GPy") {
-        require("rPython")
-        .init <<- function() {
-          python.exec('import sys') # These first two lines need to go
-          python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
-          python.exec('import numpy as np')
-          python.exec('import GPy')
+        #require("rPython")
+        .init <<- function(...) {
+          rPython::python.exec('import sys') # These first two lines need to go
+          rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
+          rPython::python.exec('import numpy as np')
+          rPython::python.exec('import GPy')
 
-          python.assign("inputdim", ncol(X))
-          python.assign("X1", (X))
-          python.assign("y1", Z)
-          python.exec('X =  np.matrix(X1)')
-          python.exec('y = np.matrix(y1).reshape((-1,1))')
-          python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
-          python.exec("gp = GPy.models.GPRegression(X,y,kernel,normalizer=True)")
-          python.exec("gp.likelihood.variance = 1e-8")
-          python.exec("gp.optimize(messages=False)")
-          python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
+          rPython::python.assign("inputdim", ncol(X))
+          rPython::python.assign("X1", (X))
+          rPython::python.assign("y1", Z)
+          rPython::python.exec('X =  np.matrix(X1)')
+          rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
+          rPython::python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
+          rPython::python.exec("gp = GPy.models.GPRegression(X,y,kernel,normalizer=True)")
+          rPython::python.exec("gp.likelihood.variance = 1e-8")
+          rPython::python.exec("gp.optimize(messages=False)")
+          rPython::python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
 
           mod <<- list("GPy model is in Python")
         }
-        .update <<- function() {
-          python.assign("X1", (X))
-          python.assign("y1", Z)
-          python.exec('X =  np.matrix(X1)')
-          python.exec('y = np.matrix(y1).reshape((-1,1))')
-          python.exec("gp.set_XY(X = X, Y = y)")
-          python.exec("gp.optimize(messages=False)")
-          python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
+        .update <<- function(...) {
+          rPython::python.assign("X1", (X))
+          rPython::python.assign("y1", Z)
+          rPython::python.exec('X =  np.matrix(X1)')
+          rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
+          rPython::python.exec("gp.set_XY(X = X, Y = y)")
+          rPython::python.exec("gp.optimize(messages=False)")
+          rPython::python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
         }
-        .predict <<- function(XX) {
-          python.assign("xp1", XX)
-          python.exec("xp = np.asmatrix(xp1)")
-          python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
-          unlist(python.get("y_pred.tolist()"))
+        .predict <<- function(XX, se.fit, ...) {
+          rPython::python.assign("xp1", XX)
+          rPython::python.exec("xp = np.asmatrix(xp1)")
+          rPython::python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+          if (se.fit) {
+            list(fit=unlist(rPython::python.get("y_pred.tolist()")),
+                 se.fit=unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()")))
+          } else {
+            unlist(rPython::python.get("y_pred.tolist()"))
+          }
         }
-        .predict.se <<- function(XX) {
-          python.assign("xp1", XX)
-          python.exec("xp = np.asmatrix(xp1)")
-          python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
-          unlist(python.get("np.sqrt(sigma2_pred).tolist()"))
+        .predict.se <<- function(XX, ...) {
+          rPython::python.assign("xp1", XX)
+          rPython::python.exec("xp = np.asmatrix(xp1)")
+          rPython::python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+          unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()"))
         }
-        .predict.var <<- function(XX) {
-          python.assign("xp1", XX)
-          python.exec("xp = np.asmatrix(xp1)")
-          python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
-          unlist(python.get("sigma2_pred.tolist()"))
+        .predict.var <<- function(XX, ...) {
+          rPython::python.assign("xp1", XX)
+          rPython::python.exec("xp = np.asmatrix(xp1)")
+          rPython::python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+          unlist(rPython::python.get("sigma2_pred.tolist()"))
         }
-        .delete <<- function(){
-          python.exec('X =  None')
-          python.exec('y =  None')
-          python.exec('xp =  None')
-          python.exec('X1 =  None')
-          python.exec('y1 =  None')
-          python.exec('xp1 =  None')
-          python.exec('y_pred =  None')
-          python.exec('sigma2_pred =  None')
-          python.exec('gp =  None')
-          python.exec('kernel =  None')
-          python.exec('inputdim =  None')
+        .delete <<- function(...){
+          rPython::python.exec('X =  None')
+          rPython::python.exec('y =  None')
+          rPython::python.exec('xp =  None')
+          rPython::python.exec('X1 =  None')
+          rPython::python.exec('y1 =  None')
+          rPython::python.exec('xp1 =  None')
+          rPython::python.exec('y_pred =  None')
+          rPython::python.exec('sigma2_pred =  None')
+          rPython::python.exec('gp =  None')
+          rPython::python.exec('kernel =  None')
+          rPython::python.exec('inputdim =  None')
           mod <<- list()
           }
       #} else if (GP.package=='exact') {
@@ -147,42 +168,42 @@ UGP <- setRefClass("UGP",
         init()
       }
     }, # end initialize
-    init = function(X=NULL, Z=NULL) {#browser()
+    init = function(X=NULL, Z=NULL, ...) {#browser()
       if (!is.null(X)) {X <<- X}
       if (!is.null(Z)) {Z <<- Z}
       if (length(.self$X) == 0 | length(.self$Z) == 0) {stop("X or Z not set")}
       n.at.last.update <<- nrow(.self$X)
       #mod <<- list(.init())
-      .init()
+      .init(...=...)
     }, # end init
-    update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL) {#browser()
+    update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...) {#browser()
       if (length(n.at.last.update) == 0) {
         init(X = if(!is.null(Xall)) Xall else Xnew, Z = if (!is.null(Zall)) Zall else Znew)
       } else {
         if (!is.null(Xall)) {X <<- Xall} else if (!is.null(Xnew)) {X <<- rbind(X, Xnew)}
         if (!is.null(Zall)) {Z <<- Zall} else if (!is.null(Znew)) {Z <<- c(Z, Znew)}
-        .update()
+        .update(...=...)
       }
       n.at.last.update <<- nrow(X)
     }, # end update
-    predict = function(XX) {
+    predict = function(XX, se.fit = FALSE, ...) {
       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
-      .predict(XX)
+      .predict(XX, se.fit=se.fit, ...=...)
     },
-    predict.se = function(XX) {
+    predict.se = function(XX, ...) {
       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
-      .predict.se(XX)
+      .predict.se(XX, ...=...)
     },
-    predict.var = function(XX) {
+    predict.var = function(XX, ...) {
       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
-      .predict.var(XX)
+      .predict.var(XX, ...=...)
     },
-    delete = function() {
-      .delete()
+    delete = function(...) {
+      .delete(...=...)
     },
-    finalize = function() {
+    finalize = function(...) {
 
     }
   )
-  )
+)
 
