@@ -10,7 +10,8 @@ UGP <- setRefClass("UGP",
     .predict.var = "function",
     .delete = "function",
     mod = "list", # First element is model
-    mod.extra = "list" # list to store additional data needed for model
+    mod.extra = "list", # list to store additional data needed for model
+    n.at.last.update = "numeric" # count how many in update, must be at end of X
   ),
   methods = list(
     initialize = function(...) {#browser()
@@ -19,7 +20,7 @@ UGP <- setRefClass("UGP",
       if (length(package)==0) {
         #message("No package specified Error # 579238572")
       } else if (package == "GPfit") {
-        .init <<- function() {GPfit::GP_fit(X, Z)}
+        .init <<- function() {mod <<- list(GPfit::GP_fit(X, Z))}
         .update <<- function(){mod <<- list(GPfit::GP_fit(X, Z))}
         .predict <<- function(XX){GPfit::predict.GP(mod[[1]], XX)$Y_hat}
         .predict.se <<- function(XX) {sqrt(GPfit::predict.GP(object=mod[[1]], xnew=XX, se.fit=T)$MSE)}
@@ -29,25 +30,31 @@ UGP <- setRefClass("UGP",
         .init <<- function() {
           da <- laGP::darg(list(mle=TRUE), X=X)
           ga <- laGP::garg(list(mle=TRUE), y=Z)
-          mod.extra <<- list(da=da, ga=ga) # store extra data for update
-          #laGP::newGPsep(X=X, Z=Z, d=p, g=1e-8)
-          #mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=ga$start, dK = TRUE)
-          mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=1e-6, dK = TRUE)
+          mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=ga$start, dK = TRUE)
+          #mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=1e-6, dK = TRUE)
           laGP::jmleGPsep(gpsepi = mod1, drange=c(da$min, da$max),
                                  grange=c(ga$min, ga$max),
-                                 dab=da$ab, gab=ga$ab, verb=1, maxit=1000)
-          mod1
+                                 dab=da$ab, gab=ga$ab, verb=0, maxit=1000)
+          mod <<- list(mod1)
         }
-        .update <<- function() {browser()
-          da <- mod.extra$da
-          ga <- mod.extra$ga
+        .update <<- function() {#browser()
           da <- laGP::darg(list(mle=TRUE), X=X)
           ga <- laGP::garg(list(mle=TRUE), y=Z)
-          laGP::updateGPsep(gpsepi=mod[[1]], X=X, Z=Z)
-          #laGP::jmleGPsep(gpsepi = mod[[1]], drange=c(da$min, da$max),
-          #                grange=c(ga$min, ga$max),
-          #                dab=da$ab, gab=ga$ab, verb=1, maxit=1000)
-          #mle <- laGP::jmleGPsep(gpsepi = mod[[1]], drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da$ab, gab=ga$ab, verb=1)
+          n.since.last.update = nrow(X) - n.at.last.update
+          if (n.since.last.update < 1) {
+            message("Can't update, no new X rows")
+          } else {
+            if (n.at.last.update < 10 || n.since.last.update > .25 * n.at.last.update) {
+              # start over if too many
+              .delete()
+              .init()
+            } else {
+              laGP::updateGPsep(gpsepi=mod[[1]], X=X[-(1:n.at.last.update),], Z=Z[-(1:n.at.last.update)])
+            }
+          }
+          laGP::jmleGPsep(gpsepi = mod[[1]], drange=c(da$min, da$max),
+                          grange=c(ga$min, ga$max),
+                          dab=da$ab, gab=ga$ab, verb=0, maxit=1000)
           }
         .predict <<- function(XX){laGP::predGPsep(mod, XX, lite=TRUE)$mean}
         .predict.se <<- function(XX) {sqrt(laGP::predGPsep(mod, XX, lite=TRUE)$s2)}
@@ -56,7 +63,7 @@ UGP <- setRefClass("UGP",
       } else if (package=="mlegp") {
         .init <<- function() {
           co <- capture.output(m <- mlegp::mlegp(X=X, Z=Z, verbose=0))
-          m
+          mod <<- list(m)
         }
         .update <<- function() {
           co <- capture.output(m <- mlegp::mlegp(X=X, Z=Z, verbose=0))
@@ -82,15 +89,19 @@ UGP <- setRefClass("UGP",
       if (!is.null(X)) {X <<- X}
       if (!is.null(Z)) {Z <<- Z}
       if (length(.self$X) == 0 | length(.self$Z) == 0) {stop("X or Z not set")}
-      mod <<- list(.init())
-      print('done')
+      n.at.last.update <<- nrow(.self$X)
+      #mod <<- list(.init())
+      .init()
     }, # end init
     update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL) {#browser()
-      if (!is.null(Xall)) {X <<- Xall}
-      if (!is.null(Zall)) {Z <<- Zall}
-      if (!is.null(Xnew)) {X <<- rbind(X, Xnew)}
-      if (!is.null(Znew)) {Z <<- c(Z, Znew)}
-      .update()
+      if (length(n.at.last.update) == 0) {
+        init(X = if(!is.null(Xall)) Xall else Xnew, Z = if (!is.null(Zall)) Zall else Znew)
+      } else {
+        if (!is.null(Xall)) {X <<- Xall} else if (!is.null(Xnew)) {X <<- rbind(X, Xnew)}
+        if (!is.null(Zall)) {Z <<- Zall} else if (!is.null(Znew)) {Z <<- c(Z, Znew)}
+        .update()
+      }
+      n.at.last.update <<- nrow(X)
     }, # end update
     predict = function(XX) {
       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)

@@ -1,0 +1,236 @@
+---
+title: "laGP issues"
+author: "Collin Erickson"
+date: "July 21, 2016"
+output: html_document
+---
+
+## Trouble with laGP
+
+I'm having trouble using laGP, specifically when updating the data with new data points.
+If I just use `updateGPsep` it looks bad, but if I follow it with `jmleGPsep` it often gives an error, and if it doesn't then the result doesn't look good.
+
+## Example, fit with mlegp
+
+I've had some trouble getting good results from laGP.
+
+Here's my function. Note that the values are all between -2 (blue) and +2 (pink).
+
+```{r}
+library(contourfilled)
+f1 <- function(x) {sin(8*pi*x[1]) + sin(8*pi*x[2])}
+contourfilled.func(f1)
+```
+
+I'll create two datasets, the first with sample size 10 and the second with sample size 100 
+
+```{r}
+set.seed(1)
+n <- 10
+d <- 2
+n2 <- 100
+X1 <- matrix(runif(n*d),n,d)
+Z1 <- apply(X1,1,f1)
+X2 <- matrix(runif(n2*d),n2,d)
+Z2 <- apply(X2,1,f1)
+Xall <- rbind(X1,X2)
+Zall <- c(Z1,Z2)
+```
+
+Here's what mlegp does with the first data set (understandably bad) and then all the data (looks good).
+
+```{r}
+contourfilled.data(X1,Z1, xcontlim = 0:1, ycontlim = 0:1)
+contourfilled.data(Xall,Zall, xcontlim = 0:1, ycontlim = 0:1)
+```
+
+## Using laGP
+
+Here I create a new GP giving it only the first data points.
+
+```{r}
+set.seed(2)
+library(laGP)
+da <- darg(list(mle=TRUE), X=X1)
+ga <- garg(list(mle=TRUE), y=Z1)
+
+## initialize new separable GP
+gpi <- newGPsep(X=X1, Z=Z1, d=da$start, g=ga$start, dK=TRUE)
+
+## joint inference for lengthscale and nugget under prior calculated above
+mle <- jmleGPsep(gpi, drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da$ab, gab=ga$ab, verb=0)
+```
+
+Okay result for n=10 as shown below.
+
+```{r}
+contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(X1, pch=19)
+```
+
+Now I want to update it adding in the second data set. It clearly updates the parameters in some way, but it is terrible (note the min/max values are not near -2/+2). I guess that means I have to tell it to jmleGPsep. (Sometimes I get an error here since all predictions are NaN or NA, I forget which.)
+
+```{r}
+updateGPsep(gpsepi = gpi, X = Xall, Z = Zall)
+contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(Xall, pch=19)
+```
+
+Here I do jmleGPsep, using updated values of da and ga. I put it in a `try` since a lot of the time it gives the error 
+
+`Error in mleGPsep(gpi, tmin = da$min, tmax = da$max, ab = da$ab, verb = 0) : `
+
+`L-BFGS-B needs finite values of 'fn' `
+
+Even with seeds set sometimes I get the error when I run it, sometimes I don't. If it works, it doesn't do well as the plot shows below. Otherwise it's the same thing as before.
+  
+```{r}
+
+da <- darg(list(mle=TRUE), X=Xall)
+ga <- garg(list(mle=TRUE), y=Zall)
+mle <- try(jmleGPsep(gpi, drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da$ab, gab=ga$ab, verb=0))
+print(mle)
+
+contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(Xall, pch=19)
+```
+
+```{r}
+## clean up
+deleteGPsep(gpi)
+```
+
+
+## Let me try again, setting the nugget to 1e-3 so it doesn't have to estimate it
+
+```{r}
+set.seed(2)
+library(laGP)
+da <- darg(list(mle=TRUE), X=X1)
+
+## initialize new separable GP
+gpi <- newGPsep(X=X1, Z=Z1, d=da$start, g=1e-3, dK=TRUE)
+
+## joint inference for lengthscale and nugget under prior calculated above
+mle <- mleGPsep(gpi, param="d", tmin=da$min, tmax=da$max, ab=da$ab, verb=0)
+```
+
+Okay result for n=10 again.
+
+```{r}
+contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(X1, pch=19)
+```
+
+Update it with the new points, it updates something but is awful. Min/max values are bad again.
+
+```{r}
+updateGPsep(gpsepi = gpi, X = Xall, Z = Zall)
+contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(Xall, pch=19)
+```
+
+This time when I do mleGPsep it usually gives the error. The plot below will probably be the same as above since there was an error.
+
+```{r}
+da <- darg(list(mle=TRUE), X=Xall)
+#ga <- garg(list(mle=TRUE), y=Zall)
+mle <- try(mleGPsep(gpi, tmin=da$min, tmax=da$max, ab=da$ab, verb=0))
+print(mle)
+
+contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(Xall, pch=19)
+```
+
+```{r}
+## clean up
+deleteGPsep(gpi)
+```
+
+
+
+
+## Let me try a third time, setting the nugget to 1e-3 and not using sep, also removing tmin, tmax, and ab
+
+```{r}
+set.seed(2)
+library(laGP)
+da <- darg(list(mle=TRUE), X=X1)
+
+## initialize new separable GP
+gpi <- newGP(X=X1, Z=Z1, d=da$start, g=1e-3, dK=TRUE)
+
+## joint inference for lengthscale and nugget under prior calculated above
+#mle <- mleGP(gpi, param="d", tmin=da$min, tmax=da$max, ab=da$ab, verb=0)
+mle <- mleGP(gpi, verb=0)
+```
+
+Okay result for n=10 again.
+
+```{r}
+contourfilled.func(function(xx){predGP(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(X1, pch=19)
+```
+
+Update it with the new points, it updates something but is awful (bad min/max and shape).
+
+```{r}
+updateGP(gpi = gpi, X = Xall, Z = Zall)
+contourfilled.func(function(xx){predGP(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(Xall, pch=19)
+```
+
+This time when I do mleGPsep it usually gives the error. The plot below will probably be the same as above since there was likely an error.
+
+```{r}
+da <- darg(list(mle=TRUE), X=Xall)
+#ga <- garg(list(mle=TRUE), y=Zall)
+#mle <- try(mleGP(gpi, tmin=da$min, tmax=da$max, ab=da$ab, verb=0))
+mle <- try(mleGP(gpi,  verb=0))
+print(mle)
+
+contourfilled.func(function(xx){predGP(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(Xall, pch=19)
+```
+
+For some reason I get an error below when I try to deleteGP, not really a big issue.
+
+```{r, last clean up}
+## clean up
+message(gpi)
+try(deleteGP(gpi))
+```
+
+
+
+
+
+## Can it fit well if I start it with all the points?
+
+Now it has all 110 points to begin with.
+
+```{r}
+set.seed(2)
+library(laGP)
+da <- darg(list(mle=TRUE), X=Xall)
+
+## initialize new separable GP
+gpi <- newGP(X=Xall, Z=Zall, d=da$start, g=1e-3, dK=TRUE)
+
+## joint inference for lengthscale and nugget under prior calculated above
+#mle <- mleGP(gpi, param="d", tmin=da$min, tmax=da$max, ab=da$ab, verb=0)
+mle <- mleGP(gpi, verb=0)
+```
+
+Now it can fit the surface fine.
+
+```{r}
+contourfilled.func(function(xx){predGP(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+points(Xall, pch=19)
+```
+
+```{r, final clean up}
+## clean up
+message(gpi)
+try(deleteGP(gpi))
+```
