@@ -95,7 +95,8 @@ UGP <- setRefClass("UGP",
 
       } else if (package=="DiceKriging") {
         .init <<- function(...) {
-          mod1 <- DiceKriging::km(design=X, response=Z, covtype="gauss", nugget.estim=T)
+          #capture.output(mod1 <- DiceKriging::km(design=X, response=Z, covtype="gauss", nugget.estim=T))
+          capture.output(mod1 <- DiceKriging::km(design=X, response=Z, covtype="gauss", nugget.estim=T))
           mod <<- list(mod1)
         }
         .update <<- function(...) {#browser()
@@ -108,7 +109,7 @@ UGP <- setRefClass("UGP",
               .delete(...=...)
               .init(...=...)
             } else {
-              DiceKriging::update(object=mod[[1]], newX=X[-(1:n.at.last.update),], newy=Z[-(1:n.at.last.update)], nugget.reestim=T)
+              capture.output(DiceKriging::update(object=mod[[1]], newX=X[-(1:n.at.last.update),], newy=Z[-(1:n.at.last.update)], nugget.reestim=T))
             } #TRYING TO LET UPDATES BE BIG, ELSE UNCOMMENT THIS PART
           }
         }

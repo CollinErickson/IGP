@@ -1,10 +1,11 @@
 set.seed(0)
-n <- 40
+n <- 80
 d <- 2
 n2 <- 40
 f1 <- function(x) {sin(8*pi*x[1]) + sin(8*pi*x[2])}
+#f1 <- branin
 X1 <- matrix(runif(n*d),n,d)
-Z1 <- apply(X1,1,f1)
+Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
 X2 <- matrix(runif(n2*d),n2,d)
 Z2 <- apply(X2,1,f1)
 Xall <- rbind(X1, X2)
