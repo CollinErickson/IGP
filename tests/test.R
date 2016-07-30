@@ -1,7 +1,7 @@
 set.seed(0)
 n <- 80
 d <- 2
-n2 <- 40
+n2 <- 20
 f1 <- function(x) {sin(8*pi*x[1]) + sin(8*pi*x[2])}
 #f1 <- branin
 X1 <- matrix(runif(n*d),n,d)
@@ -12,7 +12,7 @@ Xall <- rbind(X1, X2)
 Zall <- c(Z1, Z2)
 XX1 <- matrix(runif(10),5,2)
 ZZ1 <- apply(XX1, 1, f1)
-u <- UGP$new(package='DiceKriging',X=X1,Z=Z1)
+u <- UGP$new(package='GauPro',X=X1,Z=Z1, corr.power=2)
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
 contourfilled::contourfilled.func(u$predict,batchmax = 100, pts=X1)
@@ -25,7 +25,7 @@ contourfilled::contourfilled.data(X1,Z1)
 contourfilled::contourfilled.data(X2,Z2)
 contourfilled::contourfilled.data(rbind(X1,X2),c(Z1,Z2))
 contourfilled::contourfilled.data(u$X,u$Z)
-
+contourfilled::contourfilled.func(u$grad_norm)
 
 u <- UGP$new(package='laGP')
 u$update(Xnew=X1, Znew=Z1)

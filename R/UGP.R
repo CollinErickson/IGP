@@ -11,7 +11,8 @@ UGP <- setRefClass("UGP",
     .delete = "function",
     mod = "list", # First element is model
     mod.extra = "list", # list to store additional data needed for model
-    n.at.last.update = "numeric" # count how many in update, must be at end of X
+    n.at.last.update = "numeric", # count how many in update, must be at end of X
+    corr.power = "numeric"
   ),
   methods = list(
     initialize = function(...) {#browser()
@@ -20,8 +21,16 @@ UGP <- setRefClass("UGP",
       if (length(package)==0) {
         #message("No package specified Error # 579238572")
       } else if (package == "GPfit") {
-        .init <<- function(...) {mod <<- list(GPfit::GP_fit(X, Z))}
-        .update <<- function(...){mod <<- list(GPfit::GP_fit(X, Z))}
+        .init <<- function(...) {
+          if (length(corr.power) == 0) {
+            mod <<- list(GPfit::GP_fit(X, Z, corr = list(type="exponential",power=2)))
+          } else {
+            mod <<- list(GPfit::GP_fit(X, Z, corr = list(type="exponential",power=corr.power)))
+          }
+        }
+        .update <<- function(...){
+          .init()
+        }
         .predict <<- function(XX, se.fit, ...){
           if (se.fit) {
             preds <- GPfit::predict.GP(mod[[1]], XX, se.fit=se.fit)
@@ -90,6 +99,27 @@ UGP <- setRefClass("UGP",
         }
         .predict.se <<- function(XX, ...) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit}
         .predict.var <<- function(XX, ...) {mlegp::predict.gp(object=mod[[1]], newData=XX, se.fit=T)$se.fit^2}
+        .delete <<- function(...){mod <<- list()}
+
+
+      } else if (package=="GauPro") {
+        .init <<- function(...) {
+          m <- GauPro::GauPro$new(X=X, Z=Z)
+          mod <<- list(m)
+        }
+        .update <<- function(...) {
+          mod[[1]]$update(Xall=X, Zall=Z)
+        }
+        .predict <<- function(XX, se.fit, ...) {
+          if (se.fit) {
+            preds <- mod[[1]]$pred(XX=XX)
+            list(fit=preds$mean, se.fit=preds$se)
+          } else {
+            mod[[1]]$pred(XX=XX)$mean
+          }
+        }
+        .predict.se <<- function(XX, ...) {mod[[1]]$pred(XX=XX)$se}
+        .predict.var <<- function(XX, ...) {mod[[1]]$pred(XX=XX)$s2}
         .delete <<- function(...){mod <<- list()}
 
 
@@ -301,6 +331,25 @@ UGP <- setRefClass("UGP",
     predict.var = function(XX, ...) {
       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
       .predict.var(XX, ...=...)
+    },
+    grad = function (XX) {#browser() # NUMERICAL GRAD IS OVER 10 TIMES SLOWER
+      if (!is.matrix(XX)) {
+        if (ncol(X) == 1) XX <- matrix(XX, ncol=1)
+        else if (length(XX) == ncol(X)) XX <- matrix(XX, nrow=1)
+        else stop('Predict input should be matrix')
+      } else {
+        if (ncol(XX) != ncol(X)) {stop("Wrong dimension input")}
+      }
+      grad.func <- function(xx) predict(xx)
+      grad.apply.func <- function(xx) numDeriv::grad(grad.func, xx)
+      grad1 <- apply(XX, 1, grad.apply.func)
+      if (ncol(X) == 1) return(grad1)
+      t(grad1)
+    },
+    grad_norm = function (XX) {#browser()
+      grad1 <- grad(XX)
+      if (!is.matrix(grad1)) return(abs(grad1))
+      apply(grad1,1, function(xx) {sqrt(sum(xx^2))})
     },
     delete = function(...) {
       .delete(...=...)
