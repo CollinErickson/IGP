@@ -12,7 +12,11 @@ UGP <- setRefClass("UGP",
     mod = "list", # First element is model
     mod.extra = "list", # list to store additional data needed for model
     n.at.last.update = "numeric", # count how many in update, must be at end of X
-    corr.power = "numeric"
+    corr.power = "numeric",
+    .theta = "function",
+    .nugget = "function",
+    estimate.nugget = "logical",
+    set.nugget = "numeric"
   ),
   methods = list(
     initialize = function(...) {#browser()
@@ -43,9 +47,10 @@ UGP <- setRefClass("UGP",
         .predict.var <<- function(XX, ...) {GPfit::predict.GP(object=mod[[1]], xnew=XX, se.fit=T)$MSE}
         .delete <<- function(...){mod <<- list()}
       } else if (package=="laGP") {
-        .init <<- function(...) {
+        .init <<- function(...) {#browser()
           da <- laGP::darg(list(mle=TRUE), X=X)
-          ga <- laGP::garg(list(mle=TRUE), y=Z)
+          ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=Z), silent = T)
+          if (inherits(ga.try, "try-error")) {warning("Adding noise to ga in laGP");ga <- laGP::garg(list(mle=TRUE), y=Z+rnorm(length(Z),0,1e-2))}
           mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=ga$start, dK = TRUE)
           #mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=1e-6, dK = TRUE)
           laGP::jmleGPsep(gpsepi = mod1, drange=c(da$min, da$max),
@@ -85,6 +90,35 @@ UGP <- setRefClass("UGP",
         .delete <<- function(...) {laGP::deleteGPsep(mod[[1]]);mod <<- list()}
 
 
+      } else if (package %in% c("blm","btlm","bcart","bgp","bgpllm","btgp","btgpllm")) {
+        .init <<- function(...) {#browser()
+          modfunc <-  if (package == "blm") tgp::blm
+                      else if (package == "btlm") tgp::btlm
+                      else if (package == "bcart") tgp::bcart
+                      else if (package == "bgp") tgp::bgp
+                      else if (package == "bgpllm") tgp::bgpllm
+                      else if (package == "btgp") tgp::btgp
+                      else if (package == "btgpllm") tgp::btgpllm
+          mod1 <- modfunc(X, Z)
+          mod <<- list(mod1)
+        }
+        .update <<- function(...) {#browser()
+          .init(...=...)
+        }
+        .predict <<- function(XX, se.fit, ...){#browser()
+          preds <- with(globalenv(), predict)(mod[[1]], XX)
+          if (se.fit) {
+            list(fit=preds$ZZ.km, se.fit=sqrt(preds$ZZ.ks2))
+          } else {
+            preds$ZZ.km
+          }
+        }
+        .predict.se <<- function(XX, ...) {sqrt(with(globalenv(), predict)(mod[[1]], XX)$ZZ.ks2)}
+        .predict.var <<- function(XX, ...) {with(globalenv(), predict)(mod[[1]], XX)$ZZ.ks2}
+        .delete <<- function(...) {mod <<- list()}
+
+
+
       } else if (package=="mlegp") {
         .init <<- function(...) {
           co <- capture.output(m <- mlegp::mlegp(X=X, Z=Z, verbose=0))
@@ -112,14 +146,16 @@ UGP <- setRefClass("UGP",
         }
         .predict <<- function(XX, se.fit, ...) {
           if (se.fit) {
-            preds <- mod[[1]]$pred(XX=XX)
+            preds <- mod[[1]]$pred(XX=XX, se.fit=T)
             list(fit=preds$mean, se.fit=preds$se)
           } else {
-            mod[[1]]$pred(XX=XX)$mean
+            mod[[1]]$pred(XX=XX)
           }
         }
-        .predict.se <<- function(XX, ...) {mod[[1]]$pred(XX=XX)$se}
-        .predict.var <<- function(XX, ...) {mod[[1]]$pred(XX=XX)$s2}
+        .predict.se <<- function(XX, ...) {mod[[1]]$pred(XX=XX, se.fit=T)$se}
+        .predict.var <<- function(XX, ...) {mod[[1]]$pred(XX=XX, se.fit=T)$s2}
+        .theta <<- function() {mod[[1]]$theta}
+        .nugget <<- function() {mod[[1]]$nug}
         .delete <<- function(...){mod <<- list()}
 
 
@@ -307,6 +343,7 @@ UGP <- setRefClass("UGP",
       if (!is.null(Z)) {Z <<- Z}
       if (length(.self$X) == 0 | length(.self$Z) == 0) {stop("X or Z not set")}
       n.at.last.update <<- nrow(.self$X)
+      if (max(.self$Z) - min(.self$Z) < 1e-8) {warning("Z values are too close, adding noise"); .self$Z <<- .self$Z + rnorm(length(.self$Z), 0, 1e-6)}
       #mod <<- list(.init())
       .init(...=...)
     }, # end init
@@ -350,6 +387,12 @@ UGP <- setRefClass("UGP",
       grad1 <- grad(XX)
       if (!is.matrix(grad1)) return(abs(grad1))
       apply(grad1,1, function(xx) {sqrt(sum(xx^2))})
+    },
+    theta = function() {
+      .theta()
+    },
+    nugget = function() {
+      .nugget()
     },
     delete = function(...) {
       .delete(...=...)

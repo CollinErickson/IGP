@@ -2,7 +2,7 @@ set.seed(0)
 n <- 80
 d <- 2
 n2 <- 20
-f1 <- function(x) {sin(8*pi*x[1]) + sin(8*pi*x[2])}
+f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
 #f1 <- branin
 X1 <- matrix(runif(n*d),n,d)
 Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
@@ -12,7 +12,7 @@ Xall <- rbind(X1, X2)
 Zall <- c(Z1, Z2)
 XX1 <- matrix(runif(10),5,2)
 ZZ1 <- apply(XX1, 1, f1)
-u <- UGP$new(package='GauPro',X=X1,Z=Z1, corr.power=2)
+system.time(u <- UGP$new(package='btlm',X=X1,Z=Z1, corr.power=2))
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
 contourfilled::contourfilled.func(u$predict,batchmax = 100, pts=X1)
@@ -147,3 +147,24 @@ python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
 # Dice kriging test
 mod <- DiceKriging::km(design = X1, response = Z1, covtype = "gauss", nugget.estim = T)
 predict.km(object = mod, newdata = XX1, type = "SK")
+
+
+
+# Test flat surface
+set.seed(0)
+n <- 8
+d <- 1
+n2 <- 2
+f1 <- function(x) {0}#sin(2*pi*x[1]) + sin(2*pi*x[2])}
+#f1 <- branin
+X1 <- matrix(runif(n*d),n,d)
+Z1 <- apply(X1,1,f1) #+ rnorm(n, 0, 1e-6)
+X2 <- matrix(runif(n2*d),n2,d)
+Z2 <- apply(X2,1,f1)
+Xall <- rbind(X1, X2)
+Zall <- c(Z1, Z2)
+XX1 <- matrix(runif(10),5,2)
+ZZ1 <- apply(XX1, 1, f1)
+system.time(u <- UGP$new(package='laGP',X=X1,Z=Z1, corr.power=2))
+cbind(u$predict(XX1), ZZ1)
+u$predict.se(XX1)
