@@ -19,7 +19,9 @@ UGP <- setRefClass("UGP",
     set.nugget = "numeric"
   ),
   methods = list(
-    initialize = function(...) {#browser()
+    initialize = function(X, Z, ...) {#browser()
+      X <<- X
+      Z <<- if (is.matrix(Z)) c(Z) else Z
       callSuper(...)
 
       if (length(package)==0) {
@@ -99,14 +101,14 @@ UGP <- setRefClass("UGP",
                       else if (package == "bgpllm") tgp::bgpllm
                       else if (package == "btgp") tgp::btgp
                       else if (package == "btgpllm") tgp::btgpllm
-          mod1 <- modfunc(X, Z)
+          capture.output(mod1 <- modfunc(X, Z))
           mod <<- list(mod1)
         }
         .update <<- function(...) {#browser()
           .init(...=...)
         }
         .predict <<- function(XX, se.fit, ...){#browser()
-          preds <- with(globalenv(), predict)(mod[[1]], XX)
+          capture.output(preds <- with(globalenv(), predict)(mod[[1]], XX))
           if (se.fit) {
             list(fit=preds$ZZ.km, se.fit=sqrt(preds$ZZ.ks2))
           } else {
@@ -357,7 +359,7 @@ UGP <- setRefClass("UGP",
       }
       n.at.last.update <<- nrow(X)
     }, # end update
-    predict = function(XX, se.fit = FALSE, ...) {
+    predict = function(XX, se.fit = FALSE, ...) {#browser()
       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
       .predict(XX, se.fit=se.fit, ...=...)
     },
