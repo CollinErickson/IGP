@@ -12,4 +12,7 @@ LazyData: TRUE
 Suggests:
     GPfit,
     laGP,
-    mlegp
+    mlegp,
+    rPython,
+    tgp,
+    DiceKriging

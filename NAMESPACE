@@ -1,1 +1,3 @@
 exportPattern("^[[:alpha:]]+")
+  importFrom("graphics", "stripchart")
+  importFrom("methods", "new")

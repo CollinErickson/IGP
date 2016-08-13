@@ -140,11 +140,11 @@ UGP <- setRefClass("UGP",
 
       } else if (package=="GauPro") {
         .init <<- function(...) {
-          m <- GauPro::GauPro$new(X=X, Z=Z)
+          m <- GauPro::GauPro$new(X=X, Z=Z, ...)
           mod <<- list(m)
         }
         .update <<- function(...) {
-          mod[[1]]$update(Xall=X, Zall=Z)
+          mod[[1]]$update(Xall=X, Zall=Z, ...)
         }
         .predict <<- function(XX, se.fit, ...) {
           if (se.fit) {
@@ -335,7 +335,7 @@ UGP <- setRefClass("UGP",
       #  delete.GP.SMED <- function(mod){}
       } else {
         message("Package not recognized Error # 1347344")
-      }
+      }#;browser()
       if(length(X) != 0 & length(Z) != 0 & length(package) != 0) {
         init()
       }
