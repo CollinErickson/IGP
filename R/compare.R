@@ -1,4 +1,4 @@
-compare.UGP <- function(packages, func, D, N, Npred=1000, reps=1, debug=F) {
+compare.UGP <- function(packages, func, D, N, Npred=1000, reps=1, debug=F, init_list=list(), pred_list=list()) {
   if (debug) browser()
   out <- data.frame()
   for (rep in 1:reps) {
@@ -8,16 +8,15 @@ compare.UGP <- function(packages, func, D, N, Npred=1000, reps=1, debug=F) {
     Ypred <- apply(Xpred, 1, func)
     for (ipackage in seq_along(packages)) {
       package <- packages[ipackage]
-      if(ipackage==1) fit.time <- system.time(u <- GauPro::GauPro$new(X=X, Z=Y, useOptim2=F))[3]
-      else if(ipackage==2) fit.time <- system.time(u <- GauPro::GauPro$new(X=X, Z=Y, useOptim2=T))[3]
-      else fit.time <- system.time(u <- UGP::UGP$new(X=X, Z=Y, package=package))[3]
-      #fit.time <- system.time({
-      #  u <- UGP::UGP$new(X=matrix(NA,ncol=0,nrow=0), Z=numeric(0), package=package)
-      #  u$init(X=X, Z=Y)
-      #})[3]
-      predict.time <- system.time(up <- u$predict(Xpred, se.fit=T))[3]
-      if (ipackage < 3) mse <- mean((up$me - Ypred)^2)
-      else mse <- mean((up$fit - Ypred)^2)
+      fit.time <- system.time({
+        u <- do.call(UGP::UGP$new,
+                     c(list(X=X, Z=Y, package=package),
+                       if (!is.null(init_list[[as.character(ipackage)]])) init_list[[as.character(ipackage)]]))
+      })[3]
+
+      predict.time <- system.time(up <- do.call(u$predict, list(Xpred, se.fit=T)))[3]
+
+      mse <- mean((up$fit - Ypred)^2)
       pmse <- mean((up$se)^2)
       rmse <- sqrt(mse)
       prmse <- sqrt(pmse)
@@ -26,7 +25,7 @@ compare.UGP <- function(packages, func, D, N, Npred=1000, reps=1, debug=F) {
                             mse=mse, pmse=pmse, rmse=rmse, prmse=prmse)
       out <- rbind(out, out.new)
 
-      if(ipackage>3)u$delete()
+      u$delete()
     }
   }
   stripchart(rmse ~ package, data=out)

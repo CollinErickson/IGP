@@ -19,24 +19,23 @@ UGP <- R6Class(classname = "UGP",
     estimate.nugget = NULL, #"logical",
     set.nugget = NULL, #"numeric"
 
-    initialize = function(X=NULL, Z=NULL, package=NULL, corr.power=2, ...) {#browser()
+    initialize = function(X=NULL, Z=NULL, package=NULL, corr.power=2, estimate.nugget=T, set.nugget=F, ...) {#browser()
       if (!is.null(X)) {self$X <- X}
       if (!is.null(Z)) {self$Z <- if (is.matrix(Z)) c(Z) else Z}
       self$package <- package
       self$n.at.last.update <- 0
       self$corr.power <- corr.power
-      #for (item in list(...)) {
-      #  self$add(item)
-      #}
+      self$estimate.nugget <- estimate.nugget
+      self$set.nugget <- set.nugget
 
       if (length(self$package)==0) {
         #message("No package specified Error # 579238572")
       } else if (self$package == "GPfit") {#browser()
         self$.init <- function(...) {
           if (length(self$corr.power) == 0) {
-            self$mod <- list(GPfit::GP_fit(self$X, self$Z, corr = list(type="exponential",power=2)))
+            self$mod <- GPfit::GP_fit(self$X, self$Z, corr = list(type="exponential",power=2))
           } else {
-            self$mod <- list(GPfit::GP_fit(self$X, self$Z, corr = list(type="exponential",power=self$corr.power)))
+            self$mod <- GPfit::GP_fit(self$X, self$Z, corr = list(type="exponential",power=self$corr.power))
           }
         }
         self$.update <- function(...){
@@ -44,15 +43,15 @@ UGP <- R6Class(classname = "UGP",
         }
         self$.predict <- function(XX, se.fit, ...){#browser()
           if (se.fit) {
-            preds <- GPfit::predict.GP(self$mod[[1]], XX, se.fit=se.fit)
+            preds <- GPfit::predict.GP(self$mod, XX, se.fit=se.fit)
             list(fit=preds$Y_hat, se.fit=sqrt(preds$MSE))
           } else {
-            GPfit::predict.GP(self$mod[[1]], XX)$Y_hat
+            GPfit::predict.GP(self$mod, XX)$Y_hat
           }
         }
-        self$.predict.se <- function(XX, ...) {sqrt(GPfit::predict.GP(object=self$mod[[1]], xnew=XX, se.fit=T)$MSE)}
-        self$.predict.var <- function(XX, ...) {GPfit::predict.GP(object=self$mod[[1]], xnew=XX, se.fit=T)$MSE}
-        self$.delete <- function(...){self$mod <- list()}
+        self$.predict.se <- function(XX, ...) {sqrt(GPfit::predict.GP(object=self$mod, xnew=XX, se.fit=T)$MSE)}
+        self$.predict.var <- function(XX, ...) {GPfit::predict.GP(object=self$mod, xnew=XX, se.fit=T)$MSE}
+        self$.delete <- function(...){self$mod <- NULL}
       } else if (self$package=="laGP") {
         self$.init <- function(...) {#browser()
           da <- laGP::darg(list(mle=TRUE), X=self$X)
@@ -63,7 +62,7 @@ UGP <- R6Class(classname = "UGP",
           laGP::jmleGPsep(gpsepi = mod1, drange=c(da$min, da$max),
                                  grange=c(ga$min, ga$max),
                                  dab=da$ab, gab=ga$ab, verb=0, maxit=1000)
-          self$mod <- list(mod1)
+          self$mod <- mod1
         }
         self$.update <- function(...) {#browser()
           da <- laGP::darg(list(mle=TRUE), X=self$X)
@@ -77,10 +76,10 @@ UGP <- R6Class(classname = "UGP",
               self$.delete(...=...)
               self$.init(...=...)
             } else {
-              laGP::updateGPsep(gpsepi=self$mod[[1]], X=self$X[-(1:self$n.at.last.update),], Z=self$Z[-(1:self$n.at.last.update)])
+              laGP::updateGPsep(gpsepi=self$mod, X=self$X[-(1:self$n.at.last.update),], Z=self$Z[-(1:self$n.at.last.update)])
             }
           }
-          laGP::jmleGPsep(gpsepi = self$mod[[1]], drange=c(da$min, da$max),
+          laGP::jmleGPsep(gpsepi = self$mod, drange=c(da$min, da$max),
                           grange=c(ga$min, ga$max),
                           dab=da$ab, gab=ga$ab, verb=0, maxit=1000)
           }
@@ -92,11 +91,12 @@ UGP <- R6Class(classname = "UGP",
             laGP::predGPsep(self$mod, XX, lite=TRUE)$mean
           }
         }
-        self$.predict.se <- function(XX, ...) {sqrt(laGP::predGPsep(self$mod[[1]], XX, lite=TRUE)$s2)}
-        self$.predict.var <- function(XX, ...) {laGP::predGPsep(self$mod[[1]], XX, lite=TRUE)$s2}
+        self$.predict.se <- function(XX, ...) {sqrt(laGP::predGPsep(self$mod, XX, lite=TRUE)$s2)}
+        self$.predict.var <- function(XX, ...) {laGP::predGPsep(self$mod, XX, lite=TRUE)$s2}
         self$.delete <- function(...) {
           if (!is.null(self$mod)) {
-            laGP::deleteGPsep(self$mod[[1]]);self$mod <- list()
+            laGP::deleteGPsep(self$mod)
+            self$mod <- NULL
           }
         }
 
@@ -111,70 +111,70 @@ UGP <- R6Class(classname = "UGP",
                       else if (package == "btgp") tgp::btgp
                       else if (package == "btgpllm") tgp::btgpllm
           capture.output(mod1 <- modfunc(self$X, self$Z))
-          self$mod <- list(mod1)
+          self$mod <- mod1
         }
         self$.update <- function(...) {#browser()
           self$.init(...=...)
         }
         self$.predict <- function(XX, se.fit, ...){#browser()
-          capture.output(preds <- with(globalenv(), predict)(self$mod[[1]], XX))
+          capture.output(preds <- with(globalenv(), predict)(self$mod, XX))
           if (se.fit) {
             list(fit=preds$ZZ.km, se.fit=sqrt(preds$ZZ.ks2))
           } else {
             preds$ZZ.km
           }
         }
-        self$.predict.se <- function(XX, ...) {sqrt(with(globalenv(), predict)(self$mod[[1]], XX)$ZZ.ks2)}
-        self$.predict.var <- function(XX, ...) {with(globalenv(), predict)(self$mod[[1]], XX)$ZZ.ks2}
-        self$.delete <- function(...) {self$mod <- list()}
+        self$.predict.se <- function(XX, ...) {sqrt(with(globalenv(), predict)(self$mod, XX)$ZZ.ks2)}
+        self$.predict.var <- function(XX, ...) {with(globalenv(), predict)(self$mod, XX)$ZZ.ks2}
+        self$.delete <- function(...) {self$mod <- NULL}
 
 
 
       } else if (self$package=="mlegp") {
         self$.init <- function(...) {
           co <- capture.output(m <- mlegp::mlegp(X=self$X, Z=self$Z, verbose=0))
-          self$mod <- list(m)
+          self$mod <- m
         }
         self$.update <- function(...) {
           co <- capture.output(m <- mlegp::mlegp(X=self$X, Z=self$Z, verbose=0))
-          self$mod <- list(m)
+          self$mod <- m
         }
         self$.predict <- function(XX, se.fit, ...) {
-          mlegp::predict.gp(object=self$mod[[1]], newData=XX, se.fit = se.fit)
+          mlegp::predict.gp(object=self$mod, newData=XX, se.fit = se.fit)
         }
-        self$.predict.se <- function(XX, ...) {mlegp::predict.gp(object=self$mod[[1]], newData=XX, se.fit=T)$se.fit}
-        self$.predict.var <- function(XX, ...) {mlegp::predict.gp(object=self$mod[[1]], newData=XX, se.fit=T)$se.fit^2}
-        self$.delete <- function(...){self$mod <- list()}
+        self$.predict.se <- function(XX, ...) {mlegp::predict.gp(object=self$mod, newData=XX, se.fit=T)$se.fit}
+        self$.predict.var <- function(XX, ...) {mlegp::predict.gp(object=self$mod, newData=XX, se.fit=T)$se.fit^2}
+        self$.delete <- function(...){self$mod <- NULL}
 
 
       } else if (self$package=="GauPro") {
         self$.init <- function(...) {
           m <- GauPro::GauPro$new(X=self$X, Z=self$Z, ...)
-          self$mod <- list(m)
+          self$mod <- m
         }
         self$.update <- function(...) {
-          self$mod[[1]]$update(Xall=X, Zall=Z, ...)
+          self$mod$update(Xall=X, Zall=Z, ...)
         }
         self$.predict <- function(XX, se.fit, ...) {
           if (se.fit) {
-            preds <- self$mod[[1]]$pred(XX=XX, se.fit=T)
+            preds <- self$mod$pred(XX=XX, se.fit=T)
             list(fit=preds$mean, se.fit=preds$se)
           } else {
-            self$mod[[1]]$pred(XX=XX)
+            self$mod$pred(XX=XX)
           }
         }
-        self$.predict.se <- function(XX, ...) {self$mod[[1]]$pred(XX=XX, se.fit=T)$se}
-        self$.predict.var <- function(XX, ...) {self$mod[[1]]$pred(XX=XX, se.fit=T)$s2}
-        self$.theta <- function() {self$mod[[1]]$theta}
-        self$.nugget <- function() {self$mod[[1]]$nug}
-        self$.delete <- function(...){self$mod <- list()}
+        self$.predict.se <- function(XX, ...) {self$mod$pred(XX=XX, se.fit=T)$se}
+        self$.predict.var <- function(XX, ...) {self$mod$pred(XX=XX, se.fit=T)$s2}
+        self$.theta <- function() {self$mod$theta}
+        self$.nugget <- function() {self$mod$nug}
+        self$.delete <- function(...){self$mod <- NULL}
 
 
       } else if (self$package=="DiceKriging") {
         self$.init <- function(...) {
           #capture.output(mod1 <- DiceKriging::km(design=X, response=Z, covtype="gauss", nugget.estim=T))
           capture.output(mod1 <- DiceKriging::km(design=self$X, response=self$Z, covtype="gauss", nugget.estim=T))
-          self$mod <- list(mod1)
+          self$mod <- mod1
         }
         self$.update <- function(...) {#browser()
           n.since.last.update = nrow(self$X) - self$n.at.last.update
@@ -186,21 +186,21 @@ UGP <- R6Class(classname = "UGP",
               self$.delete(...=...)
               self$.init(...=...)
             } else {
-              capture.output(DiceKriging::update(object=mod[[1]], newX=self$X[-(1:self$n.at.last.update),], newy=self$Z[-(1:self$n.at.last.update)], nugget.reestim=T))
+              capture.output(DiceKriging::update(object=mod, newX=self$X[-(1:self$n.at.last.update),], newy=self$Z[-(1:self$n.at.last.update)], nugget.reestim=T))
             } #TRYING TO LET UPDATES BE BIG, ELSE UNCOMMENT THIS PART
           }
         }
         self$.predict <- function(XX, se.fit, ...){
           if (se.fit) {
-            preds <- DiceKriging::predict.km(self$mod[[1]], XX, type = "SK", checkNames=F)
+            preds <- DiceKriging::predict.km(self$mod, XX, type = "SK", checkNames=F)
             list(fit=preds$mean, se.fit=sqrt(preds$sd))
           } else {
-            DiceKriging::predict.km(self$mod[[1]], XX, type = "SK", checkNames=F)$mean
+            DiceKriging::predict.km(self$mod, XX, type = "SK", checkNames=F)$mean
           }
         }
-        self$.predict.se <- function(XX, ...) {DiceKriging::predict.km(self$mod[[1]], XX, type = "SK", checkNames=F)$sd}
-        self$.predict.var <- function(XX, ...) {(DiceKriging::predict.km(self$mod[[1]], XX, type = "SK", checkNames=F)$sd) ^ 2}
-        self$.delete <- function(...) {self$mod <- list()}
+        self$.predict.se <- function(XX, ...) {DiceKriging::predict.km(self$mod, XX, type = "SK", checkNames=F)$sd}
+        self$.predict.var <- function(XX, ...) {(DiceKriging::predict.km(self$mod, XX, type = "SK", checkNames=F)$sd) ^ 2}
+        self$.delete <- function(...) {self$mod <- NULL}
 
 
       } else if (self$package == "sklearn") {
@@ -225,7 +225,7 @@ UGP <- R6Class(classname = "UGP",
                                 optimizer='Welch') ")
           rPython::python.exec("gp.fit(X, y)")
 
-          self$mod <- list("GPy model is in Python")
+          self$mod <- "GPy model is in Python"
         }
         self$.update <- function(...) {
           rPython::python.assign("X1", (self$X))
@@ -268,7 +268,7 @@ UGP <- R6Class(classname = "UGP",
           rPython::python.exec('sigma2_pred =  None')
           rPython::python.exec('gp =  None')
           rPython::python.exec('inputdim =  None')
-          self$mod <- list()
+          self$mod <- NULL
         }
       } else if (self$package == "GPy") {
         #require("rPython")
@@ -289,7 +289,7 @@ UGP <- R6Class(classname = "UGP",
           rPython::python.exec("gp.optimize(messages=False)")
           rPython::python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
 
-          self$mod <- list("GPy model is in Python")
+          self$mod <- "GPy model is in Python"
         }
         self$.update <- function(...) {
           rPython::python.assign("X1", (self$X))
@@ -335,7 +335,7 @@ UGP <- R6Class(classname = "UGP",
           rPython::python.exec('gp =  None')
           rPython::python.exec('kernel =  None')
           rPython::python.exec('inputdim =  None')
-          self$mod <- list()
+          self$mod <- NULL
         }
       #} else if (GP.package=='exact') {
       #  predict.GP.SMED <- function(mod,xx) {f(xx)}
@@ -344,9 +344,9 @@ UGP <- R6Class(classname = "UGP",
       #  delete.GP.SMED <- function(mod){}
       } else {
         message("Package not recognized Error # 1347344")
-      }#;browser()
+      }
       if(length(self$X) != 0 & length(self$Z) != 0 & length(self$package) != 0) {
-        self$init()
+        self$init(...)
       }
     }, # end initialize
     init = function(X=NULL, Z=NULL, ...) {#browser()
@@ -355,8 +355,8 @@ UGP <- R6Class(classname = "UGP",
       if (length(self$X) == 0 | length(self$Z) == 0) {stop("X or Z not set")}
       self$n.at.last.update <- nrow(self$X)
       if (max(self$Z) - min(self$Z) < 1e-8) {warning("Z values are too close, adding noise"); self$Z <- self$Z + rnorm(length(self$Z), 0, 1e-6)}
-      #mod <<- list(.init())
-      self$.init(...=...)
+
+      self$.init(...)
     }, # end init
     update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...) {#browser()
       if (length(self$n.at.last.update) == 0) {
@@ -364,13 +364,13 @@ UGP <- R6Class(classname = "UGP",
       } else {
         if (!is.null(Xall)) {self$X <- Xall} else if (!is.null(Xnew)) {self$X <- rbind(self$X, Xnew)}
         if (!is.null(Zall)) {self$Z <- Zall} else if (!is.null(Znew)) {self$Z <- c(self$Z, Znew)}
-        self$.update(...=...)
+        self$.update(...)
       }
       self$n.at.last.update <- nrow(self$X)
     }, # end update
     predict = function(XX, se.fit = FALSE, ...) {#browser()
       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
-      self$.predict(XX, se.fit=se.fit, ...=...)
+      self$.predict(XX, se.fit=se.fit, ...)
     },
     predict.se = function(XX, ...) {
       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
