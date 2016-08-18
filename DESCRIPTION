@@ -9,10 +9,14 @@ Description: Creates a Gaussian process model from one of the specified R
     Essentially a wrapper for the models.
 License: GPL-3
 LazyData: TRUE
+Imports: R6
 Suggests:
     GPfit,
     laGP,
     mlegp,
     rPython,
     tgp,
-    DiceKriging
+    DiceKriging,
+    testthat,
+    lhs
+RoxygenNote: 5.0.1

@@ -1,3 +1,20 @@
+#' Compare multiple UGPs on both prediction accuracy and run time
+#'
+#' @param packages vector of packages to compare
+#' @param func The function to test on
+#' @param D Number of dimensions for the data
+#' @param N Number of data points
+#' @param Npred Number of prediction points
+#' @param reps Number of replicates
+#' @param debug If true will start browser
+#' @param init_list Additional params to pass to init
+#' @param pred_list Additional params to pass to pred
+#'
+#' @return Dataframe of results
+#' @export
+#' @importFrom graphics stripchart
+#' @examples
+#' compare.UGP(packages=c("laGP", "mlegp"), func=function(x){2*pi*x}, D=1, N=10, Npred = 1e3, reps = 3)
 compare.UGP <- function(packages, func, D, N, Npred=1000, reps=1, debug=F, init_list=list(), pred_list=list()) {
   if (debug) browser()
   out <- data.frame()
