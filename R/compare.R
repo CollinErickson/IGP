@@ -25,9 +25,10 @@ compare.UGP <- function(packages, func, D, N, Npred=1000, reps=1, debug=F, init_
     Ypred <- apply(Xpred, 1, func)
     for (ipackage in seq_along(packages)) {
       package <- packages[ipackage]
+      package.use <- strsplit(package, '-')[[1]][1] # lets you add identifying name after a hyphen
       fit.time <- system.time({
         u <- do.call(UGP::UGP$new,
-                     c(list(X=X, Z=Y, package=package),
+                     c(list(X=X, Z=Y, package=package.use),
                        if (!is.null(init_list[[as.character(ipackage)]])) init_list[[as.character(ipackage)]]))
       })[3]
 
