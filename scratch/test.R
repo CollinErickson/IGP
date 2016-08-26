@@ -15,23 +15,23 @@ ZZ1 <- apply(XX1, 1, f1)
 system.time(u <- UGP$new(package='GauPro',X=X1,Z=Z1, corr.power=2))
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
-contourfilled::contourfilled.func(u$predict,batchmax = 100, pts=X1)
+cf::cf_func(u$predict,batchmax = 100, pts=X1)
 u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
-contourfilled::contourfilled.func(u$predict,batchmax = 100, pts=Xall)
+cf::cf_func(u$predict,batchmax = 100, pts=Xall)
 u$delete()
-contourfilled::contourfilled.func(function(xx)sin(8*pi*xx[1]) + sin(8*pi*xx[2]))
-contourfilled::contourfilled.data(X1,Z1)
-contourfilled::contourfilled.data(X2,Z2)
-contourfilled::contourfilled.data(rbind(X1,X2),c(Z1,Z2))
-contourfilled::contourfilled.data(u$X,u$Z)
-contourfilled::contourfilled.func(u$grad_norm)
+cf::cf_func(function(xx)sin(8*pi*xx[1]) + sin(8*pi*xx[2]))
+cf::cf_data(X1,Z1)
+cf::cf_data(X2,Z2)
+cf::cf_data(rbind(X1,X2),c(Z1,Z2))
+cf::cf_data(u$X,u$Z)
+cf::cf_func(u$grad_norm)
 
 u <- UGP$new(package='laGP')
 u$update(Xnew=X1, Znew=Z1)
-contourfilled::contourfilled.func(u$predict,batchmax = 100);points(X1)
+cf::cf_func(u$predict,batchmax = 100);points(X1)
 u$update(Xnew=X2,Znew=Z2)
-contourfilled::contourfilled.func(u$predict,batchmax = 100);points(rbind(X1,X2))
+cf::cf_func(u$predict,batchmax = 100);points(rbind(X1,X2))
 u$delete()
 
 # try tgp
@@ -55,7 +55,7 @@ mle <- jmleGPsep(gpi, drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da
 
 ## predict at a new set of XX locations, use lite=TRUE if you don't need a full predictive covariance matrics
 p <- predGPsep(gpi, XX=XX1, lite=T)
-contourfilled::contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+cf::cf_func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
 
 ## clean up
 deleteGPsep(gpi)
@@ -78,11 +78,11 @@ gpi <- newGPsep(X=X1, Z=Z1, d=da$start, g=ga$start, dK=TRUE)
 
 ## joint inference for lengthscale and nugget under prior calculated above
 mle <- jmleGPsep(gpi, drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da$ab, gab=ga$ab, verb=1)
-contourfilled::contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+cf::cf_func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
 points(X1,pch=19)
 
 updateGPsep(gpsepi=gpi, X=X2, Z=Z2)
-contourfilled::contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+cf::cf_func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
 points(Xall,pch=19)
 
 da <- darg(list(mle=TRUE), X=Xall)
@@ -92,7 +92,7 @@ jmleGPsep(gpi, drange=c(da$min, da$max), grange=c(ga$min, ga$max), dab=da$ab, ga
 
 
 predGPsep(gpi, XX=XX1, lite=T)
-contourfilled::contourfilled.func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
+cf::cf_func(function(xx){predGPsep(gpi,XX=xx,lite=T)$mean},batchmax = 100)
 points(Xall,pch=19)
 
 ## clean up
