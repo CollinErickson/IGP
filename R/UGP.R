@@ -88,9 +88,11 @@ UGP <- R6::R6Class(classname = "UGP",
         }
         self$.predict.se <- function(XX, ...) {sqrt(GPfit::predict.GP(object=self$mod, xnew=XX, se.fit=T)$MSE)}
         self$.predict.var <- function(XX, ...) {GPfit::predict.GP(object=self$mod, xnew=XX, se.fit=T)$MSE}
+        self$.theta <- function() {10^(self$mod$beta)}
+        self$.nugget <- function() {self$mod$delta}
         self$.delete <- function(...){self$mod <- NULL}
       } else if (self$package=="laGP") {
-        self$.init <- function(...) {#browser()
+        self$.init <- function(...) {
           da <- laGP::darg(list(mle=TRUE), X=self$X)
           ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=self$Z), silent = T)
           if (inherits(ga.try, "try-error")) {warning("Adding noise to ga in laGP");ga <- laGP::garg(list(mle=TRUE), y=Z+rnorm(length(self$Z),0,1e-2))}
@@ -181,6 +183,8 @@ UGP <- R6::R6Class(classname = "UGP",
         }
         self$.predict.se <- function(XX, ...) {mlegp::predict.gp(object=self$mod, newData=XX, se.fit=T)$se.fit}
         self$.predict.var <- function(XX, ...) {mlegp::predict.gp(object=self$mod, newData=XX, se.fit=T)$se.fit^2}
+        self$.theta <- function() {self$mod$beta}
+        self$.nugget <- function() {self$mod$nugget}
         self$.delete <- function(...){self$mod <- NULL}
 
 
@@ -237,6 +241,8 @@ UGP <- R6::R6Class(classname = "UGP",
         }
         self$.predict.se <- function(XX, ...) {DiceKriging::predict.km(self$mod, XX, type = "SK", checkNames=F)$sd}
         self$.predict.var <- function(XX, ...) {(DiceKriging::predict.km(self$mod, XX, type = "SK", checkNames=F)$sd) ^ 2}
+        self$.theta <- function() {self$mod@covariance@range.val}
+        self$.nugget <- function() {self$mod@covariance@nugget}
         self$.delete <- function(...) {self$mod <- NULL}
 
 
