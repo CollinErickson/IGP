@@ -91,6 +91,8 @@ UGP <- R6::R6Class(classname = "UGP",
         self$.theta <- function() {10^(self$mod$beta)}
         self$.nugget <- function() {self$mod$delta}
         self$.delete <- function(...){self$mod <- NULL}
+
+
       } else if (self$package=="laGP") {
         self$.init <- function(...) {
           da <- laGP::darg(list(mle=TRUE), X=self$X)
@@ -132,6 +134,8 @@ UGP <- R6::R6Class(classname = "UGP",
         }
         self$.predict.se <- function(XX, ...) {sqrt(laGP::predGPsep(self$mod, XX, lite=TRUE)$s2)}
         self$.predict.var <- function(XX, ...) {laGP::predGPsep(self$mod, XX, lite=TRUE)$s2}
+        self$.theta <- function() {laGP::jmleGPsep(self$mod)[1:ncol(self$X)]}
+        self$.nugget <- function() {laGP::jmleGPsep(self$mod)[ncol(self$X) + 1]}
         self$.delete <- function(...) {
           if (!is.null(self$mod)) {
             laGP::deleteGPsep(self$mod)
@@ -165,6 +169,8 @@ UGP <- R6::R6Class(classname = "UGP",
         }
         self$.predict.se <- function(XX, ...) {sqrt(with(globalenv(), predict)(self$mod, XX)$ZZ.ks2)}
         self$.predict.var <- function(XX, ...) {with(globalenv(), predict)(self$mod, XX)$ZZ.ks2}
+        self$.theta <- function() {rep(NA, ncol(self$X))}
+        self$.nugget <- function() {NA}
         self$.delete <- function(...) {self$mod <- NULL}
 
 
@@ -300,6 +306,8 @@ UGP <- R6::R6Class(classname = "UGP",
           rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, eval_MSE=True)")
           unlist(rPython::python.get("sigma2_pred.tolist()"))
         }
+        self$.theta <- function() {rep(NA, ncol(self$X))}
+        self$.nugget <- function() {NA}
         self$.delete <- function(...){
           rPython::python.exec('X =  None')
           rPython::python.exec('y =  None')
@@ -366,6 +374,8 @@ UGP <- R6::R6Class(classname = "UGP",
           rPython::python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
           unlist(rPython::python.get("sigma2_pred.tolist()"))
         }
+        self$.theta <- function() {rep(NA, ncol(self$X))}
+        self$.nugget <- function() {NA}
         self$.delete <- function(...){
           rPython::python.exec('X =  None')
           rPython::python.exec('y =  None')
