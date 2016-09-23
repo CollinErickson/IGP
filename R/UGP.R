@@ -53,8 +53,8 @@ UGP <- R6::R6Class(classname = "UGP",
     corr.power = NULL, #"numeric",
     .theta = NULL, #"function",
     .nugget = NULL, #"function",
-    estimate.nugget = NULL, #"logical",
-    set.nugget = NULL, #"numeric"
+    estimate.nugget = NULL, #"logical", Should the nugget be estimated?
+    set.nugget = NULL, #"numeric" # What value should the nugget be set to? NOT logical
 
     initialize = function(X=NULL, Z=NULL, package=NULL, corr.power=2, estimate.nugget=T, set.nugget=F, ...) {#browser()
       if (!is.null(X)) {self$X <- X}
@@ -177,12 +177,16 @@ UGP <- R6::R6Class(classname = "UGP",
 
       } else if (self$package=="mlegp") {
         self$.init <- function(...) {
-          co <- capture.output(m <- mlegp::mlegp(X=self$X, Z=self$Z, verbose=0))
+          temp_nug <- if (is.null(self$estimate.nugget) || self$estimate.nugget == FALSE) NULL
+                      else if (self$estimate.nugget == TRUE) 1e-6
+          temp_nug_known <- if (is.null(self$set.nugget)) 0 else self$set.nugget
+          co <- capture.output(m <- mlegp::mlegp(X=self$X, Z=self$Z, verbose=0,
+                                                 nugget = temp_nug,
+                                                 nugget.known=temp_nug_known))
           self$mod <- m
         }
         self$.update <- function(...) {
-          co <- capture.output(m <- mlegp::mlegp(X=self$X, Z=self$Z, verbose=0))
-          self$mod <- m
+          self$.init(...)
         }
         self$.predict <- function(XX, se.fit, ...) {
           mlegp::predict.gp(object=self$mod, newData=XX, se.fit = se.fit)
@@ -255,8 +259,8 @@ UGP <- R6::R6Class(classname = "UGP",
       } else if (self$package == "sklearn") {
         #require("rPython")
         self$.init <- function(...) {
-          rPython::python.exec('import sys') # These first two lines need to go
-          rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
+          #rPython::python.exec('import sys') # These first two lines need to go
+          #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
           rPython::python.exec('import numpy as np')
           rPython::python.exec('from sklearn import gaussian_process')
           rPython::python.exec("import warnings")
@@ -324,8 +328,8 @@ UGP <- R6::R6Class(classname = "UGP",
       } else if (self$package == "GPy") {
         #require("rPython")
         self$.init <- function(...) {
-          rPython::python.exec('import sys') # These first two lines need to go
-          rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
+          #rPython::python.exec('import sys') # These first two lines need to go
+          #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
           rPython::python.exec('import numpy as np')
           rPython::python.exec('import GPy')
 

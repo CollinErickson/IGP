@@ -34,6 +34,35 @@ u$update(Xnew=X2,Znew=Z2)
 cf::cf_func(u$predict,batchmax = 100);points(rbind(X1,X2))
 u$delete()
 
+
+
+# Test 1 D
+set.seed(0)
+n <- 10
+d <- 1
+n2 <- 5
+f1 <- function(x) {sin(2*pi*x[1]) + rnorm(1,0,.05)}
+X1 <- matrix(runif(n*d),n,d)
+Z1 <- apply(X1,1,f1) #+ rnorm(n, 0, 1e-3)
+X2 <- matrix(runif(n2*d),n2,d)
+Z2 <- apply(X2,1,f1)
+XX1 <- matrix(runif(10),ncol=1)
+ZZ1 <- apply(XX1, 1, f1)
+system.time(u <- UGP$new(package='mlegp',X=X1,Z=Z1, estimate.nugget=T))
+cbind(u$predict(XX1), ZZ1)
+u$predict.se(XX1)
+curve(u$predict(matrix(x, ncol=1)));points(X1,Z1, col=2, cex=2, pch=19)
+curve(u$predict(matrix(x, ncol=1)) + 2*u$predict.se(matrix(x, ncol=1)), add=T, col=3)
+curve(u$predict(matrix(x, ncol=1)) - 2*u$predict.se(matrix(x, ncol=1)), add=T, col=3)
+u$update(Xnew=X2,Znew=Z2)
+curve(u$predict(matrix(x, ncol=1)));points(rbind(X1,X2),c(Z1,Z2), col=2, cex=2, pch=19)
+curve(u$predict(matrix(x, ncol=1)) + 2*u$predict.se(matrix(x, ncol=1)), add=T, col=3)
+curve(u$predict(matrix(x, ncol=1)) - 2*u$predict.se(matrix(x, ncol=1)), add=T, col=3)
+u$delete()
+
+
+
+
 # try tgp
 library(tgp)
 mod <- tgp::btgpllm(X2,Z2)
