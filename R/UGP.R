@@ -55,6 +55,7 @@ UGP <- R6::R6Class(classname = "UGP",
     .nugget = NULL, #"function",
     estimate.nugget = NULL, #"logical", Should the nugget be estimated?
     set.nugget = NULL, #"numeric" # What value should the nugget be set to? NOT logical
+    .mean = NULL, # function that gives mean
 
     initialize = function(X=NULL, Z=NULL, package=NULL, corr.power=2, estimate.nugget=T, set.nugget=F, ...) {#browser()
       if (!is.null(X)) {self$X <- X}
@@ -69,6 +70,9 @@ UGP <- R6::R6Class(classname = "UGP",
         #message("No package specified Error # 579238572")
       } else if (self$package == "GPfit") {#browser()
         self$.init <- function(...) {
+          if (!is.null(self$estimate.nugget) || !is.null(self$set.nugget)) {
+            warning("GPfit cannot estimate or set the nugget, it picks a stable value")
+          }
           if (length(self$corr.power) == 0) {
             self$mod <- GPfit::GP_fit(self$X, self$Z, corr = list(type="exponential",power=2))
           } else {
@@ -461,6 +465,25 @@ UGP <- R6::R6Class(classname = "UGP",
     },
     nugget = function() {
       self$.nugget()
+    },
+    mean = function() {
+      if (!is.null(self$.mean)) {
+        self$.mean()
+      } else {
+        self$predict(matrix(rep(max(abs(self$X)) * 10,ncol(self$X)), nrow=1))
+      }
+    },
+    max.var = function() {
+      self$predict.var(matrix(rep(max(abs(self$X)) * 10,ncol(self$X)), nrow=1))
+    },
+    at.max.var = function(X) {#browser() #logical if pred var at least 90% of max var
+      maxvar = c(self$max.var())
+      self$predict.var(X) > .9 * maxvar
+    },
+    prop.at.max.var =function(Xlims = matrix(c(0,1), nrow=ncol(self$X), ncol=2, byrow=T), n = 200) {browser()
+      maxvar = c(self$max.var())
+      X <- apply(Xlims, 1, function(Xlim) {runif(n, Xlim[1], Xlim[2])})
+      sum(self$predict.var(X) > .9 * maxvar) / n
     },
     delete = function(...) {
       self$.delete(...=...)
