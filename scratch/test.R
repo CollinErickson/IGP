@@ -1,9 +1,9 @@
 set.seed(0)
 n <- 40
-d <- 4
+d <- 1
 n2 <- 20
 f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
-f1 <- TestFunctions::RFF_get(D=d)
+#f1 <- TestFunctions::RFF_get(D=d)
 X1 <- matrix(runif(n*d),n,d)
 Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
 X2 <- matrix(runif(n2*d),n2,d)
@@ -183,6 +183,35 @@ python.exec("xp = np.asmatrix(xp1)")
 python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
 unlist(python.get("y_pred.tolist()"))
 
+
+
+# Try GPy with PythonInR since rPython not working on Windows
+library(PythonInR)
+pyConnect()
+pyExecp('print sys.path')
+pyExecp('import numpy')
+pyExecp('print numpy')
+pyExecp('import numpy as np')
+pyExecp('import scipy')
+pyExecp('print scipy.__version__')
+pyExecp('import GPy')
+pyExecp('print GPy')
+
+pySet("inputdim", ncol(X1))
+pySet("X1", X1, useNumpy=T)
+pySet("y1", Z1, useSetPoly = F)
+pyExecp('X =  np.matrix(X1)')
+pyExecp('y = np.matrix(y1).reshape((-1,1))')
+pyExecp("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
+pyExecp("gp = GPy.models.GPRegression(X,y,kernel,normalizer=True)")
+pyExecp("gp.likelihood.variance = 1e-8")
+pyExecp("gp.optimize(messages=False)")
+pyExecp("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
+python.assign("xp1", XX1)
+python.exec("xp = np.asmatrix(xp1)")
+python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+unlist(python.get("y_pred.tolist()"))
+
 # update with new data
 
 python.assign("X1", (Xall))
@@ -196,7 +225,7 @@ python.exec("gp.set_XY(X = X, Y = y)")
 python.exec("gp.optimize(messages=False)")
 python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
 
-
+pyExit()
 
 
 # Dice kriging test

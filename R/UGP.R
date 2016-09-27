@@ -70,7 +70,7 @@ UGP <- R6::R6Class(classname = "UGP",
         #message("No package specified Error # 579238572")
       } else if (self$package == "GPfit") {#browser()
         self$.init <- function(...) {
-          if (!is.null(self$estimate.nugget) || !is.null(self$set.nugget)) {
+          if (!is.null(self$estimate.nugget) || self$set.nugget) {
             warning("GPfit cannot estimate or set the nugget, it picks a stable value")
           }
           if (length(self$corr.power) == 0) {
@@ -480,7 +480,7 @@ UGP <- R6::R6Class(classname = "UGP",
       maxvar = c(self$max.var())
       self$predict.var(X) > .9 * maxvar
     },
-    prop.at.max.var =function(Xlims = matrix(c(0,1), nrow=ncol(self$X), ncol=2, byrow=T), n = 200) {browser()
+    prop.at.max.var =function(Xlims = matrix(c(0,1), nrow=ncol(self$X), ncol=2, byrow=T), n = 200) {#browser()
       maxvar = c(self$max.var())
       X <- apply(Xlims, 1, function(Xlim) {runif(n, Xlim[1], Xlim[2])})
       sum(self$predict.var(X) > .9 * maxvar) / n
