@@ -1,3 +1,4 @@
+#' UGP
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -48,7 +49,7 @@ UGP <- R6::R6Class(classname = "UGP",
     .predict.var = NULL, #"function",
     .delete = NULL, #"function",
     mod = NULL, #"list", # First element is model
-    mod.extra = NULL, #"list", # list to store additional data needed for model
+    mod.extra = list(), #"list", # list to store additional data needed for model
     n.at.last.update = NULL, #"numeric", # count how many in update, must be at end of X
     corr.power = NULL, #"numeric",
     .theta = NULL, #"function",
@@ -68,7 +69,7 @@ UGP <- R6::R6Class(classname = "UGP",
 
       if (length(self$package)==0) {
         #message("No package specified Error # 579238572")
-      } else if (self$package == "GPfit") {#browser()
+      } else if (self$package == "GPfit") {
         self$.init <- function(...) {
           if (!is.null(self$estimate.nugget) || self$set.nugget) {
             warning("GPfit cannot estimate or set the nugget, it picks a stable value")
@@ -101,32 +102,61 @@ UGP <- R6::R6Class(classname = "UGP",
         self$.init <- function(...) {
           da <- laGP::darg(list(mle=TRUE), X=self$X)
           ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=self$Z), silent = T)
-          if (inherits(ga.try, "try-error")) {warning("Adding noise to ga in laGP");ga <- laGP::garg(list(mle=TRUE), y=Z+rnorm(length(self$Z),0,1e-2))}
+          if (inherits(ga.try, "try-error")) {
+            warning("Adding noise to ga in laGP");
+            ga <- laGP::garg(list(mle=TRUE), y=Z+rnorm(length(self$Z),0,1e-2))
+          }
+
+          # Follow recommendations for small samples, otherwise use bigger range
+          drange <- if (nrow(self$X)<20) c(da$min, da$max) else c(1e-3,1e4) #c(da$min, da$max), # Don't like these small ranges
+          grange <- c(ga$min, ga$max)
           mod1 <- laGP::newGPsep(X=self$X, Z=self$Z, d=da$start, g=ga$start, dK = TRUE)
           #mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=1e-6, dK = TRUE)
-          laGP::jmleGPsep(gpsepi = mod1, drange=c(da$min, da$max),
-                                 grange=c(ga$min, ga$max),
-                                 dab=da$ab, gab=ga$ab, verb=0, maxit=1000)
+          mle.out <- laGP::jmleGPsep(gpsepi = mod1,
+                                     drange=drange,
+                                     grange=grange,
+                                     #dab=da$ab, gab=ga$ab, # Will use MLE without these
+                                     verb=0, maxit=1000)
+          self$mod.extra$theta = as.numeric(1 / mle.out[1,1:ncol(self$X)]) # store theta params
+          self$mod.extra$nugget = as.numeric(mle.out[1,ncol(self$X) + 1]) # store nugget
           self$mod <- mod1
         }
-        self$.update <- function(...) {#browser()
+        self$.update <- function(...) {
+          # Start over if not many points, had problems getting stuck in bad spots early
+          if (self$n.at.last.update < 20) {
+            self$.delete()
+            self$.init(...)
+            return()
+          }
+
           da <- laGP::darg(list(mle=TRUE), X=self$X)
           ga <- laGP::garg(list(mle=TRUE), y=self$Z)
           n.since.last.update <- nrow(self$X) - self$n.at.last.update
           if (n.since.last.update < 1) {
-            message("Can't update, no new X rows")
+            warning("Can't update, no new X rows, but can optimize again")
           } else {
             if (self$n.at.last.update < 10 || n.since.last.update > .25 * self$n.at.last.update) {
               # start over if too many
               self$.delete(...=...)
               self$.init(...=...)
             } else {
-              laGP::updateGPsep(gpsepi=self$mod, X=self$X[-(1:self$n.at.last.update),], Z=self$Z[-(1:self$n.at.last.update)])
+              laGP::updateGPsep(gpsepi=self$mod,
+                                X=self$X[-(1:self$n.at.last.update),],
+                                Z=self$Z[-(1:self$n.at.last.update)])
             }
           }
-          laGP::jmleGPsep(gpsepi = self$mod, drange=c(da$min, da$max),
-                          grange=c(ga$min, ga$max),
-                          dab=da$ab, gab=ga$ab, verb=0, maxit=1000)
+          drange <- c(1e-3,1e4)
+          grange <- c(min(sqrt(.Machine$double.eps),self$mod.extra$nugget), max(1,self$mod.extra$nugget))
+          mle.out <- laGP::jmleGPsep(gpsepi = self$mod,
+                                     #drange=c(da$min, da$max), # Getting rid of these here too
+                                     #grange=c(ga$min, ga$max),
+                                     drange=drange,
+                                     grange=grange, # Had error of nugget starting outside bound
+                                     #dab=da$ab, gab=ga$ab,
+                                     verb=0, maxit=1000)
+          # Update stored parameters for when user calls $theta() or $nugget()
+          self$mod.extra$theta = as.numeric(1 / mle.out[1,1:ncol(self$X)]) # store theta params
+          self$mod.extra$nugget = as.numeric(mle.out[1,ncol(self$X) + 1]) # store nugget
           }
         self$.predict <- function(XX, se.fit, ...){
           if (se.fit) {
@@ -138,8 +168,8 @@ UGP <- R6::R6Class(classname = "UGP",
         }
         self$.predict.se <- function(XX, ...) {sqrt(laGP::predGPsep(self$mod, XX, lite=TRUE)$s2)}
         self$.predict.var <- function(XX, ...) {laGP::predGPsep(self$mod, XX, lite=TRUE)$s2}
-        self$.theta <- function() {laGP::jmleGPsep(self$mod)[1:ncol(self$X)]}
-        self$.nugget <- function() {laGP::jmleGPsep(self$mod)[ncol(self$X) + 1]}
+        self$.theta <- function() {self$mod.extra$theta}
+        self$.nugget <- function() {self$mod.extra$nugget}
         self$.delete <- function(...) {
           if (!is.null(self$mod)) {
             laGP::deleteGPsep(self$mod)

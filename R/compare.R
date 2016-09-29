@@ -46,6 +46,24 @@ compare.UGP <- function(packages, func, D, N, Npred=1000, reps=1, debug=F, init_
       u$delete()
     }
   }
+  out$total.time <- out$fit.time + out$predict.time
+
   stripchart(rmse ~ package, data=out)
+
+  com2 <- reshape::melt(out, measure.var=c('rmse', 'prmse'), id.vars=c('package','rep'), variable_name="rmseprmse")
+
+  rmseprmse_plot <- (ggplot(com2, aes(x=value, y=rmseprmse, color=as.factor(rep)))
+                     + geom_point(aes(shape=rmseprmse),size=3) + facet_grid(package ~ .)
+                     + guides(shape=F,color=F)
+                     + ylab(NULL) + xlab(NULL)
+                     )
+  print(rmseprmse_plot)
+
+  time_plot <- (ggplot(out, aes(x=total.time,y=package, color=as.factor(rep)))
+                + geom_point(size=3)
+                +ylab(NULL) + xlab("Run time (s)")
+                + guides(color=FALSE))
+  print(time_plot)
+
   out
 }
