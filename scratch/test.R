@@ -1,9 +1,9 @@
 set.seed(0)
 n <- 100
-d <- 2
+d <- 3
 n2 <- 20
 f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
-f1 <- function(x) {abs(sin(2*pi*x[1]))}
+f1 <- function(x) {abs(sin(2*pi*x[1])) + 10*x[2]}
 #f1 <- TestFunctions::RFF_get(D=d)
 X1 <- matrix(runif(n*d),n,d)
 Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
@@ -14,6 +14,7 @@ Zall <- c(Z1, Z2)
 XX1 <- matrix(runif(5*d),nrow=5)
 ZZ1 <- apply(XX1, 1, f1)
 system.time(u <- UGP$new(package='laGP',X=X1,Z=Z1, corr.power=2))
+u$theta()
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
 cf::cf_func(u$predict,batchmax = 100, pts=X1)
@@ -253,3 +254,16 @@ ZZ1 <- apply(XX1, 1, f1)
 system.time(u <- UGP$new(package='laGP',X=X1,Z=Z1, corr.power=2))
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
+
+
+# Test update function
+u <- UGP$new(package="laGP")
+n <- 3
+d <- 2
+f <- TestFunctions::gaussian1
+for (i in 1:10) {
+  x <- matrix(runif(n*d), ncol=d)
+  y <- f(x)
+  u$update(Xnew=x, Znew=y)
+  cf::cf(u$predict, pts=u$X)
+}

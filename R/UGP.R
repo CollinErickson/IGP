@@ -147,13 +147,14 @@ UGP <- R6::R6Class(classname = "UGP",
           }
           drange <- c(1e-3,1e4)
           grange <- c(min(sqrt(.Machine$double.eps),self$mod.extra$nugget), max(1,self$mod.extra$nugget))
-          mle.out <- laGP::jmleGPsep(gpsepi = self$mod,
+          mle.try <- try(mle.out <- laGP::jmleGPsep(gpsepi = self$mod,
                                      #drange=c(da$min, da$max), # Getting rid of these here too
                                      #grange=c(ga$min, ga$max),
                                      drange=drange,
                                      grange=grange, # Had error of nugget starting outside bound
                                      #dab=da$ab, gab=ga$ab,
-                                     verb=0, maxit=1000)
+                                     verb=0, maxit=1000))
+          if (inherits(mle.try, "try-error")) {browser()}
           # Update stored parameters for when user calls $theta() or $nugget()
           self$mod.extra$theta = as.numeric(1 / mle.out[1,1:ncol(self$X)]) # store theta params
           self$mod.extra$nugget = as.numeric(mle.out[1,ncol(self$X) + 1]) # store nugget
@@ -238,7 +239,7 @@ UGP <- R6::R6Class(classname = "UGP",
           self$mod <- m
         }
         self$.update <- function(...) {
-          self$mod$update(Xall=X, Zall=Z, ...)
+          self$mod$update(Xall=self$X, Zall=self$Z, ...)
         }
         self$.predict <- function(XX, se.fit, ...) {
           if (se.fit) {
@@ -450,8 +451,8 @@ UGP <- R6::R6Class(classname = "UGP",
       self$.init(...)
     }, # end init
     update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...) {#browser()
-      if (length(self$n.at.last.update) == 0) {
-        init(X = if(!is.null(Xall)) Xall else Xnew, Z = if (!is.null(Zall)) Zall else Znew)
+      if (self$n.at.last.update == 0) {
+        self$init(X = if(!is.null(Xall)) Xall else Xnew, Z = if (!is.null(Zall)) Zall else Znew)
       } else {
         if (!is.null(Xall)) {self$X <- Xall} else if (!is.null(Xnew)) {self$X <- rbind(self$X, Xnew)}
         if (!is.null(Zall)) {self$Z <- Zall} else if (!is.null(Znew)) {self$Z <- c(self$Z, Znew)}
