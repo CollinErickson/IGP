@@ -267,3 +267,23 @@ for (i in 1:10) {
   u$update(Xnew=x, Znew=y)
   cf::cf(u$predict, pts=u$X)
 }
+
+
+# Test function with all near zero values
+set.seed(0)
+n <- 3
+d <- 2
+n2 <- 5
+f1 <- function(x) {rnorm(1,0,1e-16)}
+f1 <- TestFunctions::banana
+X1 <- matrix(runif(n*d),n,d)
+Z1 <- apply(X1,1,f1) #+ rnorm(n, 0, 1e-3)
+X2 <- matrix(runif(n2*d),n2,d)
+Z2 <- apply(X2,1,f1)
+XX1 <- matrix(runif(10),ncol=1)
+ZZ1 <- apply(XX1, 1, f1)
+system.time(u <- UGP$new(package='laGP',X=X1,Z=Z1, estimate.nugget=T))
+cf::cf(u$predict)
+u$update(Xnew=X2,Znew=Z2)
+cf::cf(u$predict)
+u$delete()

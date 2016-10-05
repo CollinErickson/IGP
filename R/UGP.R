@@ -154,7 +154,14 @@ UGP <- R6::R6Class(classname = "UGP",
                                      grange=grange, # Had error of nugget starting outside bound
                                      #dab=da$ab, gab=ga$ab,
                                      verb=0, maxit=1000))
-          if (inherits(mle.try, "try-error")) {browser()}
+          if (inherits(mle.try, "try-error")) {
+            # Sometimes gives error: L-BFGS-B needs finite values of 'fn'
+            browser()
+            warning('Restarting laGP model')
+            self$delete()
+            self$init(...)
+            return()
+          }
           # Update stored parameters for when user calls $theta() or $nugget()
           self$mod.extra$theta = as.numeric(1 / mle.out[1,1:ncol(self$X)]) # store theta params
           self$mod.extra$nugget = as.numeric(mle.out[1,ncol(self$X) + 1]) # store nugget
