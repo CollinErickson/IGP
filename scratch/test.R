@@ -1,6 +1,6 @@
 set.seed(0)
-n <- 100
-d <- 3
+n <- 60
+d <- 2
 n2 <- 20
 f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
 f1 <- function(x) {abs(sin(2*pi*x[1])) + 10*x[2]}

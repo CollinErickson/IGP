@@ -527,7 +527,7 @@ UGP <- R6::R6Class(classname = "UGP",
       self$.delete(...=...)
     },
     finalize = function(...) {
-
+      self$delete() # Mostly for laGP to delete, Python should close connection
     }
   )
 )
