@@ -242,7 +242,9 @@ UGP <- R6::R6Class(classname = "UGP",
 
       } else if (self$package=="GauPro") {
         self$.init <- function(...) {
-          m <- GauPro::GauPro$new(X=self$X, Z=self$Z, ...)
+          #m <- GauPro::GauPro$new(X=self$X, Z=self$Z, ...)
+          #m <- GauPro::GauPr_Gauss_par$new(X=self$X, Z=self$Z, ...)
+          m <- GauPro::GauPro(X=self$X, Z=self$Z, ...)
           self$mod <- m
         }
         self$.update <- function(...) {
@@ -514,14 +516,14 @@ UGP <- R6::R6Class(classname = "UGP",
     max.var = function() {
       self$predict.var(matrix(rep(max(abs(self$X)) * 10,ncol(self$X)), nrow=1))
     },
-    at.max.var = function(X) {#browser() #logical if pred var at least 90% of max var
+    at.max.var = function(X, val=.9) {#browser() #logical if pred var at least 90% of max var
       maxvar = c(self$max.var())
-      self$predict.var(X) > .9 * maxvar
+      self$predict.var(X) > val * maxvar
     },
-    prop.at.max.var =function(Xlims = matrix(c(0,1), nrow=ncol(self$X), ncol=2, byrow=T), n = 200) {#browser()
+    prop.at.max.var =function(Xlims = matrix(c(0,1), nrow=ncol(self$X), ncol=2, byrow=T), n = 200, val=.9) {#browser()
       maxvar = c(self$max.var())
       X <- apply(Xlims, 1, function(Xlim) {runif(n, Xlim[1], Xlim[2])})
-      sum(self$predict.var(X) > .9 * maxvar) / n
+      sum(self$predict.var(X) > val * maxvar) / n
     },
     delete = function(...) {
       self$.delete(...=...)
