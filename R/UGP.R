@@ -461,7 +461,10 @@ UGP <- R6::R6Class(classname = "UGP",
     }, # end init
     update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...) {#browser()
       if (self$n.at.last.update == 0) {
-        self$init(X = if(!is.null(Xall)) Xall else Xnew, Z = if (!is.null(Zall)) Zall else Znew)
+        #self$init(X = if(!is.null(Xall)) Xall else Xnew, Z = if (!is.null(Zall)) Zall else Znew)
+        x <- if(!is.null(Xall)) Xall else Xnew
+        z <- if (!is.null(Zall)) Zall else Znew
+        self$init(X = x, Z = z)
       } else {
         if (!is.null(Xall)) {self$X <- Xall} else if (!is.null(Xnew)) {self$X <- rbind(self$X, Xnew)}
         if (!is.null(Zall)) {self$Z <- Zall} else if (!is.null(Znew)) {self$Z <- c(self$Z, Znew)}
@@ -499,6 +502,11 @@ UGP <- R6::R6Class(classname = "UGP",
       grad1 <- self$grad(XX)
       if (!is.matrix(grad1)) return(abs(grad1))
       apply(grad1,1, function(xx) {sqrt(sum(xx^2))})
+    },
+    sample = function(XX, n=1) {
+      if (length(XX) != ncol(self$X)) {stop("Can only sample one point at a time right now error 23537898")}
+      XX.pred <- self$predict(XX=XX, se.fit=T)
+      rnorm(n=n, mean=XX.pred$fit, sd=XX.pred$se.fit)
     },
     theta = function() {
       self$.theta()

@@ -29,3 +29,24 @@ plot(xp,yp, type='l', xlab='x', ylab='y')
 legend(x='bottomright', legend=packs, fill=1+1:length(packs))
 lapply(1:length(out),function(outi){outj <- out[[outi]];points(xp,outj, type='l', col=outi+1, lwd=6-outi)})
 points(x,y,pch=19, cex=2)
+
+
+
+
+
+
+# TGP 1D
+f <- Vectorize(function(x){if(x<.3) {2*x-.6+rnorm(1,0,.04)} else if (x<.7) {sin(2*pi*1*(x-.3)/.4)+rnorm(1,0,.01)} else {.0+rnorm(1,0,.15)}})
+#curve(f)
+xc <- (0:1e4)/1e4
+plot(xc, f(xc),pch=19)
+
+x <- lhs::maximinLHS(50,1);#runif(50)
+y <- f(x)
+u <- UGP::UGP$new(X=x,Z=y,package="btgpllm")
+plot(u$mod)
+
+p1 <- u$predict(matrix(xc,ncol=1))
+xp <- (0:100)/100
+yp <- predict(u$mod, xp)$ZZ.mean
+plot(xp,yp)
