@@ -32,6 +32,34 @@ points(x,y,pch=19, cex=2)
 
 
 
+single.run.se <- function(pac) {
+  u <- UGP::UGP$new(X=x,Z=y,package=pac)
+  to <- u$predict.se(xp)
+  u$delete()
+  to
+}
+
+out.se <- lapply(packs, single.run.se)
+#packs <- packs[-2]
+#out.se <- out.se[-2]
+
+plot(xp,yp, type='l', xlab='x', ylab='y')
+legend(x='bottomright', legend=packs, fill=1+1:length(packs))
+lapply(1:length(out),function(outi){outj <- out[[outi]];points(xp,outj, type='l', col=outi+1, lwd=6-outi)})
+lapply(1:length(out),function(outi){outj <- out[[outi]]+1*out.se[[outi]];points(xp,outj, type='l', col=outi+1, lwd=2)})
+lapply(1:length(out),function(outi){outj <- out[[outi]]-1*out.se[[outi]];points(xp,outj, type='l', col=outi+1, lwd=2)})
+points(x,y,pch=19, cex=2)
+
+plot(NULL,xlim=c(0,1), ylim=c(0,.2), type='l', xlab='x', ylab='y')
+legend(x='bottomright', legend=packs, fill=1+1:length(packs))
+lapply(1:length(out),function(outi){outj <- out.se[[outi]];points(xp,outj, type='l', col=outi+1, lwd=6-outi)})
+#lapply(1:length(out),function(outi){outj <- out[[outi]]+1*out.se[[outi]];points(xp,outj, type='l', col=outi+1, lwd=2)})
+#lapply(1:length(out),function(outi){outj <- out[[outi]]-1*out.se[[outi]];points(xp,outj, type='l', col=outi+1, lwd=2)})
+points(x,rep(0,18),pch=19, cex=2)
+
+
+
+
 
 
 
