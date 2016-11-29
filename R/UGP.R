@@ -140,9 +140,12 @@ UGP <- R6::R6Class(classname = "UGP",
               self$.delete(...=...)
               self$.init(...=...)
             } else {
-              laGP::updateGPsep(gpsepi=self$mod,
-                                X=self$X[-(1:self$n.at.last.update),],
+              lagpupdate.try <- try(
+                laGP::updateGPsep(gpsepi=self$mod,
+                                X=self$X[-(1:self$n.at.last.update), , drop=FALSE],
                                 Z=self$Z[-(1:self$n.at.last.update)])
+              )
+              if (inherits(lagpupdate.try, "try-error")) {browser()}
             }
           }
           drange <- c(1e-3,1e4)
