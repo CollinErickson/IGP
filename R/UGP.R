@@ -47,6 +47,7 @@ UGP <- R6::R6Class(classname = "UGP",
     .predict = NULL, #"function",
     .predict.se = NULL, #"function",
     .predict.var = NULL, #"function",
+    .grad = NULL,
     .delete = NULL, #"function",
     mod = NULL, #"list", # First element is model
     mod.extra = list(), #"list", # list to store additional data needed for model
@@ -263,6 +264,7 @@ UGP <- R6::R6Class(classname = "UGP",
         }
         self$.predict.se <- function(XX, ...) {self$mod$pred(XX=XX, se.fit=T)$se}
         self$.predict.var <- function(XX, ...) {self$mod$pred(XX=XX, se.fit=T)$s2}
+        self$.grad <- function(XX) {self$mod$grad(XX=XX)}
         self$.theta <- function() {self$mod$theta}
         self$.nugget <- function() {self$mod$nug}
         self$.delete <- function(...){self$mod <- NULL}
@@ -487,7 +489,7 @@ UGP <- R6::R6Class(classname = "UGP",
       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
       self$.predict.var(XX, ...=...)
     },
-    grad = function (XX) {#browser() # NUMERICAL GRAD IS OVER 10 TIMES SLOWER
+    grad = function (XX, num=FALSE) {#browser() # NUMERICAL GRAD IS OVER 10 TIMES SLOWER
       if (!is.matrix(XX)) {
         if (ncol(self$X) == 1) XX <- matrix(XX, ncol=1)
         else if (length(XX) == ncol(self$X)) XX <- matrix(XX, nrow=1)
@@ -495,6 +497,14 @@ UGP <- R6::R6Class(classname = "UGP",
       } else {
         if (ncol(XX) != ncol(self$X)) {stop("Wrong dimension input")}
       }
+      if (is.null(self$.grad) | num) { # if no method, use numerical
+        #print('using num')
+        self$grad_num(XX)
+      } else {#print('using package')
+        self$.grad(XX)
+      }
+    },
+    grad_num = function (XX) {
       grad.func <- function(xx) self$predict(xx)
       grad.apply.func <- function(xx) numDeriv::grad(grad.func, xx)
       grad1 <- apply(XX, 1, grad.apply.func)
