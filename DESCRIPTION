@@ -18,5 +18,7 @@ Suggests:
     tgp,
     DiceKriging,
     testthat,
-    lhs
+    lhs,
+    ggplot2,
+    reshape
 RoxygenNote: 5.0.1

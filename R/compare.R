@@ -49,20 +49,20 @@ compare.UGP <- function(packages, func, D, N, Npred=1000, reps=1, debug=F, init_
   out$total.time <- out$fit.time + out$predict.time
 
   stripchart(rmse ~ package, data=out)
+  #browser()
+  com2 <- reshape::melt.data.frame(out, measure.var=c('rmse', 'prmse'), id.vars=c('package','rep'), variable_name="rmseprmse")
 
-  com2 <- reshape::melt(out, measure.var=c('rmse', 'prmse'), id.vars=c('package','rep'), variable_name="rmseprmse")
-
-  rmseprmse_plot <- (ggplot(com2, aes(x=value, y=rmseprmse, color=as.factor(rep)))
-                     + geom_point(aes(shape=rmseprmse),size=3) + facet_grid(package ~ .)
-                     + guides(shape=F,color=F)
-                     + ylab(NULL) + xlab(NULL)
+  rmseprmse_plot <- (ggplot2::ggplot(com2, ggplot2::aes(x=value, y=rmseprmse, color=as.factor(rep)))
+                     + ggplot2::geom_point(ggplot2::aes(shape=rmseprmse),size=3) + ggplot2::facet_grid(package ~ .)
+                     + ggplot2::guides(shape=F,color=F)
+                     + ggplot2::ylab(NULL) + ggplot2::xlab(NULL)
                      )
   print(rmseprmse_plot)
 
-  time_plot <- (ggplot(out, aes(x=total.time,y=package, color=as.factor(rep)))
-                + geom_point(size=3)
-                +ylab(NULL) + xlab("Run time (s)")
-                + guides(color=FALSE))
+  time_plot <- (ggplot2::ggplot(out, ggplot2::aes(x=total.time,y=package, color=as.factor(rep)))
+                + ggplot2::geom_point(size=3)
+                + ggplot2::ylab(NULL) + ggplot2::xlab("Run time (s)")
+                + ggplot2::guides(color=FALSE))
   print(time_plot)
 
   out

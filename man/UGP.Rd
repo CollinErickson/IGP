@@ -3,7 +3,8 @@
 \docType{class}
 \name{UGP}
 \alias{UGP}
-\title{Class providing object with methods for fitting a GP model}
+\title{UGP
+Class providing object with methods for fitting a GP model}
 \format{\code{\link{R6Class}} object.}
 \usage{
 UGP
@@ -12,6 +13,7 @@ UGP
 Object of \code{\link{R6Class}} with methods for fitting GP model.
 }
 \description{
+UGP
 Class providing object with methods for fitting a GP model
 }
 \section{Fields}{
