@@ -1,0 +1,174 @@
+#' UGP
+#' Class providing object with methods for fitting a GP model
+#'
+#' @docType class
+#' @importFrom R6 R6Class
+#' @export
+#' @keywords data, kriging, Gaussian process, regression
+#' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
+#' @format \code{\link{R6Class}} object.
+#' @examples
+#' n <- 40
+#' d <- 2
+#' n2 <- 20
+#' f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
+#' X1 <- matrix(runif(n*d),n,d)
+#' Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
+#' X2 <- matrix(runif(n2*d),n2,d)
+#' Z2 <- apply(X2,1,f1)
+#' XX1 <- matrix(runif(10),5,2)
+#' ZZ1 <- apply(XX1, 1, f1)
+#' u <- UGP2(package='laGP',X=X1,Z=Z1, corr.power=2)
+#' cbind(u$predict(XX1), ZZ1)
+#' u$predict.se(XX1)
+#' u$update(Xnew=X2,Znew=Z2)
+#' u$predict(XX1)
+#' u$delete()
+#' @field X Design matrix
+#' @field Z Responses
+#' @field N Number of data points
+#' @field D Dimension of data
+#' @section Methods:
+#' \describe{
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   is used to create object of this class with \code{X} and \code{Z} as the data.
+#'   The package tells it which package to fit the GP model.}
+#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   updates the model, adding new data if given, then running optimization again.}}
+UGP2_base <- R6::R6Class(classname = "UGP2",
+                   public = list(
+                     X = NULL, #"matrix",
+                     Z = NULL, #"numeric",
+                     package = NULL, #"character",
+                     .init = NULL, #"function",
+                     .update = NULL, #"function",
+                     .predict = NULL, #"function",
+                     .predict.se = NULL, #"function",
+                     .predict.var = NULL, #"function",
+                     .grad = NULL,
+                     .delete = NULL, #"function",
+                     mod = NULL, #"list", # First element is model
+                     mod.extra = list(), #"list", # list to store additional data needed for model
+                     n.at.last.update = NULL, #"numeric", # count how many in update, must be at end of X
+                     corr.power = NULL, #"numeric",
+                     .theta = NULL, #"function",
+                     .nugget = NULL, #"function",
+                     estimate.nugget = NULL, #"logical", Should the nugget be estimated?
+                     set.nugget = NULL, #"numeric" # What value should the nugget be set to? NOT logical
+                     .mean = NULL, # function that gives mean
+
+                     initialize = function(X=NULL, Z=NULL, package=NULL, corr.power=2, estimate.nugget=T, set.nugget=F, ...) {#browser()
+                       if (!is.null(X)) {self$X <- X}
+                       if (!is.null(Z)) {self$Z <- if (is.matrix(Z)) c(Z) else Z}
+                       self$package <- package
+                       self$n.at.last.update <- 0
+                       self$corr.power <- corr.power
+                       self$estimate.nugget <- estimate.nugget
+                       self$set.nugget <- set.nugget
+
+                       if(length(self$X) != 0 & length(self$Z) != 0 & length(self$package) != 0) {
+                         self$init(...)
+                       }
+                     }, # end initialize
+                     init = function(X=NULL, Z=NULL, ...) {#browser()
+                       if (!is.null(X)) {self$X <- X}
+                       if (!is.null(Z)) {self$Z <- Z}
+                       if (length(self$X) == 0 | length(self$Z) == 0) {stop("X or Z not set")}
+                       self$n.at.last.update <- nrow(self$X)
+                       if (max(self$Z) - min(self$Z) < 1e-8) {warning("Z values are too close, adding noise"); self$Z <- self$Z + rnorm(length(self$Z), 0, 1e-6)}
+
+                       self$.init(...)
+                     }, # end init
+                     update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...) {#browser()
+                       if (self$n.at.last.update == 0) {
+                         #self$init(X = if(!is.null(Xall)) Xall else Xnew, Z = if (!is.null(Zall)) Zall else Znew)
+                         x <- if(!is.null(Xall)) Xall else Xnew
+                         z <- if (!is.null(Zall)) Zall else Znew
+                         self$init(X = x, Z = z)
+                       } else {
+                         if (!is.null(Xall)) {self$X <- Xall} else if (!is.null(Xnew)) {self$X <- rbind(self$X, Xnew)}
+                         if (!is.null(Zall)) {self$Z <- Zall} else if (!is.null(Znew)) {self$Z <- c(self$Z, Znew)}
+                         self$.update(...)
+                       }
+                       self$n.at.last.update <- nrow(self$X)
+                     }, # end update
+                     predict = function(XX, se.fit = FALSE, ...) {#browser()
+                       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
+                       self$.predict(XX, se.fit=se.fit, ...)
+                     },
+                     predict.se = function(XX, ...) {
+                       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
+                       self$.predict.se(XX, ...=...)
+                     },
+                     predict.var = function(XX, ...) {
+                       if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
+                       self$.predict.var(XX, ...=...)
+                     },
+                     grad = function (XX, num=FALSE) {#browser() # NUMERICAL GRAD IS OVER 10 TIMES SLOWER
+                       if (!is.matrix(XX)) {
+                         if (ncol(self$X) == 1) XX <- matrix(XX, ncol=1)
+                         else if (length(XX) == ncol(self$X)) XX <- matrix(XX, nrow=1)
+                         else stop('Predict input should be matrix')
+                       } else {
+                         if (ncol(XX) != ncol(self$X)) {stop("Wrong dimension input")}
+                       }
+                       if (is.null(self$.grad) | num) { # if no method, use numerical
+                         #print('using num')
+                         self$grad_num(XX)
+                       } else {#print('using package')
+                         self$.grad(XX)
+                       }
+                     },
+                     grad_num = function (XX) {
+                       grad.func <- function(xx) self$predict(xx)
+                       grad.apply.func <- function(xx) numDeriv::grad(grad.func, xx)
+                       grad1 <- apply(XX, 1, grad.apply.func)
+                       if (ncol(self$X) == 1) return(grad1)
+                       t(grad1)
+                     },
+                     grad_norm = function (XX) {#browser()
+                       grad1 <- self$grad(XX)
+                       if (!is.matrix(grad1)) return(abs(grad1))
+                       apply(grad1,1, function(xx) {sqrt(sum(xx^2))})
+                     },
+                     sample = function(XX, n=1) {
+                       if (length(XX) != ncol(self$X)) {stop("Can only sample one point at a time right now error 23537898")}
+                       XX.pred <- self$predict(XX=XX, se.fit=T)
+                       rnorm(n=n, mean=XX.pred$fit, sd=XX.pred$se.fit)
+                     },
+                     theta = function() {
+                       self$.theta()
+                     },
+                     nugget = function() {
+                       self$.nugget()
+                     },
+                     mean = function() {
+                       if (!is.null(self$.mean)) {
+                         self$.mean()
+                       } else {
+                         self$predict(matrix(rep(max(abs(self$X)) * 10,ncol(self$X)), nrow=1))
+                       }
+                     },
+                     max.var = function() {
+                       self$predict.var(matrix(rep(max(abs(self$X)) * 10,ncol(self$X)), nrow=1))
+                     },
+                     at.max.var = function(X, val=.9) {#browser() #logical if pred var at least 90% of max var
+                       maxvar = c(self$max.var())
+                       self$predict.var(X) > val * maxvar
+                     },
+                     prop.at.max.var =function(Xlims = matrix(c(0,1), nrow=ncol(self$X), ncol=2, byrow=T), n = 200, val=.9) {#browser()
+                       maxvar = c(self$max.var())
+                       X <- apply(Xlims, 1, function(Xlim) {runif(n, Xlim[1], Xlim[2])})
+                       sum(self$predict.var(X) > val * maxvar) / n
+                     },
+                     delete = function(...) {
+                       self$.delete(...=...)
+                     },
+                     finalize = function(...) {
+                       self$delete() # Mostly for laGP to delete, Python should close connection
+                     }
+                   )
+)
+
