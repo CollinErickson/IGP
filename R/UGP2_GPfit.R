@@ -37,8 +37,9 @@
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_GPfit <- R6::R6Class(classname = "UGP2_GPfit", inherit = "UGP2_base",
+UGP2_GPfit <- R6::R6Class(classname = "UGP2_GPfit", inherit = UGP2_base,
                           public = list(
+                            newthing = 33,
                             .init = function(...) {
                               if (!is.null(self$estimate.nugget) || self$set.nugget) {
                                 warning("GPfit cannot estimate or set the nugget, it picks a stable value")
@@ -110,7 +111,7 @@ UGP2_GPfit <- R6::R6Class(classname = "UGP2_GPfit", inherit = "UGP2_base",
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_laGP <- R6::R6Class(classname = "UGP2_laGP", inherit = "UGP2_base",
+UGP2_laGP <- R6::R6Class(classname = "UGP2_laGP", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {
                                 da <- laGP::darg(list(mle=TRUE), X=self$X)
@@ -245,7 +246,7 @@ UGP2_laGP <- R6::R6Class(classname = "UGP2_laGP", inherit = "UGP2_base",
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_tgp <- R6::R6Class(classname = "UGP2_tgp", inherit = "UGP2_base",
+UGP2_tgp <- R6::R6Class(classname = "UGP2_tgp", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {#browser()
                                 modfunc <-  if (package == "blm") tgp::blm
@@ -319,7 +320,7 @@ UGP2_tgp <- R6::R6Class(classname = "UGP2_tgp", inherit = "UGP2_base",
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_mlegp <- R6::R6Class(classname = "UGP2_mlegp", inherit = "UGP2_base",
+UGP2_mlegp <- R6::R6Class(classname = "UGP2_mlegp", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {
                                 temp_nug <- if (is.null(self$estimate.nugget) || self$estimate.nugget == FALSE) NULL
@@ -386,7 +387,7 @@ UGP2_mlegp <- R6::R6Class(classname = "UGP2_mlegp", inherit = "UGP2_base",
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_GauPro <- R6::R6Class(classname = "UGP2_GauPro", inherit = "UGP2_base",
+UGP2_GauPro <- R6::R6Class(classname = "UGP2_GauPro", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {
                                 #m <- GauPro::GauPro$new(X=self$X, Z=self$Z, ...)
@@ -455,11 +456,11 @@ UGP2_GauPro <- R6::R6Class(classname = "UGP2_GauPro", inherit = "UGP2_base",
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_DiceKriging <- R6::R6Class(classname = "UGP2_DiceKriging", inherit = "UGP2_base",
+UGP2_DiceKriging <- R6::R6Class(classname = "UGP2_DiceKriging", inherit = UGP2_base,
                             public = list(
-                              .init = function(...) {
+                              .init = function(covtype="gauss", ...) {#browser()
                                 #capture.output(mod1 <- DiceKriging::km(design=X, response=Z, covtype="gauss", nugget.estim=T))
-                                capture.output(mod1 <- DiceKriging::km(design=self$X, response=self$Z, covtype="gauss", nugget.estim=T))
+                                capture.output(mod1 <- DiceKriging::km(design=self$X, response=self$Z, covtype=covtype, nugget.estim=T))
                                 self$mod <- mod1
                               }, #"function to initialize model with data
                               .update = function(...) {#browser()
@@ -534,7 +535,7 @@ UGP2_DiceKriging <- R6::R6Class(classname = "UGP2_DiceKriging", inherit = "UGP2_
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = "UGP2_base",
+UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {
                                 #rPython::python.exec('import sys') # These first two lines need to go
@@ -649,7 +650,7 @@ UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = "UGP2_base",
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_GPy <- R6::R6Class(classname = "UGP2_GPy", inherit = "UGP2_base",
+UGP2_GPy <- R6::R6Class(classname = "UGP2_GPy", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {
                                 #rPython::python.exec('import sys') # These first two lines need to go

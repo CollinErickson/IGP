@@ -42,25 +42,25 @@ UGP2_base <- R6::R6Class(classname = "UGP2",
                      X = NULL, #"matrix",
                      Z = NULL, #"numeric",
                      package = NULL, #"character",
-                     .init = NULL, #"function",
-                     .update = NULL, #"function",
-                     .predict = NULL, #"function",
-                     .predict.se = NULL, #"function",
-                     .predict.var = NULL, #"function",
-                     .grad = NULL,
-                     .delete = NULL, #"function",
+                     .init = function(...){stop("This function must be overwritten by subclass")}, #"function",
+                     .update = function(...){stop("This function must be overwritten by subclass")}, #"function",
+                     .predict = function(...){stop("This function must be overwritten by subclass")}, #"function",
+                     .predict.se = function(...){stop("This function must be overwritten by subclass")}, #"function",
+                     .predict.var = function(...){stop("This function must be overwritten by subclass")}, #"function",
+                     #.grad = function(...){stop("This function must be overwritten by subclass")},
+                     .delete = function(...){self$mod <- NULL}, #"function",
+                     #.theta = function(...){stop("This function must be overwritten by subclass")}, #"function",
+                     #.nugget = function(...){stop("This function must be overwritten by subclass")}, #"function",
+                     #.mean = function(...){stop("This function must be overwritten by subclass")}, # function that gives mean
                      mod = NULL, #"list", # First element is model
                      mod.extra = list(), #"list", # list to store additional data needed for model
                      n.at.last.update = NULL, #"numeric", # count how many in update, must be at end of X
                      corr.power = NULL, #"numeric",
-                     .theta = NULL, #"function",
-                     .nugget = NULL, #"function",
                      estimate.nugget = NULL, #"logical", Should the nugget be estimated?
                      set.nugget = NULL, #"numeric" # What value should the nugget be set to? NOT logical
-                     .mean = NULL, # function that gives mean
 
                      initialize = function(X=NULL, Z=NULL, package=NULL, corr.power=2, estimate.nugget=T, set.nugget=F, ...) {#browser()
-                       if (!is.null(X)) {self$X <- X}
+                       if (!is.null(X)) {self$X <- if (is.matrix(X)) X else matrix(X, ncol=1)} # Add else for 1D data passed as vector
                        if (!is.null(Z)) {self$Z <- if (is.matrix(Z)) c(Z) else Z}
                        self$package <- package
                        self$n.at.last.update <- 0
@@ -68,7 +68,8 @@ UGP2_base <- R6::R6Class(classname = "UGP2",
                        self$estimate.nugget <- estimate.nugget
                        self$set.nugget <- set.nugget
 
-                       if(length(self$X) != 0 & length(self$Z) != 0 & length(self$package) != 0) {
+                       #if(length(self$X) != 0 & length(self$Z) != 0 & length(self$package) != 0) {
+                       if(length(self$X) != 0 & length(self$Z) != 0) {
                          self$init(...)
                        }
                      }, # end initialize
