@@ -4,16 +4,16 @@
 \alias{UGP2}
 \title{UGP2 general function}
 \usage{
-UGP2(X = NULL, Z = NULL, ..., package = NULL)
+UGP2(X = NULL, Z = NULL, package = NULL, ...)
 }
 \arguments{
 \item{X}{Design matrix}
 
 \item{Z}{Response matrix or vector}
 
-\item{...}{Passed on to specific package model}
-
 \item{package}{Package to use}
+
+\item{X=X, }{Z=Z, ... Passed on to specific package model}
 }
 \value{
 UGP2 model

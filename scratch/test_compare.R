@@ -34,3 +34,17 @@ scale_y_continuous(breaks=c(unique(com2$package)),
 )
 # This might be better, uses facets
 ggplot(com2, aes(x=value, y=rmseprmse, color=as.factor(rep))) + geom_point(aes(shape=rmseprmse),size=3) + facet_grid(package ~ .) + guides(shape=F,color=F)
+
+
+
+
+
+
+
+# For compareR6
+gp <- GPcompare$new(D=2,reps=5,input.ss=20, test.ss=200, func=function(xx)sum(sin(2*pi*xx)), packages="GauPro")
+gp$create_data()
+gp$run_fits()
+gp$process_output()
+gp$plot_rmseprmse()
+gp$plot_output()
