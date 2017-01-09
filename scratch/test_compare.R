@@ -43,6 +43,14 @@ ggplot(com2, aes(x=value, y=rmseprmse, color=as.factor(rep))) + geom_point(aes(s
 
 # For compareR6
 gp <- GPcompare$new(D=2,reps=5,input.ss=20, test.ss=200, func=function(xx)sum(sin(2*pi*xx)), packages="GauPro")
+gp <- GPcompare$new(D=2,reps=5,input.ss=20, test.ss=200, func=TestFunctions::add_noise(function(xx)sum(sin(2*pi*xx)),noise=.1),
+                    packages=list(
+                      list("GauPro","Ga","Gap"),
+                      list("DiceKriging","DiceMatE","DKME", list(covtype="matern5_2", nugget.estim=T)),
+                      list("DiceKriging","DiceMat0","DKM0", list(covtype="matern5_2", nugget.estim=F)),
+                      list("DiceKriging","DiceGausE","DK2E", list(covtype="gauss", nugget.estim=T)),
+                      list("DiceKriging","DiceGaus0","DK20", list(covtype="gauss", nugget.estim=F))
+                      ))
 gp$create_data()
 gp$run_fits()
 gp$process_output()
