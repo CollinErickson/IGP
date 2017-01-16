@@ -550,11 +550,14 @@ UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = UGP2_base,
                                 rPython::python.assign("y1", self$Z)
                                 rPython::python.exec('X =  np.matrix(X1)')
                                 rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
-                                rPython::python.exec("gp = gaussian_process.GaussianProcess(                      \
-                                                     theta0=np.asarray([1e-1 for ijk in range(inputdim)]),       \
-                                                     thetaL=np.asarray([1e-4 for ijk in range(inputdim)]),       \
-                                                     thetaU=np.asarray([200 for ijk in range(inputdim)]),        \
-                                                     optimizer='Welch') ")
+                                #rPython::python.exec("gp = gaussian_process.GaussianProcess(                      \
+                                #                     theta0=np.asarray([1e-1 for ijk in range(inputdim)]),       \
+                                #                     thetaL=np.asarray([1e-4 for ijk in range(inputdim)]),       \
+                                #                     thetaU=np.asarray([200 for ijk in range(inputdim)]),        \
+                                #                     optimizer='Welch') ")
+                                rPython::python.exec('kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))') # This and line below added 1/10/17
+                                rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)') # Need to give it restarts, just predicted zero when this argument was left out
+
                                 rPython::python.exec("gp.fit(X, y)")
 
                                 self$mod <- "GPy model is in Python"
@@ -569,7 +572,7 @@ UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = UGP2_base,
                               .predict = function(XX, se.fit, ...) {
                                 rPython::python.assign("xp1", XX)
                                 rPython::python.exec("xp = np.asmatrix(xp1)")
-                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, eval_MSE=True)")
+                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
                                 if (se.fit) {
                                   list(fit=unlist(rPython::python.get("y_pred.tolist()")),
                                        se.fit=unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()")))
@@ -580,13 +583,13 @@ UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = UGP2_base,
                               .predict.se = function(XX, ...) {
                                 rPython::python.assign("xp1", XX)
                                 rPython::python.exec("xp = np.asmatrix(xp1)")
-                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, eval_MSE=True)")
+                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
                                 unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()"))
                               }, #"function predict the standard error/dev
                               .predict.var = function(XX, ...) {
                                 rPython::python.assign("xp1", XX)
                                 rPython::python.exec("xp = np.asmatrix(xp1)")
-                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, eval_MSE=True)")
+                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
                                 unlist(rPython::python.get("sigma2_pred.tolist()"))
                               }, #"function to predict the variance
                               .grad = NULL, # function to calculate the gradient
@@ -724,4 +727,5 @@ UGP2_GPy <- R6::R6Class(classname = "UGP2_GPy", inherit = UGP2_base,
 
                             )
 )
+
 
