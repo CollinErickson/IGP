@@ -18,7 +18,7 @@
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- UGP2(package='laGP',X=X1,Z=Z1, corr.power=2)
+#' u <- UGP2(package='laGP',X=X1,Z=Z1, corr="gauss")
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
@@ -31,7 +31,7 @@
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr="gauss",
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -55,16 +55,16 @@ UGP2_base <- R6::R6Class(classname = "UGP2",
                      mod = NULL, #"list", # First element is model
                      mod.extra = list(), #"list", # list to store additional data needed for model
                      n.at.last.update = NULL, #"numeric", # count how many in update, must be at end of X
-                     corr.power = NULL, #"numeric",
+                     corr = NULL, #"numeric",
                      estimate.nugget = NULL, #"logical", Should the nugget be estimated?
                      set.nugget = NULL, #"numeric" # What value should the nugget be set to? NOT logical
 
-                     initialize = function(X=NULL, Z=NULL, package=NULL, corr.power=2, estimate.nugget=T, set.nugget=F, ...) {#browser()
+                     initialize = function(X=NULL, Z=NULL, package=NULL, corr="gauss", estimate.nugget=T, set.nugget=F, ...) {#browser()
                        if (!is.null(X)) {self$X <- if (is.matrix(X)) X else matrix(X, ncol=1)} # Add else for 1D data passed as vector
                        if (!is.null(Z)) {self$Z <- if (is.matrix(Z)) c(Z) else Z}
                        self$package <- package
                        self$n.at.last.update <- 0
-                       self$corr.power <- corr.power
+                       self$corr <- corr
                        self$estimate.nugget <- estimate.nugget
                        self$set.nugget <- set.nugget
 

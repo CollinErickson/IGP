@@ -44,10 +44,18 @@ UGP2_GPfit <- R6::R6Class(classname = "UGP2_GPfit", inherit = UGP2_base,
                               if (!is.null(self$estimate.nugget) || self$set.nugget) {
                                 warning("GPfit cannot estimate or set the nugget, it picks a stable value")
                               }
-                              if (length(self$corr.power) == 0) {
+                              if (self$corr[[1]] == "gauss") {
                                 self$mod <- GPfit::GP_fit(self$X, self$Z, corr = list(type="exponential",power=2))
-                              } else {
+                              } else if (self$corr[[1]] == "powerexp") {
                                 self$mod <- GPfit::GP_fit(self$X, self$Z, corr = list(type="exponential",power=self$corr.power))
+                              } else if (self$corr[[1]] == "matern") {
+                                self$mod <- GPfit::GP_fit(self$X, self$Z, corr = list(type="matern",nu=self$corr[[2]]))
+                              } else if (self$corr[[1]] == "matern5_2") {
+                                self$mod <- GPfit::GP_fit(self$X, self$Z, corr = list(type="matern",nu=5/2))
+                              } else if (self$corr[[1]] == "matern3_2") {
+                                self$mod <- GPfit::GP_fit(self$X, self$Z, corr = list(type="matern",nu=3/2))
+                              } else {
+                                stop("corr not recognized for GPfit")
                               }
                             },
                             .update = function(...){
@@ -114,6 +122,9 @@ UGP2_GPfit <- R6::R6Class(classname = "UGP2_GPfit", inherit = UGP2_base,
 UGP2_laGP <- R6::R6Class(classname = "UGP2_laGP", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {
+                                if (self$corr[[1]] != "gauss") {
+                                  stop("laGP only uses Gaussian correlation")
+                                }
                                 da <- laGP::darg(list(mle=TRUE), X=self$X)
                                 ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=self$Z), silent = T)
                                 if (inherits(ga.try, "try-error")) {
@@ -249,6 +260,9 @@ UGP2_laGP <- R6::R6Class(classname = "UGP2_laGP", inherit = UGP2_base,
 UGP2_tgp <- R6::R6Class(classname = "UGP2_tgp", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {#browser()
+                                if (self$corr[[1]] != "gauss") {
+                                  stop("tgp only uses Gaussian correlation")
+                                }
                                 modfunc <-  if (package == "blm") tgp::blm
                                 else if (package == "btlm") tgp::btlm
                                 else if (package == "bcart") tgp::bcart
@@ -323,6 +337,9 @@ UGP2_tgp <- R6::R6Class(classname = "UGP2_tgp", inherit = UGP2_base,
 UGP2_mlegp <- R6::R6Class(classname = "UGP2_mlegp", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {
+                                if (self$corr[[1]] != "gauss") {
+                                  stop("mlegp only uses Gaussian correlation")
+                                }
                                 temp_nug <- if (is.null(self$estimate.nugget) || self$estimate.nugget == FALSE) NULL
                                 else if (self$estimate.nugget == TRUE) 1e-6
                                 temp_nug_known <- if (is.null(self$set.nugget)) 0 else self$set.nugget
@@ -389,10 +406,13 @@ UGP2_mlegp <- R6::R6Class(classname = "UGP2_mlegp", inherit = UGP2_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 UGP2_GauPro <- R6::R6Class(classname = "UGP2_GauPro", inherit = UGP2_base,
                             public = list(
-                              .init = function(...) {
+                              .init = function(...) {#browser()
+                                if (self$corr[[1]] != "gauss") {
+                                  stop("GauPro only uses Gaussian correlation")
+                                }
                                 #m <- GauPro::GauPro$new(X=self$X, Z=self$Z, ...)
                                 #m <- GauPro::GauPr_Gauss_par$new(X=self$X, Z=self$Z, ...)
-                                m <- GauPro::GauPro(X=self$X, Z=self$Z, ...)
+                                m <- GauPro::GauPro(X=self$X, Z=self$Z, nug.est=self$estimate.nugget, nug=self$set.nugget, ...)
                                 self$mod <- m
                               }, #"function to initialize model with data
                               .update = function(...) {
@@ -458,7 +478,21 @@ UGP2_GauPro <- R6::R6Class(classname = "UGP2_GauPro", inherit = UGP2_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 UGP2_DiceKriging <- R6::R6Class(classname = "UGP2_DiceKriging", inherit = UGP2_base,
                             public = list(
-                              .init = function(covtype="gauss", ...) {#browser()
+                              .init = function(...) {
+                                if (!exists("covtype")) {
+                                  if (self$corr[[1]] %in% c("gauss", "powexp", "exp", "matern5_2", "matern3_2")) {
+                                    covtype2 <- self$corr[[1]]
+                                  } else if (self$corr[[1]] == "powerexp") {
+                                    covtype2 <- "powexp"
+                                  } else if (self$corr[[1]] == "matern") {
+                                    if (self$corr[[2]] == 3/2) {covtype2 <- "matern3_2"}
+                                    else if (self$corr[[2]] == 5/2) {covtype2 <- "matern5_2"}
+                                    else {stop("DiceKriging can only do Matern 3/2 and 5/2")}
+                                  } else {
+                                    print(self$corr)
+                                    stop("corr not recognized for DiceKriging, printed above this line")
+                                  }
+                                }
                                 #capture.output(mod1 <- DiceKriging::km(design=X, response=Z, covtype="gauss", nugget.estim=T))
                                 capture.output(mod1 <- DiceKriging::km(design=self$X, response=self$Z, covtype=covtype, nugget.estim=T))
                                 self$mod <- mod1
@@ -541,7 +575,8 @@ UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = UGP2_base,
                                 #rPython::python.exec('import sys') # These first two lines need to go
                                 #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
                                 rPython::python.exec('import numpy as np')
-                                rPython::python.exec('from sklearn import gaussian_process')
+                                #rPython::python.exec('from sklearn import gaussian_process')
+                                rPython::python.exec('from sklearn.gaussian_process import GaussianProcessRegressor')
                                 rPython::python.exec("import warnings")
                                 rPython::python.exec("warnings.filterwarnings('ignore')")
 
@@ -555,7 +590,27 @@ UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = UGP2_base,
                                 #                     thetaL=np.asarray([1e-4 for ijk in range(inputdim)]),       \
                                 #                     thetaU=np.asarray([200 for ijk in range(inputdim)]),        \
                                 #                     optimizer='Welch') ")
-                                rPython::python.exec('kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))') # This and line below added 1/10/17
+
+                                if (!is.null(self$estimate.nugget) || self$set.nugget) {
+                                  warning("GPfit cannot estimate or set the nugget, it picks a stable value")
+                                }
+                                if (self$corr[[1]] == "gauss") {
+                                  rPython::python.exec('from sklearn.gaussian_process.kernels import RBF')
+                                  kernline <- 'kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))'
+                                } else if (self$corr[[1]] == "matern") {
+                                  rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
+                                  kernline <- paste0('kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=', self$corr[[2]],')')
+                                } else if (self$corr[[1]] == "matern5_2") {
+                                  rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
+                                  kernline <- 'kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=2.5)'
+                                } else if (self$corr[[1]] == "matern3_2") {
+                                  rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
+                                  kernline <- 'kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=1.5)'
+                                } else {
+                                  stop("corr not recognized for sklearn")
+                                }
+                                #rPython::python.exec('kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))') # This and line below added 1/10/17
+                                rPython::python.exec(kernline)
                                 rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)') # Need to give it restarts, just predicted zero when this argument was left out
 
                                 rPython::python.exec("gp.fit(X, y)")
@@ -656,6 +711,18 @@ UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = UGP2_base,
 UGP2_GPy <- R6::R6Class(classname = "UGP2_GPy", inherit = UGP2_base,
                             public = list(
                               .init = function(...) {
+                                if (self$corr[[1]] == "gauss") {
+                                  kernline <- 'kernel = GPy.kern.RBF(input_dim=inputdim, ARD=True)'
+                                } else if (self$corr[[1]] == "matern") {
+                                  stop("GPy only does matern5_2 and matern3_2")
+                                  #kernline <- 'kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=2.5)'
+                                } else if (self$corr[[1]] == "matern5_2") {
+                                  kernline <- 'kernel = GPy.kern.Matern52(input_dim=inputdim, ARD=True)'
+                                } else if (self$corr[[1]] == "matern3_2") {
+                                  kernline <- 'kernel = GPy.kern.Matern52(input_dim=inputdim, ARD=True)'
+                                } else {
+                                  stop("corr not recognized for GPy")
+                                }
                                 #rPython::python.exec('import sys') # These first two lines need to go
                                 #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
                                 rPython::python.exec('import numpy as np')
@@ -666,7 +733,8 @@ UGP2_GPy <- R6::R6Class(classname = "UGP2_GPy", inherit = UGP2_base,
                                 rPython::python.assign("y1", self$Z)
                                 rPython::python.exec('X =  np.matrix(X1)')
                                 rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
-                                rPython::python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
+                                #rPython::python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
+                                rPython::python.exec(kernline)
                                 rPython::python.exec("gp = GPy.models.GPRegression(X,y,kernel,normalizer=True)")
                                 rPython::python.exec("gp.likelihood.variance = 1e-8")
                                 rPython::python.exec("gp.optimize(messages=False)")
