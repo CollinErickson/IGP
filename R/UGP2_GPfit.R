@@ -494,7 +494,7 @@ UGP2_DiceKriging <- R6::R6Class(classname = "UGP2_DiceKriging", inherit = UGP2_b
                                   }
                                 }
                                 #capture.output(mod1 <- DiceKriging::km(design=X, response=Z, covtype="gauss", nugget.estim=T))
-                                capture.output(mod1 <- DiceKriging::km(design=self$X, response=self$Z, covtype=covtype, nugget.estim=T))
+                                capture.output(mod1 <- DiceKriging::km(design=self$X, response=self$Z, covtype=covtype, nugget.estim=self$estimate.nugget, nugget=self$set.nugget))
                                 self$mod <- mod1
                               }, #"function to initialize model with data
                               .update = function(...) {#browser()
@@ -570,102 +570,114 @@ UGP2_DiceKriging <- R6::R6Class(classname = "UGP2_DiceKriging", inherit = UGP2_b
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 UGP2_sklearn <- R6::R6Class(classname = "UGP2_sklearn", inherit = UGP2_base,
-                            public = list(
-                              .init = function(...) {
-                                #rPython::python.exec('import sys') # These first two lines need to go
-                                #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
-                                rPython::python.exec('import numpy as np')
-                                #rPython::python.exec('from sklearn import gaussian_process')
-                                rPython::python.exec('from sklearn.gaussian_process import GaussianProcessRegressor')
-                                rPython::python.exec("import warnings")
-                                rPython::python.exec("warnings.filterwarnings('ignore')")
+      public = list(
+        .init = function(...) {
+          #rPython::python.exec('import sys') # These first two lines need to go
+          #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
+          rPython::python.exec('import numpy as np')
+          #rPython::python.exec('from sklearn import gaussian_process')
+          rPython::python.exec('from sklearn.gaussian_process import GaussianProcessRegressor')
+          rPython::python.exec("import warnings")
+          rPython::python.exec("warnings.filterwarnings('ignore')")
 
-                                rPython::python.assign("inputdim", ncol(self$X))
-                                rPython::python.assign("X1", (self$X))
-                                rPython::python.assign("y1", self$Z)
-                                rPython::python.exec('X =  np.matrix(X1)')
-                                rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
-                                #rPython::python.exec("gp = gaussian_process.GaussianProcess(                      \
-                                #                     theta0=np.asarray([1e-1 for ijk in range(inputdim)]),       \
-                                #                     thetaL=np.asarray([1e-4 for ijk in range(inputdim)]),       \
-                                #                     thetaU=np.asarray([200 for ijk in range(inputdim)]),        \
-                                #                     optimizer='Welch') ")
+          rPython::python.assign("inputdim", ncol(self$X))
+          rPython::python.assign("X1", (self$X))
+          rPython::python.assign("y1", self$Z)
+          rPython::python.exec('X =  np.matrix(X1)')
+          rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
+          #rPython::python.exec("gp = gaussian_process.GaussianProcess(                      \
+          #                     theta0=np.asarray([1e-1 for ijk in range(inputdim)]),       \
+          #                     thetaL=np.asarray([1e-4 for ijk in range(inputdim)]),       \
+          #                     thetaU=np.asarray([200 for ijk in range(inputdim)]),        \
+          #                     optimizer='Welch') ")
 
-                                if (!is.null(self$estimate.nugget) || self$set.nugget) {
-                                  warning("GPfit cannot estimate or set the nugget, it picks a stable value")
-                                }
-                                if (self$corr[[1]] == "gauss") {
-                                  rPython::python.exec('from sklearn.gaussian_process.kernels import RBF')
-                                  kernline <- 'kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))'
-                                } else if (self$corr[[1]] == "matern") {
-                                  rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
-                                  kernline <- paste0('kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=', self$corr[[2]],')')
-                                } else if (self$corr[[1]] == "matern5_2") {
-                                  rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
-                                  kernline <- 'kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=2.5)'
-                                } else if (self$corr[[1]] == "matern3_2") {
-                                  rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
-                                  kernline <- 'kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=1.5)'
-                                } else {
-                                  stop("corr not recognized for sklearn")
-                                }
-                                #rPython::python.exec('kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))') # This and line below added 1/10/17
-                                rPython::python.exec(kernline)
-                                rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)') # Need to give it restarts, just predicted zero when this argument was left out
+          if (!is.null(self$estimate.nugget) || self$set.nugget) {
+            warning("GPfit cannot estimate or set the nugget, it picks a stable value")
+          }
+          if (self$corr[[1]] == "gauss") {
+            rPython::python.exec('from sklearn.gaussian_process.kernels import RBF')
+            kernline <- 'kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))'
+          } else if (self$corr[[1]] == "matern") {
+            rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
+            kernline <- paste0('kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=', self$corr[[2]],')')
+          } else if (self$corr[[1]] == "matern5_2") {
+            rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
+            kernline <- 'kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=2.5)'
+          } else if (self$corr[[1]] == "matern3_2") {
+            rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
+            kernline <- 'kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=1.5)'
+          } else {
+            stop("corr not recognized for sklearn")
+          }
+          #rPython::python.exec('kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))') # This and line below added 1/10/17
+          rPython::python.exec(kernline)
+          if (!is.null(self$set.nugget) & !self$estimate.nugget) { # set nug and don't estimate
+            rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, alpha=',self$set.nugget,')')
+          } else if (!is.null(self$set.nugget) & self$estimate.nugget) { # estimate nugget but not given
+            rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
+          } else if (self$estimate.nugget) { # nug not given but estimate it
+            rPython::python.exec('from sklearn.gaussian_process.kernels import WhiteKernel')
+            rPython::python.exec('kernel += WhiteKernel(noise_level=1e-6, noise_level_bounds=(1e-10, 1e5))')
+            rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
+          } else {
+            stop("no sklearn option error #928248")
+          }
+          #rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
+          # Need to give it restarts, just predicted zero when this argument was left out
 
-                                rPython::python.exec("gp.fit(X, y)")
+          rPython::python.exec("gp.fit(X, y)")
 
-                                self$mod <- "GPy model is in Python"
-                              }, #"function to initialize model with data
-                              .update = function(...) {
-                                rPython::python.assign("X1", (self$X))
-                                rPython::python.assign("y1", self$Z)
-                                rPython::python.exec('X =  np.matrix(X1)')
-                                rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
-                                rPython::python.exec("gp.fit(X, y)")
-                              }, #"function to add data to model or reestimate params
-                              .predict = function(XX, se.fit, ...) {
-                                rPython::python.assign("xp1", XX)
-                                rPython::python.exec("xp = np.asmatrix(xp1)")
-                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
-                                if (se.fit) {
-                                  list(fit=unlist(rPython::python.get("y_pred.tolist()")),
-                                       se.fit=unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()")))
-                                } else {
-                                  unlist(rPython::python.get("y_pred.tolist()"))
-                                }
-                              }, #"function to predict at new values
-                              .predict.se = function(XX, ...) {
-                                rPython::python.assign("xp1", XX)
-                                rPython::python.exec("xp = np.asmatrix(xp1)")
-                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
-                                unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()"))
-                              }, #"function predict the standard error/dev
-                              .predict.var = function(XX, ...) {
-                                rPython::python.assign("xp1", XX)
-                                rPython::python.exec("xp = np.asmatrix(xp1)")
-                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
-                                unlist(rPython::python.get("sigma2_pred.tolist()"))
-                              }, #"function to predict the variance
-                              .grad = NULL, # function to calculate the gradient
-                              .delete = function(...){
-                                rPython::python.exec('X =  None')
-                                rPython::python.exec('y =  None')
-                                rPython::python.exec('xp =  None')
-                                rPython::python.exec('X1 =  None')
-                                rPython::python.exec('y1 =  None')
-                                rPython::python.exec('xp1 =  None')
-                                rPython::python.exec('y_pred =  None')
-                                rPython::python.exec('sigma2_pred =  None')
-                                rPython::python.exec('gp =  None')
-                                rPython::python.exec('inputdim =  None')
-                                self$mod <- NULL
-                              }, #"function to delete model beyond simple deletion
-                              .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
-                              .nugget = function() {NA}, #"function to get nugget
-                              .mean = NULL # function that gives mean (constant, other functions not implemented)
+          self$mod <- "GPy model is in Python"
+        }, #"function to initialize model with data
+        .update = function(...) {
+          rPython::python.assign("X1", (self$X))
+          rPython::python.assign("y1", self$Z)
+          rPython::python.exec('X =  np.matrix(X1)')
+          rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
+          rPython::python.exec("gp.fit(X, y)")
+        }, #"function to add data to model or reestimate params
+        .predict = function(XX, se.fit, ...) {
+          rPython::python.assign("xp1", XX)
+          rPython::python.exec("xp = np.asmatrix(xp1)")
+          rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
+          if (se.fit) {
+            list(fit=unlist(rPython::python.get("y_pred.tolist()")),
+                 se.fit=unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()")))
+          } else {
+            unlist(rPython::python.get("y_pred.tolist()"))
+          }
+        }, #"function to predict at new values
+        .predict.se = function(XX, ...) {
+          rPython::python.assign("xp1", XX)
+          rPython::python.exec("xp = np.asmatrix(xp1)")
+          rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
+          unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()"))
+        }, #"function predict the standard error/dev
+        .predict.var = function(XX, ...) {
+          rPython::python.assign("xp1", XX)
+          rPython::python.exec("xp = np.asmatrix(xp1)")
+          rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
+          unlist(rPython::python.get("sigma2_pred.tolist()"))
+        }, #"function to predict the variance
+        .grad = NULL, # function to calculate the gradient
+        .delete = function(...){
+          rPython::python.exec('X =  None')
+          rPython::python.exec('y =  None')
+          rPython::python.exec('xp =  None')
+          rPython::python.exec('X1 =  None')
+          rPython::python.exec('y1 =  None')
+          rPython::python.exec('xp1 =  None')
+          rPython::python.exec('y_pred =  None')
+          rPython::python.exec('sigma2_pred =  None')
+          rPython::python.exec('gp =  None')
+          rPython::python.exec('inputdim =  None')
+          self$mod <- NULL
+        }, #"function to delete model beyond simple deletion
+        .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
+        .nugget = function() {rPython::python.get('gp.kernel.get_params()')}, #"function to get nugget
+        .mean = NULL # function that gives mean (constant, other functions not implemented)
 
-                            )
+      )
 )
 
 
@@ -735,8 +747,15 @@ UGP2_GPy <- R6::R6Class(classname = "UGP2_GPy", inherit = UGP2_base,
                                 rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
                                 #rPython::python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
                                 rPython::python.exec(kernline)
-                                rPython::python.exec("gp = GPy.models.GPRegression(X,y,kernel,normalizer=True)")
-                                rPython::python.exec("gp.likelihood.variance = 1e-8")
+                                rPython::python.exec("gp = GPy.models.GPRegression(X,y,kernel)")
+                                if (is.null(self$set.nugget)) {
+                                  rPython::python.exec("gp.likelihood.variance = 1e-8")
+                                } else {
+                                  rPython::python.exec(paste0("gp.likelihood.variance = ",self$set.nugget,""))
+                                }
+                                if (!self$estimate.nugget) {
+                                  rPython::python.exec("gp.likelihood.variance.fix()")
+                                }
                                 rPython::python.exec("gp.optimize(messages=False)")
                                 rPython::python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
 
@@ -790,10 +809,104 @@ UGP2_GPy <- R6::R6Class(classname = "UGP2_GPy", inherit = UGP2_base,
                                 self$mod <- NULL
                               }, #"function to delete model beyond simple deletion
                               .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
-                              .nugget = function() {NA}, #"function to get nugget
+                              .nugget = function() {rPython::python.get('gp.likelihood.variance')}, #"function to get nugget
                               .mean = NULL # function that gives mean (constant, other functions not implemented)
 
                             )
 )
 
 
+
+
+
+#' UGP
+#' Class providing object with methods for fitting a GP model
+#'
+#' @docType class
+#' @importFrom R6 R6Class
+#' @export
+#' @keywords data, kriging, Gaussian process, regression
+#' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
+#' @format \code{\link{R6Class}} object.
+#' @examples
+#' n <- 40
+#' d <- 2
+#' n2 <- 20
+#' f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
+#' X1 <- matrix(runif(n*d),n,d)
+#' Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
+#' X2 <- matrix(runif(n2*d),n2,d)
+#' Z2 <- apply(X2,1,f1)
+#' XX1 <- matrix(runif(10),5,2)
+#' ZZ1 <- apply(XX1, 1, f1)
+#' u <- UGP2_DACE(X=X1,Z=Z1, corr.power=2)
+#' cbind(u$predict(XX1), ZZ1)
+#' u$predict.se(XX1)
+#' u$update(Xnew=X2,Znew=Z2)
+#' u$predict(XX1)
+#' u$delete()
+#' @field X Design matrix
+#' @field Z Responses
+#' @field N Number of data points
+#' @field D Dimension of data
+#' @section Methods:
+#' \describe{
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   is used to create object of this class with \code{X} and \code{Z} as the data.
+#'   The package tells it which package to fit the GP model.}
+#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   updates the model, adding new data if given, then running optimization again.}}
+UGP2_DACE <- R6::R6Class(classname = "UGP2_DACE", inherit = "UGP2_base",
+                            public = list(
+                              .init = function(...) {
+
+                                R.matlab::Matlab$startServer()
+                                matlab <- R.matlab::Matlab()
+                                isOpen <- open(matlab)
+                                if (!isOpen) throw("MATLAB server is not running: waited 30 seconds.")
+
+                                # set a variable in R and send to MATLB
+                                x <- 10
+                                R.matlab::setVariable(matlab, X = self$X)
+                                R.matlab::setVariable(matlab, Z = self$Z)
+                                #R.matlab::setVariable(matlab, meanfunc = '')
+                                R.matlab::setVariable(matlab, theta = 1)
+                                R.matlab::setVariable(matlab, lob = 1e-4)
+                                R.matlab::setVariable(matlab, upb = 1e4)
+                                R.matlab::evaluate('meanfunc = @regpoly0')
+                                R.matlab::evaluate('corrfunc = @corrgauss')
+                                R.matlab::evaluate(matlab, "[dmodel, perf] = dacefit(X, Z, meanfunc, corrfunc, theta, lob, upb);")
+                                #R.matlab::evaluate(matlab, "y=20; z=x+y")
+                                #z <- R.matlab::getVariable(matlab, "z")
+                                #z
+                                #close(matlab)
+
+                                #R.matlab::setVariable(matlab, X1=X1)
+                                #temp <- R.matlab::evaluate(matlab, "X1 .* X1", capture=TRUE)
+                                #temp
+                              }, #"function to initialize model with data
+                              .update = NULL, #"function to add data to model or reestimate params
+                              .predict = function(XX, se.fit, ...) {
+                                R.matlab::evaluate('[YP, MSEP] = predictor(XP, dmodel);')
+                                YP <- R.matlab::getVariable(matlab, 'YP')
+                                MSEP <- R.matlab::getVariable(matlab, 'MSEP')
+                                YP
+                              }, #"function to predict at new values
+                              .predict.se = NULL, #"function predict the standard error/dev
+                              .predict.var = NULL, #"function to predict the variance
+                              .grad = NULL, # function to calculate the gradient
+                              .delete = function() {
+                                #close(matlab)
+                              }, #"function to delete model beyond simple deletion
+                              .theta = function() {
+                                R.matlab::getVariable(matlab, 'dmodel.theta')
+                              }, #"function to get theta, exp(-theta*(x-x)^2)
+                              .nugget = NULL, #"function to get nugget
+                              .mean = function() {
+                                R.matlab::getVariable(matlab, 'dmodel.beta')
+                              } # function that gives mean (constant, other functions not implemented)
+
+                            )
+)
