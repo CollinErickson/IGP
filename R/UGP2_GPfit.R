@@ -858,12 +858,13 @@ UGP2_GPy <- R6::R6Class(classname = "UGP2_GPy", inherit = UGP2_base,
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_DACE <- R6::R6Class(classname = "UGP2_DACE", inherit = "UGP2_base",
+UGP2_DACE <- R6::R6Class(classname = "UGP2_DACE", inherit = UGP2_base,
                             public = list(
-                              .init = function(...) {
+                              .init = function(...) {browser()
 
                                 R.matlab::Matlab$startServer()
                                 matlab <- R.matlab::Matlab()
+                                self$mod <- matlab
                                 isOpen <- open(matlab)
                                 if (!isOpen) throw("MATLAB server is not running: waited 30 seconds.")
 
@@ -875,8 +876,9 @@ UGP2_DACE <- R6::R6Class(classname = "UGP2_DACE", inherit = "UGP2_base",
                                 R.matlab::setVariable(matlab, theta = 1)
                                 R.matlab::setVariable(matlab, lob = 1e-4)
                                 R.matlab::setVariable(matlab, upb = 1e4)
-                                R.matlab::evaluate('meanfunc = @regpoly0')
-                                R.matlab::evaluate('corrfunc = @corrgauss')
+                                R.matlab::evaluate(matlab, 'meanfunc = @regpoly0')
+                                R.matlab::evaluate(matlab, 'corrfunc = @corrgauss')
+                                R.matlab::evaluate(matlab, "addpath('C:\\Users\\cbe117\\School\\DOE\\GP_codes\\DACE\\dace');")
                                 R.matlab::evaluate(matlab, "[dmodel, perf] = dacefit(X, Z, meanfunc, corrfunc, theta, lob, upb);")
                                 #R.matlab::evaluate(matlab, "y=20; z=x+y")
                                 #z <- R.matlab::getVariable(matlab, "z")
@@ -888,16 +890,35 @@ UGP2_DACE <- R6::R6Class(classname = "UGP2_DACE", inherit = "UGP2_base",
                                 #temp
                               }, #"function to initialize model with data
                               .update = NULL, #"function to add data to model or reestimate params
-                              .predict = function(XX, se.fit, ...) {
-                                R.matlab::evaluate('[YP, MSEP] = predictor(XP, dmodel);')
-                                YP <- R.matlab::getVariable(matlab, 'YP')
-                                MSEP <- R.matlab::getVariable(matlab, 'MSEP')
-                                YP
+                              .predict = function(XX, se.fit, ...) {browser()
+                                R.matlab::setVariable(self$mod, XX = XX)
+                                R.matlab::evaluate(self$mod, '[YP, MSEP] = predictor(XX, dmodel);')
+                                YP <- R.matlab::getVariable(self$mod, 'YP')
+                                MSEP <- R.matlab::getVariable(self$mod, 'MSEP')
+                                if (se.fit) {
+                                  cbind(YP$YP, sqrt(MSEP$MSEP))
+                                } else {
+                                  YP$YP
+                                }
                               }, #"function to predict at new values
-                              .predict.se = NULL, #"function predict the standard error/dev
-                              .predict.var = NULL, #"function to predict the variance
+                              .predict.se = function(XX, ...) {browser()
+                                R.matlab::setVariable(self$mod, XX = XX)
+                                R.matlab::evaluate(self$mod, '[YP, MSEP] = predictor(XX, dmodel);')
+                                YP <- R.matlab::getVariable(self$mod, 'YP')
+                                MSEP <- R.matlab::getVariable(self$mod, 'MSEP')
+                                YP$YP
+                                cbind(YP$YP, sqrt(MSEP$MSEP))
+                              }, #"function predict the standard error/dev
+                              .predict.var = function(XX, ...) {browser()
+                                R.matlab::setVariable(self$mod, XX = XX)
+                                R.matlab::evaluate(self$mod, '[YP, MSEP] = predictor(XX, dmodel);')
+                                YP <- R.matlab::getVariable(self$mod, 'YP')
+                                MSEP <- R.matlab::getVariable(self$mod, 'MSEP')
+                                cbind(YP$YP, MSEP$MSEP)
+                              }, #"function to predict the variance
                               .grad = NULL, # function to calculate the gradient
                               .delete = function() {
+                                close(self$mod)
                                 #close(matlab)
                               }, #"function to delete model beyond simple deletion
                               .theta = function() {

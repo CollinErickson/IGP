@@ -31,6 +31,8 @@ UGP2 <- function(X=NULL, Z=NULL, package=NULL, ...) {
     u <- UGP2_sklearn$new(X=X, Z=Z, ...)
   } else if (package  %in% c( "GPy", "gpy")) {
     u <- UGP2_GPy$new(X=X, Z=Z, ...)
+  } else if (package  %in% c( "DACE", "dace")) {
+    u <- UGP2_DACE$new(X=X, Z=Z, ...)
   } else {
     stop("Package not recognized")
   }
