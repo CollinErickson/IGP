@@ -37,7 +37,7 @@
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_name123 <- R6::R6Class(classname = "UGP2_name123", inherit = "UGP2_base",
+UGP2_name123 <- R6::R6Class(classname = "UGP2_name123", inherit = UGP2_base,
                           public = list(
                             .init = NULL, #"function to initialize model with data
                             .update = NULL, #"function to add data to model or reestimate params

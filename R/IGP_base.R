@@ -18,7 +18,7 @@
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- UGP2(package='laGP',X=X1,Z=Z1, corr="gauss")
+#' u <- IGP(package='laGP',X=X1,Z=Z1, corr="gauss")
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
@@ -37,7 +37,7 @@
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-UGP2_base <- R6::R6Class(classname = "UGP2",
+IGP_base <- R6::R6Class(classname = "IGP",
                    public = list(
                      X = NULL, #"matrix",
                      Z = NULL, #"numeric",

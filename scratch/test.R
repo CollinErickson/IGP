@@ -13,7 +13,7 @@ Xall <- rbind(X1, X2)
 Zall <- c(Z1, Z2)
 XX1 <- matrix(runif(5*d),nrow=5)
 ZZ1 <- apply(XX1, 1, f1)
-system.time(u <- UGP$new(package='laGP',X=X1,Z=Z1, corr.power=2))
+system.time(u <- IGP(package='GauPro',X=X1,Z=Z1))
 u$theta()
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
@@ -43,14 +43,15 @@ set.seed(0)
 n <- 10
 d <- 1
 n2 <- 5
-f1 <- function(x) {sin(2*pi*x[1]) + rnorm(1,0,.05)}
-X1 <- matrix(runif(n*d),n,d)
+f1 <- function(x) {sin(2*pi*x[1]) + rnorm(1,0,.005)}
+X1 <- matrix(sort(runif(n*d)),n,d)
 Z1 <- apply(X1,1,f1) #+ rnorm(n, 0, 1e-3)
 X2 <- matrix(runif(n2*d),n2,d)
 Z2 <- apply(X2,1,f1)
 XX1 <- matrix(runif(10),ncol=1)
 ZZ1 <- apply(XX1, 1, f1)
-system.time(u <- UGP$new(package='mlegp',X=X1,Z=Z1, estimate.nugget=T))
+system.time(u <- IGP(package='mlegp',X=X1,Z=Z1, estimate.nugget=T, nugget=c(10,10,10,10,10,1,1,1,1,1)))
+plot(X1, Z1)
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
 curve(u$predict(matrix(x, ncol=1)));points(X1,Z1, col=2, cex=2, pch=19)
@@ -287,3 +288,28 @@ cf::cf(u$predict)
 u$update(Xnew=X2,Znew=Z2)
 cf::cf(u$predict)
 u$delete()
+
+
+
+
+
+# Try Matlab???
+library(R.matlab)
+
+Matlab$startServer()
+matlab <- Matlab()
+isOpen <- open(matlab)
+if (!isOpen) throw("MATLAB server is not running: waited 30 seconds.")
+
+# set a variable in R and send to MATLB
+x <- 10
+setVariable(matlab, x = x)
+evaluate(matlab, "x")
+evaluate(matlab, "y=20; z=x+y")
+z <- getVariable(matlab, "z")
+z
+close(matlab)
+
+setVariable(matlab, X1=X1)
+evaluate(matlab, "X1 .* X1", capture=TRUE)->temp
+temp
