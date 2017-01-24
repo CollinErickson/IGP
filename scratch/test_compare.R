@@ -56,3 +56,36 @@ gp$run_fits()
 gp$process_output()
 gp$plot_rmseprmse()
 gp$plot_output()
+gp <- GPcompare$new(D=20,reps=2,input.ss=200, test.ss=200, func=TestFunctions::morris,
+                    packages=list(
+                      #list("GauPro","Ga","Gap", list(restarts=0)), # far slower than DK 100s v 2s
+                      list("laGP", "laGP", "laGP"),
+                      list("DiceKriging","DiceMatE","DKME", list(covtype="matern5_2", nugget.estim=T)),
+                      list("DiceKriging","DiceMat0","DKM0", list(covtype="matern5_2", nugget.estim=F)),
+                      list("DiceKriging","DiceGausE","DK2E", list(covtype="gauss", nugget.estim=T)),
+                      list("DiceKriging","DiceGaus0","DK20", list(covtype="gauss", nugget.estim=F))
+                    ))
+
+
+
+
+
+
+
+
+
+
+
+# Stochastic kriging compare test
+gp <- SKcompare$new(D=2,reps=5,input.ss=20, test.ss=200, func=TestFunctions::add_noise(function(xx)sum(sin(2*pi*xx)),noise=.1),
+                    packages=list(
+                      list("mlegp","mlegp","mlegp", list(covtype="matern5_2", nugget.estim=T)),
+                      list("DiceKriging","DiceMat0","DKM0", list(covtype="matern5_2", nugget.estim=F)),
+                      list("DiceKriging","DiceGausE","DK2E", list(covtype="gauss", nugget.estim=T)),
+                      list("DiceKriging","DiceGaus0","DK20", list(covtype="gauss", nugget.estim=F))
+                    ))
+gp$create_data()
+gp$run_fits()
+gp$process_output()
+gp$plot_rmseprmse()
+gp$plot_output()
