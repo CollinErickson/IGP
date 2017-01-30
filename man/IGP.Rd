@@ -13,7 +13,7 @@ IGP(X = NULL, Z = NULL, package = NULL, ...)
 
 \item{package}{Package to use}
 
-\item{X=X, }{Z=Z, ... Passed on to specific package model}
+\item{...}{Arguments passed on to IGP_<package>}
 }
 \value{
 IGP model

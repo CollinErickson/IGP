@@ -31,7 +31,7 @@ Class providing object with methods for fitting a GP model
 
 \describe{
   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-  \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+  \item{\code{new(X=NULL, Z=NULL, package=NULL,
   estimate.nugget=T, set.nugget=F, ...)}}{This method
   is used to create object of this class with \code{X} and \code{Z} as the data.
   The package tells it which package to fit the GP model.}
@@ -39,7 +39,7 @@ Class providing object with methods for fitting a GP model
   updates the model, adding new data if given, then running optimization again.}}
 }
 \examples{
-n <- 40
+n <- 20
 d <- 2
 n2 <- 20
 f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
@@ -49,7 +49,7 @@ X2 <- matrix(runif(n2*d),n2,d)
 Z2 <- apply(X2,1,f1)
 XX1 <- matrix(runif(10),5,2)
 ZZ1 <- apply(XX1, 1, f1)
-u <- IGP(package='laGP',X=X1,Z=Z1, corr.power=2)
+u <- IGP(package='laGP',X=X1,Z=Z1)
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
 u$update(Xnew=X2,Znew=Z2)

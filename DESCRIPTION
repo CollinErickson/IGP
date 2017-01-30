@@ -20,5 +20,8 @@ Suggests:
     testthat,
     lhs,
     ggplot2,
-    reshape
+    reshape,
+    R.matlab,
+    GauPro,
+    numDeriv
 RoxygenNote: 5.0.1

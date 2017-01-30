@@ -54,12 +54,12 @@ compare.UGP <- function(packages, func, D, N, Npred=1000, reps=1, debug=F, init_
 
   #rmseprmse_plot <- (ggplot2::ggplot(com2, ggplot2::aes(x=value, y=rmseprmse, color=as.factor(rep)))
   #                   + ggplot2::geom_point(ggplot2::aes(shape=rmseprmse),size=3) + ggplot2::facet_grid(package ~ .)
-  browser()
-  rmseprmse_plot <- (ggplot2::ggplot(com2, ggplot2::aes_(x=~value, y=~rmseprmse, color=~package, shape=~as.factor(rep)))
-                     + ggplot2::geom_point(ggplot2::aes_(shape=~as.factor(rep)),size=3) + ggplot2::facet_grid(package ~ .)
+  #browser()
+  rmseprmse_plot <- (ggplot2::ggplot(com2, ggplot2::aes_string(x="value", y="rmseprmse", color="package", shape="as.factor(rep)"))
+                     + ggplot2::geom_point(ggplot2::aes_string(shape="as.factor(rep)"),size=3) + ggplot2::facet_grid(package ~ .)
                      + ggplot2::guides(shape=F,color=F)
                      + ggplot2::ylab(NULL) + ggplot2::xlab(NULL)
-                     +  ggplot2::geom_line(ggplot2::aes(x=value, y=rmseprmse, group=rep)))
+                     +  ggplot2::geom_line(ggplot2::aes_string(x="value", y="rmseprmse", group="rep")))
 
   #time_plot <- (ggplot2::ggplot(out, ggplot2::aes(x=total.time,y=package, color=as.factor(rep)))
   time_plot <- (ggplot2::ggplot(out, ggplot2::aes_(x=~total.time,y=~package, color=~as.factor(rep)))

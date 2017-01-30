@@ -3,8 +3,8 @@ n <- 60
 d <- 2
 n2 <- 20
 f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
-#f1 <- function(x) {abs(sin(2*pi*x[1])) + 10*x[2]}
-#f1 <- TestFunctions::RFF_get(D=d)
+f1 <- function(x) {abs(sin(2*pi*x[1])) + 10*x[2]}
+f1 <- TestFunctions::RFF_get(D=d)
 X1 <- matrix(runif(n*d),n,d)
 Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
 X2 <- matrix(runif(n2*d),n2,d)

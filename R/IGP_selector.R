@@ -1,9 +1,9 @@
 #' IGP general function
 #'
-#' @param X=X, Z=Z, ... Passed on to specific package model
 #' @param package Package to use
 #' @param X Design matrix
 #' @param Z Response matrix or vector
+#' @param ... Arguments passed on to IGP_<package>
 #'
 #' @return IGP model
 #' @export

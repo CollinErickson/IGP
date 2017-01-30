@@ -8,7 +8,7 @@
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
-#' n <- 40
+#' n <- 20
 #' d <- 2
 #' n2 <- 20
 #' f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
@@ -18,7 +18,7 @@
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP(package='laGP',X=X1,Z=Z1, corr.power=2)
+#' u <- IGP(package='laGP',X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
@@ -31,7 +31,7 @@
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -100,7 +100,7 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_laGP(X=X1,Z=Z1, corr.power=2)
+#' u <- IGP_laGP$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
@@ -113,7 +113,7 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -228,6 +228,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
+#' \dontrun{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -238,12 +239,13 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_tgp(X=X1,Z=Z1, corr.power=2)
+#' u <- IGP_tgp$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
+#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points
@@ -251,7 +253,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -315,7 +317,7 @@ IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_mlegp(X=X1,Z=Z1, corr.power=2)
+#' u <- IGP_mlegp$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
@@ -328,7 +330,7 @@ IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -407,7 +409,7 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_GauPro(X=X1,Z=Z1, corr.power=2)
+#' u <- IGP_GauPro$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
@@ -420,7 +422,7 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -479,7 +481,7 @@ IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_DiceKriging(X=X1,Z=Z1, corr.power=2)
+#' u <- IGP_DiceKriging$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
@@ -492,7 +494,7 @@ IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -503,12 +505,12 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
                               .init = function(...) {
                                 if (!exists("covtype")) {
                                   if (self$corr[[1]] %in% c("gauss", "powexp", "exp", "matern5_2", "matern3_2")) {
-                                    covtype2 <- self$corr[[1]]
+                                    covtype <- self$corr[[1]]
                                   } else if (self$corr[[1]] == "powerexp") {
-                                    covtype2 <- "powexp"
+                                    covtype <- "powexp"
                                   } else if (self$corr[[1]] == "matern") {
-                                    if (self$corr[[2]] == 3/2) {covtype2 <- "matern3_2"}
-                                    else if (self$corr[[2]] == 5/2) {covtype2 <- "matern5_2"}
+                                    if (self$corr[[2]] == 3/2) {covtype <- "matern3_2"}
+                                    else if (self$corr[[2]] == 5/2) {covtype <- "matern5_2"}
                                     else {stop("DiceKriging can only do Matern 3/2 and 5/2")}
                                   } else {
                                     print(self$corr)
@@ -562,6 +564,7 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
+#' \dontrun{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -572,12 +575,13 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_sklearn(X=X1,Z=Z1, corr.power=2)
+#' u <- IGP_sklearn$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
+#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points
@@ -585,7 +589,7 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -713,6 +717,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
+#' \dontrun{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -723,12 +728,13 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_GPy(X=X1,Z=Z1, corr.power=2)
+#' u <- IGP_GPy$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
+#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points
@@ -736,7 +742,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -851,6 +857,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
+#' \dontrun{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -861,12 +868,13 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_DACE(X=X1,Z=Z1, corr.power=2)
+#' u <- IGP_DACE$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
+#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points
@@ -874,7 +882,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
@@ -969,6 +977,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
+#' \dontrun{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -979,12 +988,13 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_ooDACE(X=X1,Z=Z1, corr.power=2)
+#' u <- IGP_ooDACE$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
+#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points
@@ -992,7 +1002,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
-#'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr.power=2,
+#'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, set.nugget=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}

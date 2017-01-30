@@ -4,3 +4,5 @@ scratch
 ^README\.Rmd$
 ^README-.*\.png$
 ^\.travis\.yml$
+InputStreamByteWrapper.class
+MatlabServer.m
