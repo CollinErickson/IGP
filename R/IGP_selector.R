@@ -12,7 +12,7 @@
 #' x <- seq(0,1,l=10)
 #' y <- abs(sin(2*pi*x))
 #' IGP(x,y,'DiceKriging')
-IGP <- function(X=NULL, Z=NULL, package=NULL, ...) {
+IGP <- function(X=NULL, Z=NULL, package=NULL, ...) {#browser()
   if (length(package)==0) {
     stop("No package specified Error # 5792324572")
   } else if (package %in% c("GPfit", "gpfit")) {
@@ -20,7 +20,7 @@ IGP <- function(X=NULL, Z=NULL, package=NULL, ...) {
   } else if (package %in% c("laGP", "laGP")) {
     u <- IGP_laGP$new(X=X, Z=Z, ...)
   } else if (package %in% c("blm","btlm","bcart","bgp","bgpllm","btgp","btgpllm")) {
-    u <- IGP_tgp$new(X=X, Z=Z, ...)
+    u <- IGP_tgp$new(X=X, Z=Z, package=package, ...)
   } else if (package %in% c("mlegp")) {
     u <- IGP_mlegp$new(X=X, Z=Z, ...)
   } else if (package %in% c("GauPro", "gaupro")) {

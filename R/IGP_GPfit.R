@@ -121,12 +121,13 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                             public = list(
-                              .init = function(..., d=NULL, g=NULL, theta=NULL, nugget=NULL, estimate_params=TRUE) {browser()
+                              .init = function(..., d=NULL, g=NULL, theta=NULL, nugget=NULL, estimate_params=TRUE) {#browser()
                                 if (self$corr[[1]] != "gauss") {
                                   stop("laGP only uses Gaussian correlation")
                                 }
 
                                 if (is.null(d) & !is.null(theta)) {d <- 1/theta}
+                                if (is.null(g) && is.null(nugget) && !is.null(self$set.nugget)) {g <- self$set.nugget}
                                 if (is.null(g) & !is.null(nugget)) {g <- nugget}
 
                                 da <- laGP::darg(list(mle=TRUE), X=self$X)
@@ -152,7 +153,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                                              tmin=drange[1], tmax=drange[2],
                                                              verb=0, maxit=1000)
                                   self$mod.extra$theta <- as.numeric(1 / mle.out$d) # store theta params
-                                  self$mod.extra$nugget <- nugget
+                                  self$mod.extra$nugget <- g
                                   # Leave nugget as is
                                 } else if (estimate_params) {
                                   mle.out <- laGP::jmleGPsep(gpsepi = mod1,
@@ -165,7 +166,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                 } else {stop("Shouldn't be here IGP_laGP #32097555")}
                                 self$mod <- mod1
                               }, #"function to initialize model with data
-                              .update = function(..., estimate_params=TRUE) {browser()
+                              .update = function(..., estimate_params=TRUE) {#browser()
                                 if (!estimate_params) { # just add data and return
                                   laGP::updateGPsep(gpsepi=self$mod,
                                                     X=self$X[-(1:self$n.at.last.update), , drop=FALSE],
@@ -307,11 +308,11 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
                             public = list(
-                              .init = function(...) {#browser()
+                              .init = function(package=self$package, ...) {#browser()
                                 if (self$corr[[1]] != "gauss") {
                                   stop("tgp only uses Gaussian correlation")
                                 }
-                                modfunc <-  if (package == "blm") tgp::blm
+                                modfunc <-  if (self$package == "blm") tgp::blm
                                 else if (package == "btlm") tgp::btlm
                                 else if (package == "bcart") tgp::bcart
                                 else if (package == "bgp") tgp::bgp
@@ -325,15 +326,30 @@ IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
                                 self$.init(...=...)
                               }, #"function to add data to model or reestimate params
                               .predict = function(XX, se.fit, ...){#browser()
+                                Xsplit0 <- self$mod$Xsplit # Need to add this Xsplit stuff so it can predict outside the box of original data
+                                self$mod$Xsplit <- rbind(as.matrix(Xsplit0), XX) # This is the workaround mentioned on p37 https://cran.r-project.org/web/packages/tgp/tgp.pdf, have to as.matrix to avoid col name error
                                 capture.output(preds <- with(globalenv(), predict)(self$mod, XX))
+                                self$mod$Xsplit <- Xsplit0 # Reset value
                                 if (se.fit) {
                                   list(fit=preds$ZZ.km, se.fit=sqrt(preds$ZZ.ks2))
                                 } else {
                                   preds$ZZ.km
                                 }
                               }, #"function to predict at new values
-                              .predict.se = function(XX, ...) {sqrt(with(globalenv(), predict)(self$mod, XX)$ZZ.ks2)}, #"function predict the standard error/dev
-                              .predict.var = function(XX, ...) {with(globalenv(), predict)(self$mod, XX)$ZZ.ks2}, #"function to predict the variance
+                              .predict.se = function(XX, ...) {
+                                Xsplit0 <- self$mod$Xsplit # Need to add this Xsplit stuff so it can predict outside the box of original data
+                                self$mod$Xsplit <- rbind(as.matrix(Xsplit0), XX) # This is the workaround mentioned on p37 https://cran.r-project.org/web/packages/tgp/tgp.pdf, have to as.matrix to avoid col name error
+                                toreturn <- sqrt(with(globalenv(), predict)(self$mod, XX)$ZZ.ks2)
+                                self$mod$Xsplit <- Xsplit0 # Reset value
+                                toreturn
+                              }, #"function predict the standard error/dev
+                              .predict.var = function(XX, ...) {
+                                Xsplit0 <- self$mod$Xsplit # Need to add this Xsplit stuff so it can predict outside the box of original data
+                                self$mod$Xsplit <- rbind(as.matrix(Xsplit0), XX) # This is the workaround mentioned on p37 https://cran.r-project.org/web/packages/tgp/tgp.pdf, have to as.matrix to avoid col name error
+                                toreturn <- with(globalenv(), predict)(self$mod, XX)$ZZ.ks2
+                                self$mod$Xsplit <- Xsplit0 # Reset value
+                                toreturn
+                              }, #"function to predict the variance
                               .grad = NULL, # function to calculate the gradient
                               .delete = function(...) {self$mod <- NULL}, #"function to delete model beyond simple deletion
                               .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
