@@ -134,7 +134,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                 ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=self$Z), silent = T)
                                 if (inherits(ga.try, "try-error")) {
                                   warning("Adding noise to ga in laGP");
-                                  ga <- laGP::garg(list(mle=TRUE), y=Z+rnorm(length(self$Z),0,1e-2))
+                                  ga <- laGP::garg(list(mle=TRUE), y=self$Z+rnorm(length(self$Z),0,1e-2))
                                 }
 
                                 # Follow recommendations for small samples, otherwise use bigger range
