@@ -182,7 +182,17 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                 }
 
                                 da <- laGP::darg(list(mle=TRUE), X=self$X)
-                                ga <- laGP::garg(list(mle=TRUE), y=self$Z)
+                                # Had problem with garg that didn't make sense, trying to fix by adding noise to Z
+                                ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=self$Z), silent = TRUE)
+                                if (inherits(ga.try, "try-error")) {
+                                  print("Adding noise to Z so garg doesn't give error")
+                                  noise.sd <- 1e-8
+                                  while (TRUE) {
+                                    ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=self$Z + rnorm(length(self$Z), 0, noise.sd)), silent = TRUE)
+                                    if (!inherits(ga.try, "try-error")) {break}
+                                    noise.sd <- 10 * noise.sd
+                                  }
+                                }
                                 n.since.last.update <- nrow(self$X) - self$n.at.last.update
                                 if (n.since.last.update < 1) {
                                   warning("Can't update, no new X rows, but can optimize again")
