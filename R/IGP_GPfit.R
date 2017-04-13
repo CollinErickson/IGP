@@ -1260,10 +1260,12 @@ IGP_laGP_GauPro <- R6::R6Class(classname = "IGP_lagP_GauPro", inherit = IGP_base
                              }, #"function to predict the variance
                              .grad = function(XX) {self$mod.extra$GauPro$grad(XX=XX)}, # function to calculate the gradient
                              .delete = function(...){
-                               self$mod.extra$laGP$delete()
-                               self$mod.extra$GauPro$delete()
-                               self$mod.extra <- NULL
-                               self$mod <- NULL
+                               if (!is.null(self$mod.extra)) {
+                                 self$mod.extra$laGP$delete()
+                                 self$mod.extra$GauPro$delete()
+                                 self$mod.extra <- NULL
+                               }
+                              self$mod <- NULL
                              }, #"function to delete model beyond simple deletion
                              .theta = function() {self$mod.extra$GauPro$theta()}, #"function to get theta, exp(-theta*(x-x)^2)
                              .nugget = function() {self$mod.extra$GauPro$nugget()}, #"function to get nugget
