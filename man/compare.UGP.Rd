@@ -35,4 +35,3 @@ Compare multiple UGPs on both prediction accuracy and run time
 \examples{
 compare.UGP(packages=c("laGP", "mlegp"), func=function(x){2*pi*x}, D=1, N=10, Npred = 1e3, reps = 3)
 }
-
