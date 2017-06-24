@@ -846,6 +846,23 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                             public = list(
+                              pypack = "PythonInR",
+                              py = list(
+                                PythonInR = list(
+                                  conn = function() {PythonInR::pyOptions("numpyAlias", "np");if (!PythonInR::pyIsConnected()) {PythonInR::pyConnect()}},
+                                  exec = PythonInR::pyExec,
+                                  assign = function(key, value) {PythonInR::pySet(key=key, value=value, useSetPoly = TRUE, useNumpy = TRUE)},
+                                  get = PythonInR::pyGet,
+                                  close = PythonInR::pyExit
+                                ),
+                                rPython = list(
+                                  conn = function() {},
+                                  exec = function() {},#rPython::python.exec,
+                                  assign = function() {},#rPython::assign,
+                                  get = function() {},#rPython::get
+                                  close = function() {}
+                                )
+                              ),
                               .init = function(...) {
                                 if (self$corr[[1]] == "gauss") {
                                   kernline <- 'kernel = GPy.kern.RBF(input_dim=inputdim, ARD=True)'
@@ -861,13 +878,14 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                                 }
                                 #rPython::python.exec('import sys') # These first two lines need to go
                                 #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
-                                rPython::python.exec('import numpy as np')
-                                rPython::python.exec('import GPy')
+                                self$py[[self$pypack]]$conn()
+                                self$py[[self$pypack]]$exec('import numpy as np')
+                                self$py[[self$pypack]]$exec('import GPy')
 
-                                rPython::python.assign("inputdim", ncol(self$X))
-                                rPython::python.assign("X1", (self$X))
-                                rPython::python.assign("y1", self$Z)
-                                rPython::python.exec('X =  np.matrix(X1)')
+                                self$py[[self$pypack]]$assign("inputdim", ncol(self$X))
+                                self$py[[self$pypack]]$assign("X1", (self$X))
+                                self$py[[self$pypack]]$assign("y1", matrix(self$Z, ncol=1))
+                                self$py[[self$pypack]]$exec('X =  np.matrix(X1)')
                                 rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
                                 #rPython::python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
                                 rPython::python.exec(kernline)
@@ -886,54 +904,55 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                                 self$mod <- "GPy model is in Python"
                               }, #"function to initialize model with data
                               .update = function(...) {
-                                rPython::python.assign("X1", (self$X))
-                                rPython::python.assign("y1", self$Z)
-                                rPython::python.exec('X =  np.matrix(X1)')
-                                rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
-                                rPython::python.exec("gp.set_XY(X = X, Y = y)")
-                                rPython::python.exec("gp.optimize(messages=False)")
-                                rPython::python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
+                                self$py[[self$pypack]]$assign("X1", (self$X))
+                                self$py[[self$pypack]]$assign("y1", matrix(self$Z, ncol=1))
+                                self$py[[self$pypack]]$exec('X =  np.matrix(X1)')
+                                self$py[[self$pypack]]$exec('y = np.matrix(y1).reshape((-1,1))')
+                                self$py[[self$pypack]]$exec("gp.set_XY(X = X, Y = y)")
+                                self$py[[self$pypack]]$exec("gp.optimize(messages=False)")
+                                self$py[[self$pypack]]$exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
                               }, #"function to add data to model or reestimate params
                               .predict = function(XX, se.fit, ...) {
-                                rPython::python.assign("xp1", XX)
-                                rPython::python.exec("xp = np.asmatrix(xp1)")
-                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+                                self$py[[self$pypack]]$assign("xp1", XX)
+                                self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
+                                self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
                                 if (se.fit) {
-                                  list(fit=unlist(rPython::python.get("y_pred.tolist()")),
-                                       se.fit=unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()")))
+                                  list(fit=unlist(self$py[[self$pypack]]$get("y_pred.tolist()")),
+                                       se.fit=unlist(self$py[[self$pypack]]$get("np.sqrt(sigma2_pred).tolist()")))
                                 } else {
-                                  unlist(rPython::python.get("y_pred.tolist()"))
+                                  unlist(self$py[[self$pypack]]$get("y_pred.tolist()"))
                                 }
                               }, #"function to predict at new values
                               .predict.se = function(XX, ...) {
-                                rPython::python.assign("xp1", XX)
-                                rPython::python.exec("xp = np.asmatrix(xp1)")
-                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
-                                unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()"))
+                                self$py[[self$pypack]]$assign("xp1", XX)
+                                self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
+                                self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+                                unlist(self$py[[self$pypack]]$get("np.sqrt(sigma2_pred).tolist()"))
                               }, #"function predict the standard error/dev
                               .predict.var = function(XX, ...) {
-                                rPython::python.assign("xp1", XX)
-                                rPython::python.exec("xp = np.asmatrix(xp1)")
-                                rPython::python.exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
-                                unlist(rPython::python.get("sigma2_pred.tolist()"))
+                                self$py[[self$pypack]]$assign("xp1", XX)
+                                self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
+                                self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+                                unlist(self$py[[self$pypack]]$get("sigma2_pred.tolist()"))
                               }, #"function to predict the variance
                               .grad = NULL, # function to calculate the gradient
                               .delete = function(...){
-                                rPython::python.exec('X =  None')
-                                rPython::python.exec('y =  None')
-                                rPython::python.exec('xp =  None')
-                                rPython::python.exec('X1 =  None')
-                                rPython::python.exec('y1 =  None')
-                                rPython::python.exec('xp1 =  None')
-                                rPython::python.exec('y_pred =  None')
-                                rPython::python.exec('sigma2_pred =  None')
-                                rPython::python.exec('gp =  None')
-                                rPython::python.exec('kernel =  None')
-                                rPython::python.exec('inputdim =  None')
+                                self$py[[self$pypack]]$exec('X =  None')
+                                self$py[[self$pypack]]$exec('y =  None')
+                                self$py[[self$pypack]]$exec('xp =  None')
+                                self$py[[self$pypack]]$exec('X1 =  None')
+                                self$py[[self$pypack]]$exec('y1 =  None')
+                                self$py[[self$pypack]]$exec('xp1 =  None')
+                                self$py[[self$pypack]]$exec('y_pred =  None')
+                                self$py[[self$pypack]]$exec('sigma2_pred =  None')
+                                self$py[[self$pypack]]$exec('gp =  None')
+                                self$py[[self$pypack]]$exec('kernel =  None')
+                                self$py[[self$pypack]]$exec('inputdim =  None')
+                                self$py[[self$pypack]]$close()
                                 self$mod <- NULL
                               }, #"function to delete model beyond simple deletion
                               .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
-                              .nugget = function() {rPython::python.get('gp.likelihood.variance')}, #"function to get nugget
+                              .nugget = function() {self$py[[self$pypack]]$get('gp.likelihood.variance')}, #"function to get nugget
                               .mean = NULL # function that gives mean (constant, other functions not implemented)
 
                             )
