@@ -669,20 +669,43 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
       public = list(
-        .init = function(...) {
+        pypack = "PythonInR",
+        py = list(
+          PythonInR = list(
+            conn = function() {PythonInR::pyOptions("numpyAlias", "np");if (!PythonInR::pyIsConnected()) {PythonInR::pyConnect()}},
+            exec = PythonInR::pyExec,
+            assign = function(key, value) {PythonInR::pySet(key=key, value=value, useSetPoly = TRUE, useNumpy = TRUE)},
+            get = PythonInR::pyGet,
+            close = PythonInR::pyExit
+          ),
+          rPython = list(
+            conn = function() {},
+            exec = function() {},#rPython::python.exec,
+            assign = function() {},#rPython::assign,
+            get = function() {},#rPython::get
+            close = function() {}
+          )
+        ),
+        .init = function(...) {#browser()
           #rPython::python.exec('import sys') # These first two lines need to go
           #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
-          rPython::python.exec('import numpy as np')
+          self$py[[self$pypack]]$conn()
+          self$py[[self$pypack]]$exec('import numpy as np')
+          #self$py[[self$pypack]]$exec('import numpy')
+          #rPython::python.exec('import numpy as np')
           #rPython::python.exec('from sklearn import gaussian_process')
-          rPython::python.exec('from sklearn.gaussian_process import GaussianProcessRegressor')
-          rPython::python.exec("import warnings")
-          rPython::python.exec("warnings.filterwarnings('ignore')")
+          self$py[[self$pypack]]$exec('from sklearn.gaussian_process import GaussianProcessRegressor')
+          # rPython::python.exec('from sklearn.gaussian_process import GaussianProcessRegressor')
+          self$py[[self$pypack]]$exec("import warnings")
+          self$py[[self$pypack]]$exec("warnings.filterwarnings('ignore')")
+          # rPython::python.exec("import warnings")
+          # rPython::python.exec("warnings.filterwarnings('ignore')")
 
-          rPython::python.assign("inputdim", ncol(self$X))
-          rPython::python.assign("X1", (self$X))
-          rPython::python.assign("y1", self$Z)
-          rPython::python.exec('X =  np.matrix(X1)')
-          rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
+          self$py[[self$pypack]]$assign("inputdim", ncol(self$X))
+          self$py[[self$pypack]]$assign("X1", (self$X))
+          self$py[[self$pypack]]$assign("y1", matrix(self$Z, ncol=1))
+          self$py[[self$pypack]]$exec('X =  np.matrix(X1)')
+          self$py[[self$pypack]]$exec('y = np.matrix(y1).reshape((-1,1))')
           #rPython::python.exec("gp = gaussian_process.GaussianProcess(                      \
           #                     theta0=np.asarray([1e-1 for ijk in range(inputdim)]),       \
           #                     thetaL=np.asarray([1e-4 for ijk in range(inputdim)]),       \
@@ -693,82 +716,83 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
             warning("GPfit cannot estimate or set the nugget, it picks a stable value")
           }
           if (self$corr[[1]] == "gauss") {
-            rPython::python.exec('from sklearn.gaussian_process.kernels import RBF')
+            self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import RBF')
             kernline <- 'kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))'
           } else if (self$corr[[1]] == "matern") {
-            rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
+            self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import Matern')
             kernline <- paste0('kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=', self$corr[[2]],')')
           } else if (self$corr[[1]] == "matern5_2") {
-            rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
+            self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import Matern')
             kernline <- 'kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=2.5)'
           } else if (self$corr[[1]] == "matern3_2") {
-            rPython::python.exec('from sklearn.gaussian_process.kernels import Matern')
+            self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import Matern')
             kernline <- 'kernel = Matern(length_scale=np.asarray([1 for ijk in range(inputdim)]), nu=1.5)'
           } else {
             stop("corr not recognized for sklearn")
           }
           #rPython::python.exec('kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))') # This and line below added 1/10/17
-          rPython::python.exec(kernline)
+          self$py[[self$pypack]]$exec(kernline)
           if (!is.null(self$set.nugget) & !self$estimate.nugget) { # set nug and don't estimate
-            rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, alpha=',self$set.nugget,')')
+            self$py[[self$pypack]]$exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, alpha=',self$set.nugget,')')
           } else if (!is.null(self$set.nugget) & self$estimate.nugget) { # estimate nugget but not given
-            rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
+            self$py[[self$pypack]]$exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
           } else if (self$estimate.nugget) { # nug not given but estimate it
-            rPython::python.exec('from sklearn.gaussian_process.kernels import WhiteKernel')
-            rPython::python.exec('kernel += WhiteKernel(noise_level=1e-6, noise_level_bounds=(1e-10, 1e5))')
-            rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
+            self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import WhiteKernel')
+            self$py[[self$pypack]]$exec('kernel += WhiteKernel(noise_level=1e-6, noise_level_bounds=(1e-10, 1e5))')
+            self$py[[self$pypack]]$exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
           } else {
             stop("no sklearn option error #928248")
           }
           #rPython::python.exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
           # Need to give it restarts, just predicted zero when this argument was left out
 
-          rPython::python.exec("gp.fit(X, y)")
+          self$py[[self$pypack]]$exec("gp.fit(X, y)")
 
           self$mod <- "GPy model is in Python"
         }, #"function to initialize model with data
         .update = function(...) {
-          rPython::python.assign("X1", (self$X))
-          rPython::python.assign("y1", self$Z)
-          rPython::python.exec('X =  np.matrix(X1)')
-          rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
-          rPython::python.exec("gp.fit(X, y)")
+          self$py[[self$pypack]]$assign("X1", (self$X))
+          self$py[[self$pypack]]$assign("y1", matrix(self$Z, ncol=1))
+          self$py[[self$pypack]]$exec('X =  np.matrix(X1)')
+          self$py[[self$pypack]]$exec('y = np.matrix(y1).reshape((-1,1))')
+          self$py[[self$pypack]]$exec("gp.fit(X, y)")
         }, #"function to add data to model or reestimate params
         .predict = function(XX, se.fit, ...) {
-          rPython::python.assign("xp1", XX)
-          rPython::python.exec("xp = np.asmatrix(xp1)")
-          rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
+          self$py[[self$pypack]]$assign("xp1", XX)
+          self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
+          self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
           if (se.fit) {
-            list(fit=unlist(rPython::python.get("y_pred.tolist()")),
-                 se.fit=unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()")))
+            list(fit=unlist(self$py[[self$pypack]]$get("y_pred.tolist()")),
+                 se.fit=unlist(self$py[[self$pypack]]$get("np.sqrt(sigma2_pred).tolist()")))
           } else {
-            unlist(rPython::python.get("y_pred.tolist()"))
+            unlist(self$py[[self$pypack]]$get("y_pred.tolist()"))
           }
         }, #"function to predict at new values
         .predict.se = function(XX, ...) {
-          rPython::python.assign("xp1", XX)
-          rPython::python.exec("xp = np.asmatrix(xp1)")
-          rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
-          unlist(rPython::python.get("np.sqrt(sigma2_pred).tolist()"))
+          self$py[[self$pypack]]$assign("xp1", XX)
+          self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
+          self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
+          unlist(self$py[[self$pypack]]$get("np.sqrt(sigma2_pred).tolist()"))
         }, #"function predict the standard error/dev
         .predict.var = function(XX, ...) {
-          rPython::python.assign("xp1", XX)
-          rPython::python.exec("xp = np.asmatrix(xp1)")
-          rPython::python.exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
-          unlist(rPython::python.get("sigma2_pred.tolist()"))
+          self$py[[self$pypack]]$assign("xp1", XX)
+          self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
+          self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
+          unlist(self$py[[self$pypack]]$get("sigma2_pred.tolist()"))
         }, #"function to predict the variance
         .grad = NULL, # function to calculate the gradient
         .delete = function(...){
-          rPython::python.exec('X =  None')
-          rPython::python.exec('y =  None')
-          rPython::python.exec('xp =  None')
-          rPython::python.exec('X1 =  None')
-          rPython::python.exec('y1 =  None')
-          rPython::python.exec('xp1 =  None')
-          rPython::python.exec('y_pred =  None')
-          rPython::python.exec('sigma2_pred =  None')
-          rPython::python.exec('gp =  None')
-          rPython::python.exec('inputdim =  None')
+          self$py[[self$pypack]]$exec('X =  None')
+          self$py[[self$pypack]]$exec('y =  None')
+          self$py[[self$pypack]]$exec('xp =  None')
+          self$py[[self$pypack]]$exec('X1 =  None')
+          self$py[[self$pypack]]$exec('y1 =  None')
+          self$py[[self$pypack]]$exec('xp1 =  None')
+          self$py[[self$pypack]]$exec('y_pred =  None')
+          self$py[[self$pypack]]$exec('sigma2_pred =  None')
+          self$py[[self$pypack]]$exec('gp =  None')
+          self$py[[self$pypack]]$exec('inputdim =  None')
+          self$py[[self$pypack]]$close()
           self$mod <- NULL
         }, #"function to delete model beyond simple deletion
         .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
