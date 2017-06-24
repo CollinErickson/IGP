@@ -748,7 +748,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 
           self$py[[self$pypack]]$exec("gp.fit(X, y)")
 
-          self$mod <- "GPy model is in Python"
+          self$mod <- "sklearn model is in Python"
         }, #"function to initialize model with data
         .update = function(...) {
           self$py[[self$pypack]]$assign("X1", (self$X))
@@ -863,7 +863,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                                   close = function() {}
                                 )
                               ),
-                              .init = function(...) {
+                              .init = function(...) {browser()
                                 if (self$corr[[1]] == "gauss") {
                                   kernline <- 'kernel = GPy.kern.RBF(input_dim=inputdim, ARD=True)'
                                 } else if (self$corr[[1]] == "matern") {
@@ -886,20 +886,20 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                                 self$py[[self$pypack]]$assign("X1", (self$X))
                                 self$py[[self$pypack]]$assign("y1", matrix(self$Z, ncol=1))
                                 self$py[[self$pypack]]$exec('X =  np.matrix(X1)')
-                                rPython::python.exec('y = np.matrix(y1).reshape((-1,1))')
+                                self$py[[self$pypack]]$exec('y = np.matrix(y1).reshape((-1,1))')
                                 #rPython::python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
-                                rPython::python.exec(kernline)
-                                rPython::python.exec("gp = GPy.models.GPRegression(X,y,kernel)")
+                                self$py[[self$pypack]]$exec(kernline)
+                                self$py[[self$pypack]]$exec("gp = GPy.models.GPRegression(X,y,kernel)")
                                 if (is.null(self$set.nugget)) {
-                                  rPython::python.exec("gp.likelihood.variance = 1e-8")
+                                  self$py[[self$pypack]]$exec("gp.likelihood.variance = 1e-8")
                                 } else {
-                                  rPython::python.exec(paste0("gp.likelihood.variance = ",self$set.nugget,""))
+                                  self$py[[self$pypack]]$exec(paste0("gp.likelihood.variance = ",self$set.nugget,""))
                                 }
                                 if (!self$estimate.nugget) {
-                                  rPython::python.exec("gp.likelihood.variance.fix()")
+                                  self$py[[self$pypack]]$exec("gp.likelihood.variance.fix()")
                                 }
-                                rPython::python.exec("gp.optimize(messages=False)")
-                                rPython::python.exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
+                                self$py[[self$pypack]]$exec("gp.optimize(messages=False)")
+                                self$py[[self$pypack]]$exec("gp.optimize_restarts(num_restarts = 5,  verbose=False)")
 
                                 self$mod <- "GPy model is in Python"
                               }, #"function to initialize model with data
