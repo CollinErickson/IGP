@@ -1093,7 +1093,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
 #'
 #' @docType class
 #' @importFrom R6 R6Class
-#' @export
+# @export
 #' @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
@@ -1139,9 +1139,9 @@ IGP_ooDACE <- R6::R6Class(classname = "IGP_ooDACE", inherit = IGP_base,
                              isOpen <- open(matlab)
                              if (!isOpen) throw("MATLAB server is not running: waited 30 seconds.")
 
-                             # set a variable in R and send to MATLB
-                             x <- 10
+                             # set a variable in R and send to MATLAB
                              R.matlab::setVariable(matlab, X = self$X)
+                             R.matlab::setVariable(matlab, inputdim = ncol(self$X))
                              R.matlab::setVariable(matlab, Z = self$Z)
                              #R.matlab::setVariable(matlab, meanfunc = '')
                              R.matlab::setVariable(matlab, theta = 1)
@@ -1149,8 +1149,11 @@ IGP_ooDACE <- R6::R6Class(classname = "IGP_ooDACE", inherit = IGP_base,
                              R.matlab::setVariable(matlab, upb = 1e4)
                              R.matlab::evaluate(matlab, 'meanfunc = @regpoly0')
                              R.matlab::evaluate(matlab, 'corrfunc = @corrgauss')
-                             R.matlab::evaluate(matlab, "addpath('C:\\Users\\cbe117\\School\\DOE\\GP_codes\\ooDACE\\ooDACE');")
+                             R.matlab::evaluate(matlab, "addpath(genpath('C:\\Users\\cbe117\\School\\DOE\\GP_codes\\ooDACE'));")
+                             # R.matlab::evaluate(matlab, "addpath('C:\\Users\\cbe117\\School\\DOE\\GP_codes\\ooDACE');")
+                             # R.matlab::evaluate(matlab, "addpath('C:\\Users\\cbe117\\School\\DOE\\GP_codes\\ooDACE\\optimizers\');")
                              #R.matlab::evaluate(matlab, "[dmodel, perf] = DACEfit(X, Z, meanfunc, corrfunc, theta, lob, upb);")
+                             browser()
                              R.matlab::evaluate(matlab, "opts = Kriging.getDefaultOptions();")
                              R.matlab::evaluate(matlab, "opts.hpBounds = [lob ; upb]; % hyperparameter optimization bounds")
                              R.matlab::evaluate(matlab, "opts.hpOptimizer = SQPLabOptimizer( inputdim, 1 );")
@@ -1161,8 +1164,8 @@ IGP_ooDACE <- R6::R6Class(classname = "IGP_ooDACE", inherit = IGP_base,
                              R.matlab::evaluate(matlab, "")
                              R.matlab::evaluate(matlab, "")
                              R.matlab::evaluate(matlab, "")
-                             R.matlab::evaluate(matlab, "k = Kriging( opts, theta, meanfuncstring2, corrfunc);")
-                             R.matlab::evaluate(matlab, "k = k.fit( S, Y);")
+                             R.matlab::evaluate(matlab, "k = Kriging( opts, theta, meanfunc, corrfunc);")
+                             R.matlab::evaluate(matlab, "k = k.fit( X, Z);")
                              #R.matlab::evaluate(matlab, "y=20; z=x+y")
                              #z <- R.matlab::getVariable(matlab, "z")
                              #z
@@ -1172,7 +1175,12 @@ IGP_ooDACE <- R6::R6Class(classname = "IGP_ooDACE", inherit = IGP_base,
                              #temp <- R.matlab::evaluate(matlab, "X1 .* X1", capture=TRUE)
                              #temp
                            }, #"function to initialize model with data
-                           .update = NULL, #"function to add data to model or reestimate params
+                           .update = function (...) { #function to add data to model or reestimate params
+                             matlab <- self$mod
+                             R.matlab::setVariable(matlab, X = self$X)
+                             R.matlab::setVariable(matlab, Z = self$Z)
+                             R.matlab::evaluate(matlab, "k = k.fit( X, Z);")
+                           },
                            .predict = function(XX, se.fit, ...) {browser()
                              R.matlab::setVariable(self$mod, XX = XX)
                              R.matlab::evaluate(self$mod, '[YP, MSEP] = k.predict(XX);')
