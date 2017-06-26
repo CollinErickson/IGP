@@ -677,14 +677,14 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
             assign = function(key, value) {PythonInR::pySet(key=key, value=value, useSetPoly = TRUE, useNumpy = TRUE)},
             get = PythonInR::pyGet,
             close = PythonInR::pyExit
-          ),
-          rPython = list(
-            conn = function() {},
-            exec = function() {},#rPython::python.exec,
-            assign = function() {},#rPython::assign,
-            get = function() {},#rPython::get
-            close = function() {}
-          )
+          )#,
+          # rPython = list(
+          #   conn = function() {},
+          #   exec = function() {},#rPython::python.exec,
+          #   assign = function() {},#rPython::assign,
+          #   get = function() {},#rPython::get
+          #   close = function() {}
+          # )
         ),
         .init = function(...) {#browser()
           #rPython::python.exec('import sys') # These first two lines need to go
@@ -796,7 +796,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           self$mod <- NULL
         }, #"function to delete model beyond simple deletion
         .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
-        .nugget = function() {rPython::python.get('gp.kernel.get_params()')}, #"function to get nugget
+        .nugget = function() {self$py[[self$pypack]]$get('gp.kernel.get_params()')}, #"function to get nugget
         .mean = NULL # function that gives mean (constant, other functions not implemented)
 
       )
@@ -808,6 +808,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #'
 #' @docType class
 #' @importFrom R6 R6Class
+#' @importFrom PythonInR pyOptions pySet
 #' @export
 #' @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
@@ -854,14 +855,14 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                                   assign = function(key, value) {PythonInR::pySet(key=key, value=value, useSetPoly = TRUE, useNumpy = TRUE)},
                                   get = PythonInR::pyGet,
                                   close = PythonInR::pyExit
-                                ),
-                                rPython = list(
-                                  conn = function() {},
-                                  exec = function() {},#rPython::python.exec,
-                                  assign = function() {},#rPython::assign,
-                                  get = function() {},#rPython::get
-                                  close = function() {}
-                                )
+                                )#,
+                                # rPython = list(
+                                #   conn = function() {},
+                                #   exec = function() {},#rPython::python.exec,
+                                #   assign = function() {},#rPython::assign,
+                                #   get = function() {},#rPython::get
+                                #   close = function() {}
+                                # )
                               ),
                               .init = function(...) {browser()
                                 if (self$corr[[1]] == "gauss") {
