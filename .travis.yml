@@ -8,3 +8,9 @@ r_github_packages:
   - CollinErickson/contour
   - CollinErickson/GauPro
   - CollinErickson/TestFunctions
+
+r_packages:
+  - covr
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
