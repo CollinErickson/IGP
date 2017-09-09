@@ -56,7 +56,7 @@ u <- IGP_DACE$new(X=X1,Z=Z1)
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
 u$update(Xnew=X2,Znew=Z2)
-u$predict(XX1)
+cbind(u$predict(XX1), ZZ1)
 u$delete()
 }
 }

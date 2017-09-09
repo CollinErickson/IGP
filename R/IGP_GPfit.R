@@ -1006,7 +1006,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                             public = list(
-                              matlab_path = "C:\\Users\\cbe117\\School\\DOE\\GP_codes\\DACE\\dace",
+                              # matlab_path = "C:\\Users\\cbe117\\School\\DOE\\GP_codes\\DACE\\dace",
                               .init = function(...) {#browser()
 
                                 R.matlab::Matlab$startServer()
@@ -1014,6 +1014,10 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                                 self$mod <- matlab
                                 isOpen <- open(matlab)
                                 if (!isOpen) throw("MATLAB server is not running: waited 30 seconds.")
+
+                                # Add DACE folder in UGP to path
+                                DACE_file_path <- system.file("dace", package="UGP")
+                                R.matlab::evaluate(matlab, paste0("addpath(genpath('", GPML_file_path, "'));"))
 
                                 # set a variable in R and send to MATLAB
                                 R.matlab::setVariable(matlab, X = self$X)
@@ -1024,7 +1028,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                                 R.matlab::setVariable(matlab, upb = 1e4)
                                 R.matlab::evaluate(matlab, 'meanfunc = @regpoly0')
                                 R.matlab::evaluate(matlab, 'corrfunc = @corrgauss')
-                                R.matlab::evaluate(matlab, paste0("addpath('",self$matlab_path,"');"))
+                                # R.matlab::evaluate(matlab, paste0("addpath('",self$matlab_path,"');"))
                                 R.matlab::evaluate(matlab, "[dmodel, perf] = dacefit(X, Z, meanfunc, corrfunc, theta, lob, upb);")
                                 #R.matlab::evaluate(matlab, "y=20; z=x+y")
                                 #z <- R.matlab::getVariable(matlab, "z")
