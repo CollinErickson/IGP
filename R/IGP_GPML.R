@@ -44,7 +44,7 @@
 IGP_GPML <- R6::R6Class(classname = "IGP_GPML", inherit = IGP_base,
   public = list(
     matlab_path = NULL,
-    .init = function(...) {browser()
+    .init = function(...) {#browser()
 
       R.matlab::Matlab$startServer()
       matlab <- R.matlab::Matlab()
@@ -58,14 +58,11 @@ IGP_GPML <- R6::R6Class(classname = "IGP_GPML", inherit = IGP_base,
       # set a variable in R and send to MATLAB
       R.matlab::setVariable(matlab, X = self$X)
       R.matlab::setVariable(matlab, Z = self$Z)
-      #R.matlab::setVariable(matlab, meanfunc = '')
       R.matlab::setVariable(matlab, theta = 1)
-      R.matlab::setVariable(matlab, lob = 1e-4)
-      R.matlab::setVariable(matlab, upb = 1e4)
       R.matlab::evaluate(matlab, 'meanfunc = @meanConst; hyp.mean = [0;];')
-      R.matlab::evaluate(matlab, 'corrfunc = @corrSEard; hyp.cov = [zeros(size(X, 2), 1); 0;]; hyp.lik = log(0.1);')
+      R.matlab::evaluate(matlab, 'corrfunc = @covSEard; hyp.cov = [zeros(size(X, 2), 1); 0;]; hyp.lik = log(0.1);')
       R.matlab::evaluate(matlab, 'likfunc = @likGauss')
-      browser()
+      # Optimize parameters
       R.matlab::evaluate(matlab, 'hyp = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, corrfunc, likfunc, X, Z);')
     }, #"function to initialize model with data
     .update = function() { # function to add data to model or reestimate params

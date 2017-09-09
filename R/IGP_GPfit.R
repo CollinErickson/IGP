@@ -988,7 +988,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
-#' u$predict(XX1)
+#' cbind(u$predict(XX1), ZZ1)
 #' u$delete()
 #' }
 #' @field X Design matrix

@@ -31,6 +31,7 @@ Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
 
 R.matlab::Matlab$startServer()
 matlab <- R.matlab::Matlab()
+isOpen <- open(matlab)
 print(R.matlab::evaluate.Matlab(matlab, '1+2', capture=TRUE))
 GPML_file_path <- system.file("gpml-matlab-v4.0-2016-10-19", package="UGP")
 # addpath(genpath('C:/Users/cbe117/Documents/R/win-library/3.4/UGP/gpml-matlab-v4.0-2016-10-19'))
@@ -45,3 +46,20 @@ R.matlab::evaluate(matlab, 'likfunc = @likGauss')
 R.matlab::evaluate(matlab, 'hyp = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, corrfunc, likfunc, X, Z);')
 
 close(matlab)
+
+
+
+filepath <- tempfile(fileext='.m')
+filetext <- paste0("
+1+2
+addpath(genpath('", GPML_file_path, "'));
+X = [0; .3; .5; .7; .9; 1;];
+Z = [0; .4; .5; .6; .7; 1;];
+meanfunc = @meanConst; hyp.mean = [0;];
+corrfunc = @covSEard; hyp.cov = [zeros(size(X, 2), 1); 0;]; hyp.lik = log(0.1);
+likfunc = @likGauss
+hyp = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, corrfunc, likfunc, X, Z);
+")
+write(x=filetext, file=filepath)
+# system(paste0("matlab ", filepath))
+system(paste0("matlab -nodisplay -nosplash -minimize -r \"run('",filepath,"'); exit\""))

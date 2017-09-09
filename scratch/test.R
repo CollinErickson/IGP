@@ -1,7 +1,7 @@
 set.seed(0)
-n <- 60
+n <- 40
 d <- 2
-n2 <- 20
+n2 <- 2
 f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
 f1 <- function(x) {abs(sin(2*pi*x[1])) + 10*x[2]}
 f1 <- TestFunctions::RFF_get(D=d)
@@ -13,7 +13,7 @@ Xall <- rbind(X1, X2)
 Zall <- c(Z1, Z2)
 XX1 <- matrix(runif(5*d),nrow=5)
 ZZ1 <- apply(XX1, 1, f1)
-system.time(u <- IGP(package='GauPro',X=X1,Z=Z1))
+system.time(u <- IGP(package='laGP_GauPro',X=X1,Z=Z1))
 u$theta()
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
@@ -40,24 +40,24 @@ u$delete()
 
 # Test 1 D
 set.seed(0)
-n <- 10
+n <- 100
 d <- 1
 n2 <- 5
-f1 <- function(x) {sin(2*pi*x[1]) + rnorm(1,0,.005)}
+f1 <- function(x) {sin(2*pi*x[1]) + rnorm(1,0,.15)}
 X1 <- matrix(sort(runif(n*d)),n,d)
 Z1 <- apply(X1,1,f1) #+ rnorm(n, 0, 1e-3)
 X2 <- matrix(runif(n2*d),n2,d)
 Z2 <- apply(X2,1,f1)
 XX1 <- matrix(runif(10),ncol=1)
 ZZ1 <- apply(XX1, 1, f1)
-system.time(u <- IGP(package='mlegp',X=X1,Z=Z1, estimate.nugget=T, nugget=c(10,10,10,10,10,1,1,1,1,1)))
+system.time(u <- IGP(package='laGP_GauPro',X=X1,Z=Z1, estimate.nugget=T, nugget=c(10,10,10,10,10,1,1,1,1,1)))
 plot(X1, Z1)
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
 curve(u$predict(matrix(x, ncol=1)));points(X1,Z1, col=2, cex=2, pch=19)
 curve(u$predict(matrix(x, ncol=1)) + 2*u$predict.se(matrix(x, ncol=1)), add=T, col=3)
 curve(u$predict(matrix(x, ncol=1)) - 2*u$predict.se(matrix(x, ncol=1)), add=T, col=3)
-u$update(Xnew=X2,Znew=Z2)
+u$update(Xnew=X2,Znew=Z2, estimate_params=FALSE)
 curve(u$predict(matrix(x, ncol=1)));points(rbind(X1,X2),c(Z1,Z2), col=2, cex=2, pch=19)
 curve(u$predict(matrix(x, ncol=1)) + 2*u$predict.se(matrix(x, ncol=1)), add=T, col=3)
 curve(u$predict(matrix(x, ncol=1)) - 2*u$predict.se(matrix(x, ncol=1)), add=T, col=3)
@@ -77,7 +77,7 @@ X2 <- matrix(runif(n2*d),n2,d)
 Z2 <- apply(X2,1,f1)
 XX1 <- matrix(runif(10),ncol=1)
 ZZ1 <- apply(XX1, 1, f1)
-system.time(u <- UGP$new(package='mlegp',X=X1,Z=Z1, estimate.nugget=T))
+system.time(u <- UGP$new(package='laGP',X=X1,Z=Z1, estimate.nugget=T))
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
 curve(u$predict(matrix(x, ncol=1)), ylim=c(-.1,.1));points(X1,Z1, col=2, cex=2, pch=19)
