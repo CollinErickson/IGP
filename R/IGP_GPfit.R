@@ -18,7 +18,7 @@
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP(package='laGP',X=X1,Z=Z1)
+#' u <- IGP_GPfit$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
@@ -39,7 +39,6 @@
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
                           public = list(
-                            newthing = 33,
                             .init = function(...) {
                               if (!is.null(self$estimate.nugget) || self$set.nugget) {
                                 warning("GPfit cannot estimate or set the nugget, it picks a stable value")
@@ -1017,7 +1016,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
 
                                 # Add DACE folder in UGP to path
                                 DACE_file_path <- system.file("dace", package="UGP")
-                                R.matlab::evaluate(matlab, paste0("addpath(genpath('", GPML_file_path, "'));"))
+                                R.matlab::evaluate(matlab, paste0("addpath(genpath('", DACE_file_path, "'));"))
 
                                 # set a variable in R and send to MATLAB
                                 R.matlab::setVariable(matlab, X = self$X)
