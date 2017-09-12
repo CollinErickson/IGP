@@ -22,6 +22,5 @@ Suggests:
     ggplot2,
     reshape,
     R.matlab,
-    PythonInR,
     numDeriv
 RoxygenNote: 6.0.1

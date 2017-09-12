@@ -33,7 +33,7 @@ Class providing object with methods for fitting a GP model
 \describe{
   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-  estimate.nugget=T, set.nugget=F, ...)}}{This method
+  estimate.nugget=T, nugget0=F, ...)}}{This method
   is used to create object of this class with \code{X} and \code{Z} as the data.
   The package tells it which package to fit the GP model.}
   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method

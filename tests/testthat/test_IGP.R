@@ -1,5 +1,5 @@
 test_that("1D data works", {
-  packages = c("laGP", "mlegp", "GauPro")
+  packages = c("laGP", "mlegp", "GauPro", "GPfit", "DiceKriging", "btgp")
   # package = "GauPro"
   for (package in packages) { print(package)
     n <- 40

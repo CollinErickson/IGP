@@ -447,10 +447,16 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
                                 self$.init(...)
                               }, #"function to add data to model or reestimate params
                               .predict = function(XX, se.fit, ...) {
-                                mlegp::predict.gp(object=self$mod, newData=XX, se.fit = se.fit)
+                                pred <- mlegp::predict.gp(object=self$mod, newData=XX, se.fit = se.fit)
+                                # If only Z then return as numeric instead of list
+                                if (se.fit) {
+                                  pred
+                                } else{
+                                  c(pred)
+                                }
                               }, #"function to predict at new values
-                              .predict.se = function(XX, ...) {mlegp::predict.gp(object=self$mod, newData=XX, se.fit=T)$se.fit}, #"function predict the standard error/dev
-                              .predict.var = function(XX, ...) {mlegp::predict.gp(object=self$mod, newData=XX, se.fit=T)$se.fit^2}, #"function to predict the variance
+                              .predict.se = function(XX, ...) {c(mlegp::predict.gp(object=self$mod, newData=XX, se.fit=T)$se.fit)}, #"function predict the standard error/dev
+                              .predict.var = function(XX, ...) {c(mlegp::predict.gp(object=self$mod, newData=XX, se.fit=T)$se.fit^2)}, #"function to predict the variance
                               .grad = NULL, # function to calculate the gradient
                               .delete = function(...){self$mod <- NULL}, #"function to delete model beyond simple deletion
                               .theta = function() {self$mod$beta}, #"function to get theta, exp(-theta*(x-x)^2)
@@ -518,7 +524,7 @@ IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
                                   preds <- self$mod$pred(XX=XX, se.fit=T)
                                   list(fit=preds$mean, se.fit=preds$se)
                                 } else {
-                                  self$mod$pred(XX=XX)
+                                  c(self$mod$pred(XX=XX))
                                 }
                               }, #"function to predict at new values
                               .predict.se = function(XX, ...) {self$mod$pred(XX=XX, se.fit=T)$se}, #"function predict the standard error/dev
