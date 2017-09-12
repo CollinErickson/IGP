@@ -60,43 +60,43 @@ IGP_GPML <- R6::R6Class(classname = "IGP_GPML", inherit = IGP_base,
       R.matlab::setVariable(matlab, Z = self$Z)
       R.matlab::setVariable(matlab, theta = 1)
       R.matlab::evaluate(matlab, 'meanfunc = @meanConst; hyp.mean = [0;];')
-      R.matlab::evaluate(matlab, 'corrfunc = @covSEard; hyp.cov = [zeros(size(X, 2), 1); 0;]; hyp.lik = log(0.1);')
+      R.matlab::evaluate(matlab, 'covfunc = @covSEard; hyp.cov = [zeros(size(X, 2), 1); 0;]; hyp.lik = log(0.1);')
       R.matlab::evaluate(matlab, 'likfunc = @likGauss')
       # Optimize parameters
-      R.matlab::evaluate(matlab, 'hyp = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, corrfunc, likfunc, X, Z);')
+      R.matlab::evaluate(matlab, 'hyp = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, X, Z);')
     }, #"function to initialize model with data
     .update = function() { # function to add data to model or reestimate params
       matlab <- self$mod
       R.matlab::setVariable(matlab, X = self$X)
       R.matlab::setVariable(matlab, Z = self$Z)
-      R.matlab::evaluate(matlab, "[dmodel, perf] = dacefit(X, Z, meanfunc, corrfunc, theta, lob, upb);")
+      R.matlab::evaluate(matlab, "hyp = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, X, Z);")
     },
-    .predict = function(XX, se.fit, ...) {browser()
+    .predict = function(XX, se.fit, ...) {#browser()
       R.matlab::setVariable(self$mod, XX = XX)
       R.matlab::evaluate(self$mod, '[mu s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, X, Z, XX);')
       YP <- R.matlab::getVariable(self$mod, 'mu')
       MSEP <- R.matlab::getVariable(self$mod, 's2')
       if (se.fit) {
-        cbind(YP$YP, sqrt(MSEP$MSEP))
+        cbind(YP$mu, sqrt(MSEP$s2))
       } else {
-        YP$YP
+        YP$mu
       }
     }, #"function to predict at new values
-    .predict.se = function(XX, ...) {browser()
+    .predict.se = function(XX, ...) {#browser()
       R.matlab::setVariable(self$mod, XX = XX)
       R.matlab::evaluate(self$mod, '[mu s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, X, Z, XX);')
       YP <- R.matlab::getVariable(self$mod, 'mu')
       MSEP <- R.matlab::getVariable(self$mod, 's2')
       #cbind(YP$YP, sqrt(MSEP$MSEP))
-      sqrt(MSEP$MSEP)
+      sqrt(MSEP$s2)
     }, #"function predict the standard error/dev
-    .predict.var = function(XX, ...) {browser()
+    .predict.var = function(XX, ...) {#browser()
       R.matlab::setVariable(self$mod, XX = XX)
       R.matlab::evaluate(self$mod, '[mu s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, X, Z, XX);')
       # YP <- R.matlab::getVariable(self$mod, 'YP')
       MSEP <- R.matlab::getVariable(self$mod, 's2')
       # cbind(YP$YP, MSEP$MSEP)
-      MSEP$MSEP
+      MSEP$s2
     }, #"function to predict the variance
     .grad = NULL, # function to calculate the gradient
     .delete = function() {
