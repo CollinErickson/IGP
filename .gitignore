@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+InputStreamByteWrapper.class
+MatlabServer.m
