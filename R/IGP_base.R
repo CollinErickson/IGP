@@ -32,7 +32,7 @@
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL, corr="gauss",
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -57,16 +57,16 @@ IGP_base <- R6::R6Class(classname = "IGP",
                      n.at.last.update = NULL, #"numeric", # count how many in update, must be at end of X
                      corr = NULL, #"numeric",
                      estimate.nugget = NULL, #"logical", Should the nugget be estimated?
-                     set.nugget = NULL, #"numeric" # What value should the nugget be set to? NOT logical
+                     nugget0 = NULL, #"numeric" # What value should the nugget be set to? NOT logical. If estimate.nugget==TRUE, then it's the starting value
 
-                     initialize = function(X=NULL, Z=NULL, package=NULL, corr="gauss", estimate.nugget=T, set.nugget=F, ...) {#browser()
+                     initialize = function(X=NULL, Z=NULL, package=NULL, corr="gauss", estimate.nugget=TRUE, nugget0=1e-8, ...) {#browser()
                        if (!is.null(X)) {self$X <- if (is.matrix(X)) X else matrix(X, ncol=1)} # Add else for 1D data passed as vector
                        if (!is.null(Z)) {self$Z <- if (is.matrix(Z)) c(Z) else Z}
                        self$package <- package
                        self$n.at.last.update <- 0
                        self$corr <- corr
                        self$estimate.nugget <- estimate.nugget
-                       self$set.nugget <- set.nugget
+                       self$nugget0 <- nugget0
 
                        #if(length(self$X) != 0 & length(self$Z) != 0 & length(self$package) != 0) {
                        if(length(self$X) != 0 & length(self$Z) != 0) {

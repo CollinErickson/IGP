@@ -32,7 +32,7 @@
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -40,9 +40,9 @@
 IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
                           public = list(
                             .init = function(...) {
-                              if (!is.null(self$estimate.nugget) || self$set.nugget) {
-                                warning("GPfit cannot estimate or set the nugget, it picks a stable value")
-                              }
+                              # if (self$estimate.nugget) {
+                              #   warning("GPfit cannot estimate or set the nugget, it picks a stable value")
+                              # }
                               if (self$corr[[1]] == "gauss") {
                                 self$mod <- GPfit::GP_fit(self$X, self$Z, corr = list(type="exponential",power=2))
                               } else if (self$corr[[1]] == "powerexp") {
@@ -113,7 +113,7 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -126,7 +126,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                 }
 
                                 if (is.null(d) & !is.null(theta)) {d <- 1/theta}
-                                if (is.null(g) && is.null(nugget) && !is.null(self$set.nugget)) {g <- self$set.nugget}
+                                if (is.null(g) && is.null(nugget) && !is.null(self$nugget0)) {g <- self$nugget0}
                                 if (is.null(g) & !is.null(nugget)) {g <- nugget}
 
                                 da <- laGP::darg(list(mle=TRUE), X=self$X)
@@ -310,7 +310,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -402,7 +402,7 @@ IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -414,9 +414,9 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
                                   stop("mlegp only uses Gaussian correlation")
                                 }
                                 # Have to do this for nugget or else it won't work
-                                temp_nug <- if (is.null(self$estimate.nugget) || self$estimate.nugget == FALSE) NULL
-                                            else if (self$estimate.nugget == TRUE) 1e-6
-                                temp_nug_known <- if (is.null(self$set.nugget)) 0 else self$set.nugget
+                                temp_nug <- if (self$estimate.nugget == FALSE) NULL
+                                            else if (self$estimate.nugget == TRUE) self$nugget0
+                                temp_nug_known <- self$nugget0 #if (is.null(self$nugget0)) 0 else self$nugget0
 
                                 # Having trouble when nugget passed as ... since two match, so trying other method
                                 if (FALSE) {
@@ -426,7 +426,7 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
                                   co <- capture.output(m <- mlegp::mlegp(X=self$X, Z=self$Z, verbose=0,
                                                                          nugget = nugget, #temp_nug,
                                                                          nugget.known = nugget.known, #temp_nug_known,
-                                                                         #nugget = self$set.nugget,
+                                                                         #nugget = self$nugget0,
                                                                          #nugget.known=as.integer(!self$estimate.nugget),
                                                                          ...)
                                                        )
@@ -494,7 +494,7 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -507,7 +507,7 @@ IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
                                 }
                                 #m <- GauPro::GauPro$new(X=self$X, Z=self$Z, ...)
                                 #m <- GauPro::GauPr_Gauss_par$new(X=self$X, Z=self$Z, ...)
-                                m <- GauPro::GauPro(X=self$X, Z=self$Z, nug.est=self$estimate.nugget, nug=self$set.nugget, ...)
+                                m <- GauPro::GauPro(X=self$X, Z=self$Z, nug.est=self$estimate.nugget, nug=self$nugget0, ...)
                                 self$mod <- m
                               }, #"function to initialize model with data
                               .update = function(...) {
@@ -566,7 +566,7 @@ IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -589,7 +589,7 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
                                   }
                                 }
                                 #capture.output(mod1 <- DiceKriging::km(design=X, response=Z, covtype="gauss", nugget.estim=T))
-                                capture.output(mod1 <- DiceKriging::km(design=self$X, response=self$Z, covtype=covtype, nugget.estim=self$estimate.nugget, nugget=self$set.nugget, ...))
+                                capture.output(mod1 <- DiceKriging::km(design=self$X, response=self$Z, covtype=covtype, nugget.estim=self$estimate.nugget, nugget=self$nugget0, ...))
                                 self$mod <- mod1
                               }, #"function to initialize model with data
                               .update = function(...) {#browser()
@@ -661,7 +661,7 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -705,15 +705,9 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           self$py[[self$pypack]]$assign("y1", matrix(self$Z, ncol=1))
           self$py[[self$pypack]]$exec('X =  np.matrix(X1)')
           self$py[[self$pypack]]$exec('y = np.matrix(y1).reshape((-1,1))')
-          #rPython::python.exec("gp = gaussian_process.GaussianProcess(                      \
-          #                     theta0=np.asarray([1e-1 for ijk in range(inputdim)]),       \
-          #                     thetaL=np.asarray([1e-4 for ijk in range(inputdim)]),       \
-          #                     thetaU=np.asarray([200 for ijk in range(inputdim)]),        \
-          #                     optimizer='Welch') ")
-
-          if (!is.null(self$estimate.nugget) || self$set.nugget) {
-            warning("sklearn will estimate the nugget")
-          }
+          # if (!self$estimate.nugget) {
+          #   warning("sklearn will estimate the nugget")
+          # }
           if (self$corr[[1]] == "gauss") {
             self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import RBF')
             kernline <- 'kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))'
@@ -729,16 +723,19 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           } else {
             stop("corr not recognized for sklearn")
           }
-          #rPython::python.exec('kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))') # This and line below added 1/10/17
-          self$py[[self$pypack]]$exec(kernline)
-          if (!is.null(self$set.nugget) & !self$estimate.nugget) { # set nug and don't estimate
-            self$py[[self$pypack]]$exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, alpha=',self$set.nugget,')')
-          } else if (!is.null(self$set.nugget) & self$estimate.nugget) { # estimate nugget but not given
-            self$py[[self$pypack]]$exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
-          } else if (self$estimate.nugget) { # nug not given but estimate it
+          # Add WhiteKernel if estimate nugget
+          if (self$estimate.nugget) {
             self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import WhiteKernel')
             self$py[[self$pypack]]$exec('kernel += WhiteKernel(noise_level=1e-6, noise_level_bounds=(1e-10, 1e5))')
+          }
+          #rPython::python.exec('kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))') # This and line below added 1/10/17
+          self$py[[self$pypack]]$exec(kernline)
+          if (!self$estimate.nugget) { # set nug and don't estimate
+            self$py[[self$pypack]]$exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, alpha=',self$nugget0,')')
+          } else if (self$estimate.nugget) { # estimate nugget but not given
             self$py[[self$pypack]]$exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
+          # } else if (self$estimate.nugget) { # nug not given but estimate it
+          #   self$py[[self$pypack]]$exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)')
           } else {
             stop("no sklearn option error #928248")
           }
@@ -839,7 +836,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -890,11 +887,11 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                                 #rPython::python.exec("kernel = GPy.kern.RBF(input_dim=inputdim, variance=1., lengthscale=[1. for iii in range(inputdim)],ARD=True)")
                                 self$py[[self$pypack]]$exec(kernline)
                                 self$py[[self$pypack]]$exec("gp = GPy.models.GPRegression(X,y,kernel)")
-                                if (is.null(self$set.nugget)) {
-                                  self$py[[self$pypack]]$exec("gp.likelihood.variance = 1e-8")
-                                } else {
-                                  self$py[[self$pypack]]$exec(paste0("gp.likelihood.variance = ",self$set.nugget,""))
-                                }
+                                # if (is.null(self$nugget0)) {
+                                #   self$py[[self$pypack]]$exec("gp.likelihood.variance = 1e-8")
+                                # } else {
+                                  self$py[[self$pypack]]$exec(paste0("gp.likelihood.variance = ",self$nugget0,""))
+                                # }
                                 if (!self$estimate.nugget) {
                                   self$py[[self$pypack]]$exec("gp.likelihood.variance.fix()")
                                 }
@@ -998,7 +995,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -1125,7 +1122,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
-#'   estimate.nugget=T, set.nugget=F, ...)}}{This method
+#'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
@@ -1137,14 +1134,14 @@ IGP_laGP_GauPro <- R6::R6Class(classname = "IGP_lagP_GauPro", inherit = IGP_base
                                self$mod.extra$laGP <- IGP(X=self$X, Z=self$Z, package="laGP",
                                                           corr=self$corr,
                                                           estimate.nugget=self$estimate.nugget,
-                                                          set.nugget=self$set.nugget)
+                                                          nugget0=self$nugget0)
                                #self$mod.extra$laGP$init(X=self$X, Z=self$Z, ...)
 
                                # Copy params to GauPro, don't fit, use this for predicting
                                self$mod.extra$GauPro <- IGP(X=self$X, Z=self$Z, package="GauPro",
                                                           corr=self$corr,
                                                           estimate.nugget=FALSE,
-                                                          set.nugget=self$mod.extra$laGP$nugget(),
+                                                          nugget0=self$mod.extra$laGP$nugget(),
                                                           theta=self$mod.extra$laGP$theta(),
                                                           #nug=self$mod.extra$laGP$nug,
                                                           param.est=FALSE)
