@@ -35,6 +35,8 @@ IGP <- function(X=NULL, Z=NULL, package=NULL, ...) {#browser()
     u <- IGP_GPy$new(X=X, Z=Z, ...)
   } else if (package  %in% c( "DACE", "dace")) {
     u <- IGP_DACE$new(X=X, Z=Z, ...)
+  } else if (package  %in% c( "GPML", "gpml")) {
+    u <- IGP_GPML$new(X=X, Z=Z, ...)
   } else {
     stop("Package not recognized")
   }

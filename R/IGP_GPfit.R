@@ -685,7 +685,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           #   close = function() {}
           # )
         ),
-        .init = function(...) {#browser()
+        .init = function(...) {browser()
           #rPython::python.exec('import sys') # These first two lines need to go
           #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
           self$py[[self$pypack]]$conn()
@@ -712,7 +712,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           #                     optimizer='Welch') ")
 
           if (!is.null(self$estimate.nugget) || self$set.nugget) {
-            warning("GPfit cannot estimate or set the nugget, it picks a stable value")
+            warning("sklearn will estimate the nugget")
           }
           if (self$corr[[1]] == "gauss") {
             self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import RBF')
