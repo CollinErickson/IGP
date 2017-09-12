@@ -691,7 +691,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           #   close = function() {}
           # )
         ),
-        .init = function(...) {browser()
+        .init = function(...) {#browser()
           #rPython::python.exec('import sys') # These first two lines need to go
           #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
           self$py[[self$pypack]]$conn()
@@ -714,6 +714,8 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           # if (!self$estimate.nugget) {
           #   warning("sklearn will estimate the nugget")
           # }
+
+          # Get text line for kernel, don't run yet
           if (self$corr[[1]] == "gauss") {
             self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import RBF')
             kernline <- 'kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))'
@@ -729,13 +731,16 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           } else {
             stop("corr not recognized for sklearn")
           }
+          # Execute kernline
+          self$py[[self$pypack]]$exec(kernline)
+
           # Add WhiteKernel if estimate nugget
           if (self$estimate.nugget) {
             self$py[[self$pypack]]$exec('from sklearn.gaussian_process.kernels import WhiteKernel')
             self$py[[self$pypack]]$exec('kernel += WhiteKernel(noise_level=1e-6, noise_level_bounds=(1e-10, 1e5))')
           }
-          #rPython::python.exec('kernel = RBF(length_scale=np.asarray([1. for ijk in range(inputdim)]))') # This and line below added 1/10/17
-          self$py[[self$pypack]]$exec(kernline)
+
+          # Set alpha if needed, else run
           if (!self$estimate.nugget) { # set nug and don't estimate
             self$py[[self$pypack]]$exec('gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, alpha=',self$nugget0,')')
           } else if (self$estimate.nugget) { # estimate nugget but not given
@@ -1053,18 +1058,18 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                                 YP <- R.matlab::getVariable(self$mod, 'YP')
                                 MSEP <- R.matlab::getVariable(self$mod, 'MSEP')
                                 if (se.fit) {
-                                  cbind(YP$YP, sqrt(MSEP$MSEP))
+                                  list(fit=YP$YP, se.fit=sqrt(MSEP$MSEP))
                                 } else {
-                                  YP$YP
+                                  c(YP$YP)
                                 }
                               }, #"function to predict at new values
                               .predict.se = function(XX, ...) {#browser()
                                 R.matlab::setVariable(self$mod, XX = XX)
                                 R.matlab::evaluate(self$mod, '[YP, MSEP] = predictor(XX, dmodel);')
-                                YP <- R.matlab::getVariable(self$mod, 'YP')
+                                # YP <- R.matlab::getVariable(self$mod, 'YP')
                                 MSEP <- R.matlab::getVariable(self$mod, 'MSEP')
                                 #cbind(YP$YP, sqrt(MSEP$MSEP))
-                                sqrt(MSEP$MSEP)
+                                c(sqrt(MSEP$MSEP))
                               }, #"function predict the standard error/dev
                               .predict.var = function(XX, ...) {#browser()
                                 R.matlab::setVariable(self$mod, XX = XX)
@@ -1072,7 +1077,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                                 # YP <- R.matlab::getVariable(self$mod, 'YP')
                                 MSEP <- R.matlab::getVariable(self$mod, 'MSEP')
                                 # cbind(YP$YP, MSEP$MSEP)
-                                MSEP$MSEP
+                                c(MSEP$MSEP)
                               }, #"function to predict the variance
                               .grad = NULL, # function to calculate the gradient
                               .delete = function() {

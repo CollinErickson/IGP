@@ -77,18 +77,18 @@ IGP_GPML <- R6::R6Class(classname = "IGP_GPML", inherit = IGP_base,
       YP <- R.matlab::getVariable(self$mod, 'mu')
       MSEP <- R.matlab::getVariable(self$mod, 's2')
       if (se.fit) {
-        cbind(YP$mu, sqrt(MSEP$s2))
+        list(fit=YP$mu, se.fit=sqrt(MSEP$s2))
       } else {
-        YP$mu
+        c(YP$mu)
       }
     }, #"function to predict at new values
     .predict.se = function(XX, ...) {#browser()
       R.matlab::setVariable(self$mod, XX = XX)
       R.matlab::evaluate(self$mod, '[mu s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, X, Z, XX);')
-      YP <- R.matlab::getVariable(self$mod, 'mu')
+      # YP <- R.matlab::getVariable(self$mod, 'mu')
       MSEP <- R.matlab::getVariable(self$mod, 's2')
       #cbind(YP$YP, sqrt(MSEP$MSEP))
-      sqrt(MSEP$s2)
+      c(sqrt(MSEP$s2))
     }, #"function predict the standard error/dev
     .predict.var = function(XX, ...) {#browser()
       R.matlab::setVariable(self$mod, XX = XX)
@@ -96,7 +96,7 @@ IGP_GPML <- R6::R6Class(classname = "IGP_GPML", inherit = IGP_base,
       # YP <- R.matlab::getVariable(self$mod, 'YP')
       MSEP <- R.matlab::getVariable(self$mod, 's2')
       # cbind(YP$YP, MSEP$MSEP)
-      MSEP$s2
+      c(MSEP$s2)
     }, #"function to predict the variance
     .grad = NULL, # function to calculate the gradient
     .delete = function() {

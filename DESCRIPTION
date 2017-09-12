@@ -1,6 +1,6 @@
 Package: IGP
 Type: Package
-Title: Interchangeable Gaussian process modeling
+Title: Interchangeable Gaussian process models
 Version: 0.1.0
 Authors@R: person("Collin", "Erickson", email = "collinberickson@gmail.com",
     role = c("aut", "cre"))
