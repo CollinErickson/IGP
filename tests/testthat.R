@@ -1,4 +1,4 @@
 library(testthat)
-library(UGP)
+library(IGP)
 
-test_check("UGP")
+test_check("IGP")
