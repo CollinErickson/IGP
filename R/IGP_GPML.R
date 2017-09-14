@@ -1,6 +1,14 @@
 #' IGP R6 object for fitting GPML model
 #'
-#' Class providing object with methods for fitting a GP model
+#' Class providing object with methods for fitting a GP model.
+#'
+#' GPML code is included in this package since GPML has a FreeBSD
+#' license as stated on http://www.gaussianprocess.org/gpml/code/matlab/Copyright.
+#' The GPML code for MATLAB was written by
+#' Carl Edward Rasmussen and Hannes Nickisch.
+#'
+#' See http://www.gaussianprocess.org/gpml/code/matlab/doc/ for more details
+#' about the GPML code.
 #'
 #' @docType class
 #' @importFrom R6 R6Class

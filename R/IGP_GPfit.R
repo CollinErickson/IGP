@@ -981,7 +981,11 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 
 #' IGP R6 object for fitting DACE model
 #'
-#' Class providing object with methods for fitting a GP model
+#' Class providing object with methods for fitting a GP model.
+#'
+#' DACE was created by Soren N. Lophaven, Hans Bruun Nielsen, Jacob Sondergaard.
+#' More information about DACE can be found at http://www2.imm.dtu.dk/projects/dace/.
+#'
 #'
 #' @docType class
 #' @importFrom R6 R6Class
