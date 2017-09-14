@@ -1,4 +1,5 @@
-#' UGP
+#' IGP R6 object for fitting GPfit model
+#'
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -30,12 +31,12 @@
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
                           public = list(
@@ -79,7 +80,8 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
                           )
 )
 
-#' UGP
+#' IGP R6 object for fitting laGP model
+#'
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -111,12 +113,12 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                             public = list(
@@ -276,7 +278,8 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                             )
 )
 
-#' UGP
+#' IGP R6 object for fitting tgp model
+#'
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -310,12 +313,12 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
                             public = list(
@@ -370,7 +373,8 @@ IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
                             )
 )
 
-#' UGP
+#' IGP R6 object for fitting mlegp model
+#'
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -402,12 +406,12 @@ IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
                             public = list(
@@ -467,7 +471,8 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
                             )
 )
 
-#' UGP
+#' IGP R6 object for fitting GauPro model
+#'
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -499,12 +504,12 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
                             public = list(
@@ -539,7 +544,8 @@ IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
                             )
 )
 
-#' UGP
+#' IGP R6 object for fitting DiceKriging model
+#'
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -571,12 +577,12 @@ IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base,
                             public = list(
@@ -632,7 +638,8 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
                             )
 )
 
-#' UGP
+#' IGP R6 object for fitting sklearn model
+#'
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -666,12 +673,12 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
       public = list(
@@ -811,7 +818,8 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 )
 
 
-#' UGP
+#' IGP R6 object for fitting GPy model
+#'
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -846,12 +854,12 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                             public = list(
@@ -971,7 +979,8 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 
 
 
-#' UGP
+#' IGP R6 object for fitting DACE model
+#'
 #' Class providing object with methods for fitting a GP model
 #'
 #' @docType class
@@ -1005,12 +1014,12 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                             public = list(
@@ -1023,8 +1032,8 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                                 isOpen <- open(matlab)
                                 if (!isOpen) throw("MATLAB server is not running: waited 30 seconds.")
 
-                                # Add DACE folder in UGP to path
-                                DACE_file_path <- system.file("dace", package="UGP")
+                                # Add DACE folder in IGP to path
+                                DACE_file_path <- system.file("dace", package="IGP")
                                 R.matlab::evaluate(matlab, paste0("addpath(genpath('", DACE_file_path, "'));"))
 
                                 # set a variable in R and send to MATLAB
@@ -1098,8 +1107,11 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
 
 
 
-#' UGP
-#' Class providing object with methods for fitting a GP model
+#' IGP R6 object for fitting laGP_GauPro model
+#'
+#' Class providing object with methods for fitting a GP model.
+#' This mixes laGP and GauPro. It fits the model using laGP,
+#' then copies the parameters to a GauPro model for prediction.
 #'
 #' @docType class
 #' @importFrom R6 R6Class
@@ -1132,12 +1144,12 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
 #' @field D Dimension of data
 #' @section Methods:
 #' \describe{
-#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+#'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
 #'   \item{\code{new(X=NULL, Z=NULL, package=NULL,
 #'   estimate.nugget=T, nugget0=F, ...)}}{This method
 #'   is used to create object of this class with \code{X} and \code{Z} as the data.
 #'   The package tells it which package to fit the GP model.}
-#'   \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+#'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_laGP_GauPro <- R6::R6Class(classname = "IGP_lagP_GauPro", inherit = IGP_base,
                            public = list(

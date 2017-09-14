@@ -3,8 +3,7 @@
 \docType{class}
 \name{IGP_laGP}
 \alias{IGP_laGP}
-\title{UGP
-Class providing object with methods for fitting a GP model}
+\title{IGP R6 object for fitting laGP model}
 \format{\code{\link{R6Class}} object.}
 \usage{
 IGP_laGP
@@ -13,7 +12,6 @@ IGP_laGP
 Object of \code{\link{R6Class}} with methods for fitting GP model.
 }
 \description{
-UGP
 Class providing object with methods for fitting a GP model
 }
 \section{Fields}{
@@ -31,12 +29,12 @@ Class providing object with methods for fitting a GP model
 \section{Methods}{
 
 \describe{
-  \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/UGP/}
+  \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
   \item{\code{new(X=NULL, Z=NULL, package=NULL,
   estimate.nugget=T, nugget0=F, ...)}}{This method
   is used to create object of this class with \code{X} and \code{Z} as the data.
   The package tells it which package to fit the GP model.}
-  \item{\code{Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...}}{This method
+  \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
   updates the model, adding new data if given, then running optimization again.}}
 }
 
