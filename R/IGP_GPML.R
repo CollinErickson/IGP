@@ -44,7 +44,7 @@
 IGP_GPML <- R6::R6Class(classname = "IGP_GPML", inherit = IGP_base,
   public = list(
     matlab_path = NULL,
-    .init = function(...) {#browser()
+    .init = function(...) {
 
       R.matlab::Matlab$startServer()
       matlab <- R.matlab::Matlab()
@@ -71,7 +71,7 @@ IGP_GPML <- R6::R6Class(classname = "IGP_GPML", inherit = IGP_base,
       R.matlab::setVariable(matlab, Z = self$Z)
       R.matlab::evaluate(matlab, "hyp = minimize(hyp, @gp, -100, @infGaussLik, meanfunc, covfunc, likfunc, X, Z);")
     },
-    .predict = function(XX, se.fit, ...) {#browser()
+    .predict = function(XX, se.fit, ...) {
       R.matlab::setVariable(self$mod, XX = XX)
       R.matlab::evaluate(self$mod, '[mu s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, X, Z, XX);')
       YP <- R.matlab::getVariable(self$mod, 'mu')
@@ -82,7 +82,7 @@ IGP_GPML <- R6::R6Class(classname = "IGP_GPML", inherit = IGP_base,
         c(YP$mu)
       }
     }, #"function to predict at new values
-    .predict.se = function(XX, ...) {#browser()
+    .predict.se = function(XX, ...) {
       R.matlab::setVariable(self$mod, XX = XX)
       R.matlab::evaluate(self$mod, '[mu s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, X, Z, XX);')
       # YP <- R.matlab::getVariable(self$mod, 'mu')
@@ -90,7 +90,7 @@ IGP_GPML <- R6::R6Class(classname = "IGP_GPML", inherit = IGP_base,
       #cbind(YP$YP, sqrt(MSEP$MSEP))
       c(sqrt(MSEP$s2))
     }, #"function predict the standard error/dev
-    .predict.var = function(XX, ...) {#browser()
+    .predict.var = function(XX, ...) {
       R.matlab::setVariable(self$mod, XX = XX)
       R.matlab::evaluate(self$mod, '[mu s2] = gp(hyp, @infGaussLik, meanfunc, covfunc, likfunc, X, Z, XX);')
       # YP <- R.matlab::getVariable(self$mod, 'YP')

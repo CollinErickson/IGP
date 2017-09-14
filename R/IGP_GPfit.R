@@ -60,7 +60,7 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
                             .update = function(...){
                               self$.init()
                             }, #"function",
-                            .predict = function(XX, se.fit, ...){#browser()
+                            .predict = function(XX, se.fit, ...){
                               if (se.fit) {
                                 preds <- GPfit::predict.GP(self$mod, XX, se.fit=se.fit)
                                 list(fit=preds$Y_hat, se.fit=sqrt(preds$MSE))
@@ -120,7 +120,7 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                             public = list(
-                              .init = function(..., d=NULL, g=NULL, theta=NULL, nugget=NULL, no_update=FALSE) {#browser()
+                              .init = function(..., d=NULL, g=NULL, theta=NULL, nugget=NULL, no_update=FALSE) {
                                 if (self$corr[[1]] != "gauss") {
                                   stop("laGP only uses Gaussian correlation")
                                 }
@@ -165,7 +165,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                 } else {stop("Shouldn't be here IGP_laGP #32097555")}
                                 self$mod <- mod1
                               }, #"function to initialize model with data
-                              .update = function(..., no_update=FALSE) {#browser()
+                              .update = function(..., no_update=FALSE) {
                                 if (no_update) { # just add data and return
                                   laGP::updateGPsep(gpsepi=self$mod,
                                                     X=self$X[-(1:self$n.at.last.update), , drop=FALSE],
@@ -206,7 +206,9 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                                         X=self$X[-(1:self$n.at.last.update), , drop=FALSE],
                                                         Z=self$Z[-(1:self$n.at.last.update)])
                                     )
-                                    if (inherits(lagpupdate.try, "try-error")) {browser()}
+                                    if (inherits(lagpupdate.try, "try-error")) {
+                                      stop("Error in lagpupdate.try #8257")
+                                    }
                                   }
                                 }
                                 drange <- c(1e-3,1e4)
@@ -220,8 +222,8 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                                                             verb=0, maxit=1000))
                                   if (inherits(mle.try, "try-error")) {
                                     # Sometimes gives error: L-BFGS-B needs finite values of 'fn'
-                                    browser()
-                                    warning('Restarting laGP model')
+
+                                    warning('Restarting laGP model after mle error #40297')
                                     self$delete()
                                     self$init(..., no_update=no_update)
                                     return()
@@ -239,8 +241,8 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                                                             verb=0, maxit=1000))
                                   if (inherits(mle.try, "try-error")) {
                                     # Sometimes gives error: L-BFGS-B needs finite values of 'fn'
-                                    browser()
-                                    warning('Restarting laGP model')
+
+                                    warning('Restarting laGP model after jmle error #19378')
                                     self$delete()
                                     self$init(...)
                                     return()
@@ -317,7 +319,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
                             public = list(
-                              .init = function(package=self$package, ...) {#browser()
+                              .init = function(package=self$package, ...) {
                                 if (self$corr[[1]] != "gauss") {
                                   stop("tgp only uses Gaussian correlation")
                                 }
@@ -331,10 +333,10 @@ IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
                                 capture.output(mod1 <- modfunc(self$X, self$Z))
                                 self$mod <- mod1
                               }, #"function to initialize model with data
-                              .update = function(...) {#browser()
+                              .update = function(...) {
                                 self$.init(...=...)
                               }, #"function to add data to model or reestimate params
-                              .predict = function(XX, se.fit, ...){#browser()
+                              .predict = function(XX, se.fit, ...){
                                 Xsplit0 <- self$mod$Xsplit # Need to add this Xsplit stuff so it can predict outside the box of original data
                                 self$mod$Xsplit <- rbind(as.matrix(Xsplit0), XX) # This is the workaround mentioned on p37 https://cran.r-project.org/web/packages/tgp/tgp.pdf, have to as.matrix to avoid col name error
                                 capture.output(preds <- with(globalenv(), predict)(self$mod, XX))
@@ -431,7 +433,6 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
                                                                          ...)
                                                        )
                                 } else { # use args and do.call to avoid multiple matching
-                                  #browser()
                                   argss <- list(...)
                                   argss$X <- self$X
                                   argss$Z <- self$Z
@@ -507,7 +508,7 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
                             public = list(
-                              .init = function(...) {#browser()
+                              .init = function(...) {
                                 if (self$corr[[1]] != "gauss") {
                                   stop("GauPro only uses Gaussian correlation")
                                 }
@@ -598,7 +599,7 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
                                 capture.output(mod1 <- DiceKriging::km(design=self$X, response=self$Z, covtype=covtype, nugget.estim=self$estimate.nugget, nugget=self$nugget0, ...))
                                 self$mod <- mod1
                               }, #"function to initialize model with data
-                              .update = function(...) {#browser()
+                              .update = function(...) {
                                 n.since.last.update = nrow(self$X) - self$n.at.last.update
                                 if (n.since.last.update < 1) {
                                   message("Can't update, no new X rows")
@@ -691,7 +692,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           #   close = function() {}
           # )
         ),
-        .init = function(...) {#browser()
+        .init = function(...) {
           #rPython::python.exec('import sys') # These first two lines need to go
           #rPython::python.exec("sys.path.insert(0, '/Users/collin/anaconda/lib/python2.7/site-packages/')")
           self$py[[self$pypack]]$conn()
@@ -871,7 +872,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                                 #   close = function() {}
                                 # )
                               ),
-                              .init = function(...) {browser()
+                              .init = function(...) {
                                 if (self$corr[[1]] == "gauss") {
                                   kernline <- 'kernel = GPy.kern.RBF(input_dim=inputdim, ARD=True)'
                                 } else if (self$corr[[1]] == "matern") {
@@ -1014,7 +1015,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                             public = list(
                               # matlab_path = "C:\\Users\\cbe117\\School\\DOE\\GP_codes\\DACE\\dace",
-                              .init = function(...) {#browser()
+                              .init = function(...) {
 
                                 R.matlab::Matlab$startServer()
                                 matlab <- R.matlab::Matlab()
@@ -1052,7 +1053,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                                 R.matlab::setVariable(matlab, Z = self$Z)
                                 R.matlab::evaluate(matlab, "[dmodel, perf] = dacefit(X, Z, meanfunc, corrfunc, theta, lob, upb);")
                               },
-                              .predict = function(XX, se.fit, ...) {#browser()
+                              .predict = function(XX, se.fit, ...) {
                                 R.matlab::setVariable(self$mod, XX = XX)
                                 R.matlab::evaluate(self$mod, '[YP, MSEP] = predictor(XX, dmodel);')
                                 YP <- R.matlab::getVariable(self$mod, 'YP')
@@ -1063,7 +1064,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                                   c(YP$YP)
                                 }
                               }, #"function to predict at new values
-                              .predict.se = function(XX, ...) {#browser()
+                              .predict.se = function(XX, ...) {
                                 R.matlab::setVariable(self$mod, XX = XX)
                                 R.matlab::evaluate(self$mod, '[YP, MSEP] = predictor(XX, dmodel);')
                                 # YP <- R.matlab::getVariable(self$mod, 'YP')
@@ -1071,7 +1072,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
                                 #cbind(YP$YP, sqrt(MSEP$MSEP))
                                 c(sqrt(MSEP$MSEP))
                               }, #"function predict the standard error/dev
-                              .predict.var = function(XX, ...) {#browser()
+                              .predict.var = function(XX, ...) {
                                 R.matlab::setVariable(self$mod, XX = XX)
                                 R.matlab::evaluate(self$mod, '[YP, MSEP] = predictor(XX, dmodel);')
                                 # YP <- R.matlab::getVariable(self$mod, 'YP')
@@ -1140,7 +1141,7 @@ IGP_DACE <- R6::R6Class(classname = "IGP_DACE", inherit = IGP_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_laGP_GauPro <- R6::R6Class(classname = "IGP_lagP_GauPro", inherit = IGP_base,
                            public = list(
-                             .init = function(...) {#browser()
+                             .init = function(...) {
                                # Fit model to data with laGP
                                self$mod.extra$laGP <- IGP(X=self$X, Z=self$Z, package="laGP",
                                                           corr=self$corr,
