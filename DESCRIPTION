@@ -1,12 +1,14 @@
 Package: IGP
 Type: Package
-Title: Interchangeable Gaussian process models
+Title: Interchangeable Gaussian Process Models
 Version: 0.1.0
 Authors@R: person("Collin", "Erickson", email = "collinberickson@gmail.com",
     role = c("aut", "cre"))
-Description: Creates a Gaussian process model from one of the specified R
-    packages. Makes it easy to try different packages in same code.
-    Essentially a wrapper for the models.
+Description: Creates a Gaussian process model using the specified package. 
+    Makes it easy to try different packages in same code, only the
+    package argument needs to be changed.
+    It is essentially a wrapper for the other Gaussian process
+    software packages.
 License: GPL-3
 LazyData: TRUE
 Imports: R6, PythonInR
@@ -24,3 +26,5 @@ Suggests:
     R.matlab,
     numDeriv
 RoxygenNote: 6.0.1
+URL: https://github.com/CollinErickson/IGP
+BugReports: https://github.com/CollinErickson/IGP/issues
