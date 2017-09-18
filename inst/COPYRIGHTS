@@ -1,13 +1,5 @@
-This R package includes code copied from the MATLAB toolboxes GPML and DACE.
-The authors of each of these retain the copyrights for their code.
-
-
-DACE did not include any easily-found license or copyright, and its code is freely available online.
-The website http://www2.imm.dtu.dk/projects/dace/
-where DACE can be downloaded says:
-"The software and documentation are available for free. Selling the software and/or the documentation for commercial advantage, in part (e.g., included in other software) or as a whole, is allowed only with a prior written agreement with the authors (see feedback section below for contact information)."
-
-
+This R package includes code copied from the MATLAB toolbox GPML.
+The authors of GPML retain the copyrights for their code.
 
 The copyright for GPML is pasted below between the dashed lines:
 

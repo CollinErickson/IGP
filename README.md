@@ -71,7 +71,6 @@ The available packages and the platform they run on are shown below. The R packa
 | laGP        | R        |
 | mlegp       | R        |
 | tgp         | R        |
-| DACE        | MATLAB   |
 | GPML        | MATLAB   |
-| GPy         | MATLAB   |
+| GPy         | Python   |
 | sklearn     | Python   |

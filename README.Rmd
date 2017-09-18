@@ -93,7 +93,6 @@ GPfit | R
 laGP | R
 mlegp | R
 tgp | R
-DACE | MATLAB
 GPML | MATLAB
-GPy | MATLAB
+GPy | Python
 sklearn | Python

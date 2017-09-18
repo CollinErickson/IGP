@@ -5,9 +5,6 @@ Version: 0.1.0
 Authors@R: 
     c(
     person("Collin", "Erickson", email = "collinberickson@gmail.com", role = c("aut", "cre")),
-    person("Hans Bruun", "Nielsen", email = "hbn@imm.dtu.dk", role = c("ctb", "cph")),
-    person("Soren Nymand", "Lophaven", email = "dkslh@coloplast.dk", role = c("ctb", "cph")),
-    person("Jacob", "Sondergaard", email = "", role = c("ctb", "cph")),
     person("Carl Edward", "Rasmussen", email = "cer54@cam.ac.uk", role = c("ctb", "cph")),
     person("Hannes", "Nickisch", email = "contact.hannes@nickisch.org", role = c("ctb", "cph"))
     )
