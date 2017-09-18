@@ -61,16 +61,17 @@ points(X1, Z1, pch=19)
 Package options
 ---------------
 
-The available packages and the platform they run on are shown below. The R packages should run easily. The MATLAB packages are called using the `R.matlab` R package and have to open a connection to MATLAB. Thus you need to have MATLAB on your computer, it will be slow, and is likely to have problems. The Python packages are called using the R package `Python.In.R`. It will open a connection to Python and probably will be slow. In addition to requiring that you already have the package (`GPy` or `sklearn`) installed, and must be accessible through your default Python path.
+The available packages and the platform they run on are shown below. The R packages should run easily. The MATLAB packages are called using the `R.matlab` R package and have to open a connection to MATLAB. Thus you need to have MATLAB on your computer, it will be slow, and is likely to have problems. Currently the MATLAB packages are not included in the CRAN version of the package, but they can be found on the GitHub repository. The Python packages are called using the R package `Python.In.R`. It will open a connection to Python and probably will be slow. In addition to requiring that you already have the package (GPy or sklearn) installed, and must be accessible through your default Python path.
 
-| Package     | Platform |
-|-------------|----------|
-| DiceKriging | R        |
-| GauPro      | R        |
-| GPfit       | R        |
-| laGP        | R        |
-| mlegp       | R        |
-| tgp         | R        |
-| GPML        | MATLAB   |
-| GPy         | Python   |
-| sklearn     | Python   |
+| Package            | Platform |
+|--------------------|----------|
+| DiceKriging        | R        |
+| GauPro             | R        |
+| GPfit              | R        |
+| laGP               | R        |
+| mlegp              | R        |
+| tgp                | R        |
+| DACE (GitHub only) | MATLAB   |
+| GPML (GitHub only) | MATLAB   |
+| GPy                | Python   |
+| sklearn            | Python   |

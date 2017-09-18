@@ -4,9 +4,7 @@ Title: Interchangeable Gaussian Process Models
 Version: 0.1.0
 Authors@R: 
     c(
-    person("Collin", "Erickson", email = "collinberickson@gmail.com", role = c("aut", "cre")),
-    person("Carl Edward", "Rasmussen", email = "cer54@cam.ac.uk", role = c("ctb", "cph")),
-    person("Hannes", "Nickisch", email = "contact.hannes@nickisch.org", role = c("ctb", "cph"))
+    person("Collin", "Erickson", email = "collinberickson@gmail.com", role = c("aut", "cre"))
     )
 Description: Creates a Gaussian process model using the specified package. 
     Makes it easy to try different packages in same code, only the
@@ -27,7 +25,6 @@ Suggests:
     lhs,
     ggplot2,
     reshape,
-    R.matlab,
     numDeriv
 RoxygenNote: 6.0.1
 URL: https://github.com/CollinErickson/IGP
