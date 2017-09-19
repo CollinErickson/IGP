@@ -2,7 +2,6 @@
 
 export(IGP)
 export(IGP_DiceKriging)
-export(IGP_GPML)
 export(IGP_GPfit)
 export(IGP_GPy)
 export(IGP_GauPro)
