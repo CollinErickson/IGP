@@ -39,6 +39,10 @@ IGP <- function(X=NULL, Z=NULL, package=NULL, ...) {#browser()
   } else if (package  %in% c( "GPML", "gpml")) {
     # u <- IGP_GPML$new(X=X, Z=Z, ...)
     stop("GPML is currently not available")
+  } else if (package  %in% c( "LOOEC-laGP_GauPro-laGP")) {
+    u <- IGP_LOOEC_laGP_GauPro$new(X=X, Z=Z, package2='laGP', ...)
+  } else if (package  %in% c( "LOOEC-laGP_GauPro-GauPro")) {
+    u <- IGP_LOOEC_laGP_GauPro$new(X=X, Z=Z, package2='GauPro', ...)
   } else {
     stop("Package not recognized")
   }

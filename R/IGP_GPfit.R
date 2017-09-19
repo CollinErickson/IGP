@@ -1002,7 +1002,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #' Z2 <- apply(X2,1,f1)
 #' XX1 <- matrix(runif(10),5,2)
 #' ZZ1 <- apply(XX1, 1, f1)
-#' u <- IGP_sklearn$new(X=X1,Z=Z1)
+#' u <- IGP_laGP_GauPro$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
