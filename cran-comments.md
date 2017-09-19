@@ -1,10 +1,10 @@
-I had my submission rejected on 9/16/17 (and previously on 9/14/17) because of copyright issues.
+I had my submission rejected on 9/18/17 (and previously on 9/16 and 9/14) because of copyright issues.
 
-This package includes code copied from the MATLAB toolboxes GPML. I added the authors of GPML as authors of this package with ctb and cph roles. I have an AUTHORS file that explains that they were the others of their code, and I am the author of all of the rest of the code.
+I removed all the code from other projects that had copyrights. I didn't realize there were many different copyrights inside of the GPML folder since their copyright only mentioned the two authors. I may add it back for a later version, but for now it isn't worth the hassle since it is nonessential code.
 
-In my COPYRIGHTS file I copied the copyright file from GPML, which clearly states that the code can be included in other projects as long as their copyright remains. See http://www.gaussianprocess.org/gpml/code/matlab/Copyright.
+All the code here now is my own.
 
-My previous submission included code from the MATLAB toolbox DACE, but I removed it because of copyright issues.
+Sorry for the issues with my previous submissions. Thanks for the work you do for CRAN.
 
 
 ## Test environments
