@@ -164,6 +164,24 @@ IGP_base <- R6::R6Class(classname = "IGP",
                        X <- apply(Xlims, 1, function(Xlim) {runif(n, Xlim[1], Xlim[2])})
                        sum(self$predict.var(X) > val * maxvar) / n
                      },
+                     plot = function() {#browser()
+                       if (ncol(self$X) == 1) {
+                         XX <- matrix(seq(0,1,length.out = 300), ncol=1)
+                         pp <- self$predict(XX=XX, se.fit=TRUE)
+                         pm <- pp$fit
+                         ps <- pp$se.fit
+                         phigh <- pm + 2 * ps
+                         plow  <- pm - 2 * ps
+                         plot(XX, pm, col='white', ylim=c(min(plow), max(phigh)),
+                              xlab="X", ylab="Z")
+                         points(XX, phigh, type='l', col=2, lwd=2)
+                         points(XX, plow, type='l', col=2, lwd=2)
+                         points(XX, pm, type='l', lwd=3)
+                         points(self$X, self$Z, pch=19, cex=2)
+                       } else {
+                         stop("No plot method for higher than 1D")
+                       }
+                     },
                      delete = function(...) {
                        self$.delete(...=...)
                      },
