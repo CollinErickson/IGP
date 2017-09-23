@@ -4,11 +4,14 @@
 \alias{predict.IGP}
 \title{Predict for class IGP}
 \usage{
-\method{predict}{IGP}(object, XX, se.fit = F, covmat = F, split_speed = T,
-  ...)
+\method{predict}{IGP}(object, XX, se.fit = FALSE, ...)
 }
 \arguments{
 \item{object}{Object of class IGP}
+
+\item{XX}{Points to predict at}
+
+\item{se.fit}{Whether the standard error prediction should be returned with the mean prediction}
 
 \item{...}{Additional parameters}
 }
