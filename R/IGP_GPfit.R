@@ -131,19 +131,26 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                 if (is.null(g) && is.null(nugget) && !is.null(self$nugget0)) {g <- self$nugget0}
                                 if (is.null(g) & !is.null(nugget)) {g <- nugget}
 
-                                da <- laGP::darg(list(mle=TRUE), X=self$X)
-                                ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=self$Z), silent = T)
-                                if (inherits(ga.try, "try-error")) {
-                                  warning("Adding noise to ga in laGP");
-                                  ga <- laGP::garg(list(mle=TRUE), y=self$Z+rnorm(length(self$Z),0,1e-2))
-                                }
 
-                                # Follow recommendations for small samples, otherwise use bigger range
-                                drange <- if (nrow(self$X)<20) c(da$min, da$max) else c(1e-3,1e4) #c(da$min, da$max), # Don't like these small ranges
-                                grange <- c(ga$min, ga$max)
-                                da_start <- if (!is.null(d)) d else da$start
-                                ga_start <- if (!is.null(g)) g else ga$start
-                                mod1 <- laGP::newGPsep(X=self$X, Z=self$Z, d=da_start, g=ga$start, dK = TRUE)
+                                if (no_update) {
+                                  if (is.null(d)) {stop("d or theta must be given when using no_update")}
+                                  if (is.null(g)) {stop("g or nugget must be given when using no_update")}
+                                  da_start <- d
+                                  ga_start <- g
+                                } else { # Estimating params
+                                  da <- laGP::darg(list(mle=TRUE), X=self$X)
+                                  ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=self$Z), silent = T)
+                                  if (inherits(ga.try, "try-error")) {
+                                    # warning("Adding noise to ga in laGP"); # Not too important a warning
+                                    ga <- laGP::garg(list(mle=TRUE), y=self$Z+rnorm(length(self$Z),0,1e-2))
+                                  }
+                                  # Follow recommendations for small samples, otherwise use bigger range
+                                  drange <- if (nrow(self$X)<20) c(da$min, da$max) else c(1e-3,1e4) #c(da$min, da$max), # Don't like these small ranges
+                                  grange <- c(ga$min, ga$max)
+                                  da_start <- if (!is.null(d)) d else da$start
+                                  ga_start <- if (!is.null(g)) g else ga$start
+                                }
+                                mod1 <- laGP::newGPsep(X=self$X, Z=self$Z, d=da_start, g=ga_start, dK = TRUE)
                                 #mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=1e-6, dK = TRUE)
                                 if (no_update) { #using d and g given
                                   self$mod.extra$theta = as.numeric(1 / d) # store theta params
