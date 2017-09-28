@@ -147,8 +147,21 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                   # Follow recommendations for small samples, otherwise use bigger range
                                   drange <- if (nrow(self$X)<20) c(da$min, da$max) else c(1e-3,1e4) #c(da$min, da$max), # Don't like these small ranges
                                   grange <- c(ga$min, ga$max)
-                                  da_start <- if (!is.null(d)) d else da$start
-                                  ga_start <- if (!is.null(g)) g else ga$start
+                                  # da_start <- if (!is.null(d)) d else da$start
+                                  # ga_start <- if (!is.null(g)) g else ga$start
+                                  # Need to make sure starting values are in ranges
+                                  if (!is.null(d)) {
+                                    da_start <- d
+                                    drange <- c(min(drange[1], d), max(drange[2], d))
+                                  } else {
+                                    da_start <- da$start
+                                  }
+                                  if (!is.null(g)) {
+                                    ga_start <- g
+                                    grange <- c(min(grange[1], g), max(grange[2], g))
+                                  } else {
+                                    ga_start <- ga$start
+                                  }
                                 }
                                 mod1 <- laGP::newGPsep(X=self$X, Z=self$Z, d=da_start, g=ga_start, dK = TRUE)
                                 #mod1 <- laGP::newGPsep(X=X, Z=Z, d=da$start, g=1e-6, dK = TRUE)
@@ -264,13 +277,48 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                               .predict = function(XX, se.fit, ...){
                                 if (se.fit) {
                                   preds <- laGP::predGPsep(self$mod, XX, lite=TRUE)
+                                  # Sometimes preds$s2 is negative
+                                  numneg <- sum(preds$s2<0)
+                                  if (numneg > 0) {
+                                    if (nrow(XX) - numneg >= 5) {
+                                      newmin <- min(preds$s2[preds$s2 > 0])
+                                      preds$s2 <- pmax(newmin, preds$s2)
+                                      warning(paste0("laGP gave ",numneg," s2 preds < 0, setting them to min pos s2 pred of ", newmin))
+                                    } else {
+                                      warning(paste0("laGP gave ",numneg," s2 preds < 0, setting them to have pos s2 of ", 1e-16))
+                                      preds$s2 <- pmax(1e-16, preds$s2)
+                                    }
+                                  }
                                   list(fit=preds$mean, se.fit=sqrt(preds$s2))
                                 } else {
                                   laGP::predGPsep(self$mod, XX, lite=TRUE)$mean
                                 }
                               }, #"function to predict at new values
-                              .predict.se = function(XX, ...) {sqrt(laGP::predGPsep(self$mod, XX, lite=TRUE)$s2)}, #"function predict the standard error/dev
-                              .predict.var = function(XX, ...) {laGP::predGPsep(self$mod, XX, lite=TRUE)$s2}, #"function to predict the variance
+                              .predict.se = function(XX, ...) {
+                                # sqrt(laGP::predGPsep(self$mod, XX, lite=TRUE)$s2)
+
+                                # laGP can give neg s2 values, problem with sqrt, so check for it
+                                sqrt(self$.predict.var(XX=XX, ...))
+                              }, #"function predict the standard error/dev
+                              .predict.var = function(XX, ...) {
+                                # laGP::predGPsep(self$mod, XX, lite=TRUE)$s2
+
+                                # laGP can give neg s2 values, problem with sqrt, so check for it
+                                s2 <- laGP::predGPsep(self$mod, XX, lite=TRUE)$s2
+                                numneg <- sum(s2<0)
+                                if (numneg > 0) {#print("Fixing laGP var")
+                                  if (nrow(XX) - numneg >= 5) {
+                                    newmin <- min(s2[s2 > 0])
+                                    s2 <- pmax(newmin, s2)
+                                    warning(paste0("laGP gave ",numneg," s2 preds < 0, setting them to min pos s2 pred of ", newmin))
+                                  } else {
+                                    warning(paste0("laGP gave ",numneg," s2 preds < 0, setting them to have pos s2 of ", 1e-16))
+                                    s2 <- pmax(1e-16, s2)
+                                  }
+                                }
+                                s2
+
+                              }, #"function to predict the variance
                               .grad = NULL, # function to calculate the gradient
                               .delete = function(...) {
                                 if (!is.null(self$mod)) {
