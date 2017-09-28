@@ -25,6 +25,8 @@ IGP <- function(X=NULL, Z=NULL, package=NULL, ...) {#browser()
     u <- IGP_mlegp$new(X=X, Z=Z, ...)
   } else if (package %in% c("GauPro", "gaupro")) {
     u <- IGP_GauPro$new(X=X, Z=Z, ...)
+  } else if (package %in% c("GauPro_kernel", "gaupro_kernel")) {
+    u <- IGP_GauPro_kernel$new(X=X, Z=Z, ...)
   } else if (package %in% c("laGP_GauPro", "lagp_gaupro", "laGP_gaupro", "lagp_GauPro")) {
     u <- IGP_laGP_GauPro$new(X=X, Z=Z, ...)
   } else if (package %in% c("DiceKriging", "dicekriging", "dice", "Dice", "DK", "dk")) {
