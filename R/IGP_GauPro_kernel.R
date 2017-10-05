@@ -81,7 +81,7 @@ IGP_GauPro_kernel <- R6::R6Class(
     .predict.var = function(XX, ...) {self$mod$pred(XX=XX, se.fit=T)$s2}, #"function to predict the variance
     .grad = function(XX) {self$mod$grad(XX=XX)}, # function to calculate the gradient
     .delete = function(...){self$mod <- NULL}, #"function to delete model beyond simple deletion
-    .theta = function() {self$mod$theta}, #"function to get theta, exp(-theta*(x-x)^2)
+    .theta = function() {10 ^ self$mod$kernel$beta}, #"function to get theta, exp(-theta*(x-x)^2)
     .nugget = function() {self$mod$nug}, #"function to get nugget
     .mean = NULL # function that gives mean (constant, other functions not implemented)
 

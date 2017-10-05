@@ -1077,7 +1077,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
-IGP_laGP_GauPro <- R6::R6Class(classname = "IGP_lagP_GauPro", inherit = IGP_base,
+IGP_laGP_GauPro <- R6::R6Class(classname = "IGP_laGP_GauPro", inherit = IGP_base,
                            public = list(
                              .init = function(...) {
                                # Fit model to data with laGP
