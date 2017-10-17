@@ -129,22 +129,40 @@ IGP_base <- R6::R6Class(classname = "IGP",
                        if (ncol(self$X) == 1) return(grad1)
                        t(grad1)
                      },
-                     dC_dx = function(XX, theta, s2) {#browser()
-                       if (missing(theta)) {theta <- 10^beta}
-                       if (!is.matrix(XX)) {stop()}
-                       d <- ncol(XX)
-                       if (ncol(X) != d) {stop()}
-                       n <- nrow(X)
-                       nn <- nrow(XX)
-                       dC_dx <- array(NA, dim=c(nn, d, n))
-                       for (i in 1:nn) {
-                         for (j in 1:d) {
-                           for (k in 1:n) {
-                             dC_dx[i, j, k] <- -2 * theta[j] * (XX[i, j] - X[k, j]) * s2 * exp(-sum(theta * (XX[i,] - X[k,]) ^ 2))
-                           }
+                     grad_from_theta = function(XX, theta) {
+                       if (missing(theta)) {
+                         theta <- self$theta()
+                         if (is.null(theta)) {
+                           stop("Need theta for grad_from_theta")
                          }
                        }
-                       dC_dx
+                       mu <- self$mean()
+                       D <- ncol(self$X)
+                       N <- nrow(self$X)
+                       if (!is.matrix(XX)) {
+                         if (D == 1) XX <- matrix(XX, ncol=1)
+                         else if (length(XX) == D) XX <- matrix(XX, nrow=1)
+                         else stop('Predict input should be matrix')
+                       } else {
+                         if (ncol(XX) != D) {stop("Wrong dimension input")}
+                       }
+                       # kx.xx <- self$corr_func(self$X, XX, theta=self$theta)
+                       kx.xx <- GauPro::corr_gauss_matrix(self$X, XX, theta)
+                       Kx <- GauPro::corr_gauss_matrix_symC(self$X, theta)
+                       Kx_nug <- Kx + diag(self$nugget(), nrow(Kx))
+                       Kinv_Z_minus_mu <- solve(Kx_nug, self$Z - mu)
+
+                       grad1 <-   vapply(1:nrow(XX),
+                                         Vectorize(
+                                           function(k) {
+                                             t(-2 * outer(1:N, 1:D, Vectorize(function(i,j) {theta[j] * (XX[k, j] - self$X[i, j]) * kx.xx[i, k]}))
+                                             )  %*%Kinv_Z_minus_mu
+                                           }
+                                         )
+                                         , numeric(D)
+                       )
+                       if (D == 1) return(grad1)
+                       t(grad1)
                      },
                      grad_norm = function (XX) {#browser()
                        grad1 <- self$grad(XX)
