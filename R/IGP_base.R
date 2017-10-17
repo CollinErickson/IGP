@@ -129,6 +129,23 @@ IGP_base <- R6::R6Class(classname = "IGP",
                        if (ncol(self$X) == 1) return(grad1)
                        t(grad1)
                      },
+                     dC_dx = function(XX, theta, s2) {#browser()
+                       if (missing(theta)) {theta <- 10^beta}
+                       if (!is.matrix(XX)) {stop()}
+                       d <- ncol(XX)
+                       if (ncol(X) != d) {stop()}
+                       n <- nrow(X)
+                       nn <- nrow(XX)
+                       dC_dx <- array(NA, dim=c(nn, d, n))
+                       for (i in 1:nn) {
+                         for (j in 1:d) {
+                           for (k in 1:n) {
+                             dC_dx[i, j, k] <- -2 * theta[j] * (XX[i, j] - X[k, j]) * s2 * exp(-sum(theta * (XX[i,] - X[k,]) ^ 2))
+                           }
+                         }
+                       }
+                       dC_dx
+                     },
                      grad_norm = function (XX) {#browser()
                        grad1 <- self$grad(XX)
                        if (!is.matrix(grad1)) return(abs(grad1))
@@ -144,6 +161,9 @@ IGP_base <- R6::R6Class(classname = "IGP",
                      },
                      nugget = function() {
                        self$.nugget()
+                     },
+                     s2 = function() {
+                       self$.s2()
                      },
                      mean = function() {
                        if (!is.null(self$.mean)) {

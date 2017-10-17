@@ -74,8 +74,9 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
                             #.grad = NULL,
                             .delete = function(...){self$mod <- NULL}, #"function",
                             .theta = function() {10^(self$mod$beta)}, #"function",
-                            .nugget = function() {self$mod$delta} #"function",
-                            #.mean = NULL # function that gives mean
+                            .nugget = function() {self$mod$delta}, #"function",
+                            .s2 = function() {self$mod$sig2},
+                            .mean = function() {self$predict(rep(Inf, ncol(u$X)))} # function that gives mean
 
                           )
 )
@@ -328,7 +329,8 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                               }, #"function to delete model beyond simple deletion
                               .theta = function() {self$mod.extra$theta}, #"function to get theta, exp(-theta*(x-x)^2)
                               .nugget = function() {self$mod.extra$nugget}, #"function to get nugget
-                              .mean = NULL # function that gives mean (constant, other functions not implemented)
+                              .s2 = function() {self$predict.var(rep(1e4, ncol(self$X)))},
+                              .mean = function() {0} # function that gives mean (constant, other functions not implemented)
 
                             )
 )
@@ -423,6 +425,7 @@ IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
                               .delete = function(...) {self$mod <- NULL}, #"function to delete model beyond simple deletion
                               .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
                               .nugget = function() {NA}, #"function to get nugget
+                              .s2 = NULL,
                               .mean = NULL # function that gives mean (constant, other functions not implemented)
 
                             )
@@ -521,7 +524,8 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
                               .delete = function(...){self$mod <- NULL}, #"function to delete model beyond simple deletion
                               .theta = function() {self$mod$beta}, #"function to get theta, exp(-theta*(x-x)^2)
                               .nugget = function() {self$mod$nugget}, #"function to get nugget
-                              .mean = NULL # function that gives mean (constant, other functions not implemented)
+                              .s2 = function() {self$mod$sig2},
+                              .mean = function() {self$mod$mu[1]} # function that gives mean (constant, other functions not implemented)
 
                             )
 )
@@ -594,7 +598,8 @@ IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
                               .delete = function(...){self$mod <- NULL}, #"function to delete model beyond simple deletion
                               .theta = function() {self$mod$theta}, #"function to get theta, exp(-theta*(x-x)^2)
                               .nugget = function() {self$mod$nug}, #"function to get nugget
-                              .mean = NULL # function that gives mean (constant, other functions not implemented)
+                              .s2 = function() {self$mod$s2_hat},
+                              .mean = function() {self$mod$mu_hat} # function that gives mean (constant, other functions not implemented)
 
                             )
 )
@@ -688,7 +693,8 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
                               .delete = function(...) {self$mod <- NULL}, #"function to delete model beyond simple deletion
                               .theta = function() {self$mod@covariance@range.val}, #"function to get theta, exp(-theta*(x-x)^2)
                               .nugget = function() {self$mod@covariance@nugget}, #"function to get nugget
-                              .mean = NULL # function that gives mean (constant, other functions not implemented)
+                              .s2 = function() {self$mod@covariance@sd2},
+                              .mean = function() {self$mod@trend.coef[1]} # function that gives mean (constant, other functions not implemented)
 
                             )
 )
@@ -867,6 +873,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
         }, #"function to delete model beyond simple deletion
         .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
         .nugget = function() {self$py[[self$pypack]]$get('gp.kernel.get_params()')}, #"function to get nugget
+        .s2 = NULL,
         .mean = NULL # function that gives mean (constant, other functions not implemented)
 
       )
@@ -1025,6 +1032,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                               }, #"function to delete model beyond simple deletion
                               .theta = function() {rep(NA, ncol(self$X))}, #"function to get theta, exp(-theta*(x-x)^2)
                               .nugget = function() {self$py[[self$pypack]]$get('gp.likelihood.variance')}, #"function to get nugget
+                              .s2 = NULL,
                               .mean = NULL # function that gives mean (constant, other functions not implemented)
 
                             )
@@ -1136,7 +1144,8 @@ IGP_laGP_GauPro <- R6::R6Class(classname = "IGP_laGP_GauPro", inherit = IGP_base
                              }, #"function to delete model beyond simple deletion
                              .theta = function() {self$mod.extra$GauPro$theta()}, #"function to get theta, exp(-theta*(x-x)^2)
                              .nugget = function() {self$mod.extra$GauPro$nugget()}, #"function to get nugget
-                             .mean = NULL # function that gives mean (constant, other functions not implemented)
+                             .s2 = function() {self$mod.extra$GauPro$s2()},
+                             .mean = function() {self$mod.extra$GauPro$mean()} # function that gives mean (constant, other functions not implemented)
 
                            )
 )

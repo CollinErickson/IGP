@@ -106,7 +106,8 @@ IGP_laGP_GauPro_kernel <- R6::R6Class(
     }, #"function to delete model beyond simple deletion
     .theta = function() {self$mod.extra$GauPro$theta()}, #"function to get theta, exp(-theta*(x-x)^2)
     .nugget = function() {self$mod.extra$GauPro$nugget()}, #"function to get nugget
-    .mean = NULL # function that gives mean (constant, other functions not implemented)
+    .s2 = function() {self$mod.extra$GauPro$s2()},
+    .mean = function() {self$mod.extra$GauPro$trend$m} # function that gives mean (constant, other functions not implemented)
 
   )
 )

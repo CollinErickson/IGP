@@ -83,7 +83,8 @@ IGP_GauPro_kernel <- R6::R6Class(
     .delete = function(...){self$mod <- NULL}, #"function to delete model beyond simple deletion
     .theta = function() {10 ^ self$mod$kernel$beta}, #"function to get theta, exp(-theta*(x-x)^2)
     .nugget = function() {self$mod$nug}, #"function to get nugget
-    .mean = NULL # function that gives mean (constant, other functions not implemented)
+    .s2 = function() {self$mod$s2_hat},
+    .mean = function() {self$mod$trend$m} # function that gives mean (constant, other functions not implemented)
 
   )
 )
