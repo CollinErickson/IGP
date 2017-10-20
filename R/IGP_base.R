@@ -203,8 +203,12 @@ IGP_base <- R6::R6Class(classname = "IGP",
                        sum(self$predict.var(X) > val * maxvar) / n
                      },
                      plot = function() {#browser()
+                       minx <- min(self$X)
+                       maxx <- max(self$X)
+                       minxeval <- minx - .03 * (maxx - minx)
+                       maxxeval <- maxx + .03 * (maxx - minx)
                        if (ncol(self$X) == 1) {
-                         XX <- matrix(seq(0,1,length.out = 300), ncol=1)
+                         XX <- matrix(seq(minxeval,maxxeval,length.out = 300), ncol=1)
                          pp <- self$predict(XX=XX, se.fit=TRUE)
                          pm <- pp$fit
                          ps <- pp$se.fit
