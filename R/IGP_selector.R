@@ -37,6 +37,8 @@ IGP <- function(X=NULL, Z=NULL, package=NULL, ...) {#browser()
     u <- IGP_laGP_GauPro_kernel$new(X=X, Z=Z, ...)
   } else if (package %in% c("DiceKriging", "dicekriging", "dice", "Dice", "DK", "dk")) {
     u <- IGP_DiceKriging$new(X=X, Z=Z, ...)
+  } else if (tolower(package) %in% c("cgp")) {
+    u <- IGP_CGP$new(X=X, Z=Z, ...)
   } else if (package  %in% c( "sklearn", "scikit-learn", "scikitlearn")) {
     u <- IGP_sklearn$new(X=X, Z=Z, ...)
   } else if (package  %in% c( "GPy", "gpy")) {

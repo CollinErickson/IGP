@@ -2,6 +2,7 @@
 
 S3method(predict,IGP)
 export(IGP)
+export(IGP_CGP)
 export(IGP_DiceKriging)
 export(IGP_GPfit)
 export(IGP_GPy)
