@@ -43,7 +43,7 @@ IGP_GauPro_kernel <- R6::R6Class(
   classname = "IGP_GauPro_kernel",
   inherit = IGP_base,
   public = list(
-    .init = function(..., kernel=NULL) {
+    .init = function(..., kernel=NULL, theta=NULL) {
       if (!is.null(kernel)) {
         # kernel will be passed in
       } else if (any(c("R6ClassGenerator", "GauPro_kernel")%in% class(self$corr))) {
@@ -63,6 +63,7 @@ IGP_GauPro_kernel <- R6::R6Class(
       } else {
         stop("Corr/kernel not recognized in IGP_GauPro_kernel")
       }
+      if (!is.null(theta)) {kernel$beta <- log(theta, 10)}
       m <- GauPro::GauPro_kernel_model$new(X=self$X, Z=self$Z, kernel=kernel, nug.est=self$estimate.nugget, nug=self$nugget0, ...)
       self$mod <- m
     }, #"function to initialize model with data

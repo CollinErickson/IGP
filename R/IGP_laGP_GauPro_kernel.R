@@ -65,6 +65,10 @@ IGP_laGP_GauPro_kernel <- R6::R6Class(
                                    theta=self$mod.extra$laGP$theta(),
                                    #nug=self$mod.extra$laGP$nug,
                                    param.est=FALSE)
+      laGPs2 <- self$mod.extra$laGP$s2()
+      self$mod.extra$GauPro$mod$kernel$s2 <- laGPs2
+      self$mod.extra$GauPro$mod$kernel$logs2 <- log(laGPs2, 10)
+      self$mod.extra$GauPro$mod$s2_hat <- laGPs2
       #self$mod.extra$GauPro$init(X=self$X, Z=self$Z,
       #                          theta=self$mod.extra$laGP$theta,
       #                           nug=self$mod.extra$laGP$nug)
@@ -81,6 +85,10 @@ IGP_laGP_GauPro_kernel <- R6::R6Class(
       if (!no_update) {
         self$mod.extra$GauPro$mod$kernel$beta <- log(self$mod.extra$laGP$theta(), 10)
         self$mod.extra$GauPro$mod$nug <- self$mod.extra$laGP$nugget()
+        laGPs2 <- self$mod.extra$laGP$s2()
+        self$mod.extra$GauPro$mod$kernel$s2 <- laGPs2
+        self$mod.extra$GauPro$mod$kernel$logs2 <- log(laGPs2, 10)
+        self$mod.extra$GauPro$mod$s2_hat <- laGPs2
       }
       self$mod.extra$GauPro$update(Xall=self$X, Zall=self$Z,
                                    no_update=TRUE)
