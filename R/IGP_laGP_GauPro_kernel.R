@@ -58,17 +58,20 @@ IGP_laGP_GauPro_kernel <- R6::R6Class(
       #self$mod.extra$laGP$init(X=self$X, Z=self$Z, ...)
 
       # Copy params to GauPro, don't fit, use this for predicting
+      kern <- GauPro::Gaussian$new(D=ncol(self$X), beta=log(self$mod.extra$laGP$theta(),10),
+                                   s2=self$mod.extra$laGP$s2())
       self$mod.extra$GauPro <- IGP(X=self$X, Z=self$Z, package="GauPro_kernel",
                                    corr=self$corr,
                                    estimate.nugget=FALSE,
                                    nugget0=self$mod.extra$laGP$nugget(),
-                                   theta=self$mod.extra$laGP$theta(),
+                                   kernel=kern,
+                                   # theta=self$mod.extra$laGP$theta(),
                                    #nug=self$mod.extra$laGP$nug,
                                    param.est=FALSE)
-      laGPs2 <- self$mod.extra$laGP$s2()
-      self$mod.extra$GauPro$mod$kernel$s2 <- laGPs2
-      self$mod.extra$GauPro$mod$kernel$logs2 <- log(laGPs2, 10)
-      self$mod.extra$GauPro$mod$s2_hat <- laGPs2
+      # laGPs2 <- self$mod.extra$laGP$s2()
+      # self$mod.extra$GauPro$mod$kernel$s2 <- laGPs2
+      # self$mod.extra$GauPro$mod$kernel$logs2 <- log(laGPs2, 10)
+      # self$mod.extra$GauPro$mod$s2_hat <- laGPs2
       #self$mod.extra$GauPro$init(X=self$X, Z=self$Z,
       #                          theta=self$mod.extra$laGP$theta,
       #                           nug=self$mod.extra$laGP$nug)
