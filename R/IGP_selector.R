@@ -53,6 +53,8 @@ IGP <- function(X=NULL, Z=NULL, package=NULL, ...) {#browser()
     u <- IGP_LOOEC_laGP_GauPro$new(X=X, Z=Z, package2='laGP', ...)
   } else if (package  %in% c( "LOOEC-laGP_GauPro-GauPro")) {
     u <- IGP_LOOEC_laGP_GauPro$new(X=X, Z=Z, package2='GauPro', ...)
+  } else if (tolower(package)  %in% c( "looec-gaupro_kernel")) {
+    u <- IGP_LOOEC_GauPro_kernel$new(X=X, Z=Z, package2='GauPro', ...)
   } else {
     stop("Package not recognized")
   }
