@@ -54,7 +54,7 @@ IGP_laGP_GauPro_kernel <- R6::R6Class(
       self$mod.extra$laGP <- IGP(X=self$X, Z=self$Z, package="laGP",
                                  corr=self$corr,
                                  estimate.nugget=self$estimate.nugget,
-                                 nugget0=self$nugget0)
+                                 nugget0=self$nugget0, ...)
       #self$mod.extra$laGP$init(X=self$X, Z=self$Z, ...)
 
       # Copy params to GauPro, don't fit, use this for predicting
