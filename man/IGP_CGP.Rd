@@ -39,6 +39,7 @@ Class providing object with methods for fitting a GP model
 }
 
 \examples{
+\dontrun{
 n <- 20
 d <- 2
 n2 <- 20
@@ -55,6 +56,7 @@ u$predict.se(XX1)
 u$update(Xnew=X2,Znew=Z2)
 cbind(u$predict(XX1), ZZ1)
 u$delete()
+}
 }
 \references{
 Ba, S. and V. Roshan Joseph (2012) "Composite Gaussian Process Models for Emulating Expensive Functions". Annals of Applied Statistics, 6, 1838-1860.

@@ -10,6 +10,7 @@
 #' @format \code{\link{R6Class}} object.
 #' @references Ba, S. and V. Roshan Joseph (2012) "Composite Gaussian Process Models for Emulating Expensive Functions". Annals of Applied Statistics, 6, 1838-1860.
 #' @examples
+#' \dontrun{
 #' n <- 20
 #' d <- 2
 #' n2 <- 20
@@ -26,6 +27,7 @@
 #' u$update(Xnew=X2,Znew=Z2)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$delete()
+#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points

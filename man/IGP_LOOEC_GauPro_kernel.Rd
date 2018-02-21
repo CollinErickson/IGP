@@ -39,9 +39,9 @@ Class providing object with methods for fitting a GP model
 }
 
 \examples{
-n <- 40
+n <- 30
 d <- 2
-n2 <- 20
+n2 <- 10
 f1 <- function(x) {sin(2*pi*x[1]) + sin(2*pi*x[2])}
 X1 <- matrix(runif(n*d),n,d)
 Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
@@ -55,6 +55,7 @@ u$predict.se(XX1)
 u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
 u$delete()
+
 # 1D example to see difference
 n <- 9
 d <- 1
