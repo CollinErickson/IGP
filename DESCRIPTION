@@ -22,6 +22,7 @@ Suggests:
     DiceKriging,
     CGP,
     GauPro,
+    hetGP,
     testthat,
     lhs,
     ggplot2,

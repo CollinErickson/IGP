@@ -42,9 +42,9 @@ Class providing object with methods for fitting a GP model
 n <- 40
 d <- 2
 n2 <- 20
-f1 <- TestFunctions::banana #function(x) {x[1]*sin(2*pi*x[1]) + sqrt(x[1])*sin(2*pi*x[2])}
+f1 <- function(x) {x[1]*sin(2*pi*x[1]) + sqrt(x[1])*exp(x[2])}
 X1 <- matrix(runif(n*d),n,d)
-Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-3)
+Z1 <- apply(X1,1,f1) + rnorm(n, 0, 1e-2)
 X2 <- matrix(runif(n2*d),n2,d)
 Z2 <- apply(X2,1,f1)
 XX1 <- matrix(runif(10),5,2)
@@ -52,11 +52,15 @@ ZZ1 <- apply(XX1, 1, f1)
 u <- IGP_hetGP$new(X=X1,Z=Z1)
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
+\dontrun{
 ContourFunctions::cf(function(x) u$predict(x), pts=X1)
 ContourFunctions::cf(function(x) u$predict(x, se.fit=T)$se, pts=X1)
+}
 u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
+\dontrun{
 ContourFunctions::cf(function(x) u$predict(x), pts=rbind(X1, X2))
+}
 u$delete()
 
 n <- 10
@@ -66,11 +70,10 @@ X1 <- c(X1, X1)
 f1 <- function(x) {abs(sin(pi*x))+sqrt(x)+rnorm(1,0,.1)}
 Z1 <- sapply(X1, f1)
 plot(X1, Z1)
-h1 <- hetGP::mleHetGP(X=X1,Z=Z1, lower=c(.1), upper=c(50))
+h1 <- hetGP::mleHetGP(X=matrix(X1,ncol=1),Z=matrix(Z1, ncol=1), lower=c(.1), upper=c(50))
 curve(predict(h1, matrix(x, ncol=1))$mean, add=T, col=3)
-u <- IGP_hetGP$new(X=X1,Z=Z1); plot(X1, Z1, col=2); curve(u$predict(matrix(x,ncol=1)), add=T)
 u <- IGP_hetGP$new(X=X1,Z=Z1)
-curve(u$predict(matrix(x,ncol=1)))
+plot(X1, Z1, col=2); curve(u$predict(matrix(x,ncol=1)), add=TRUE)
 }
 \keyword{Gaussian}
 \keyword{data,}
