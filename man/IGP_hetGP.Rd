@@ -54,7 +54,7 @@ cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
 \dontrun{
 ContourFunctions::cf(function(x) u$predict(x), pts=X1)
-ContourFunctions::cf(function(x) u$predict(x, se.fit=T)$se, pts=X1)
+ContourFunctions::cf(function(x) u$predict(x, se.fit=TRUE)$se, pts=X1)
 }
 u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
@@ -71,7 +71,7 @@ f1 <- function(x) {abs(sin(pi*x))+sqrt(x)+rnorm(1,0,.1)}
 Z1 <- sapply(X1, f1)
 plot(X1, Z1)
 h1 <- hetGP::mleHetGP(X=matrix(X1,ncol=1),Z=matrix(Z1, ncol=1), lower=c(.1), upper=c(50))
-curve(predict(h1, matrix(x, ncol=1))$mean, add=T, col=3)
+curve(predict(h1, matrix(x, ncol=1))$mean, add=TRUE, col=3)
 u <- IGP_hetGP$new(X=X1,Z=Z1)
 plot(X1, Z1, col=2); curve(u$predict(matrix(x,ncol=1)), add=TRUE)
 }
