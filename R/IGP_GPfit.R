@@ -143,7 +143,15 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                   ga.try <- try(ga <- laGP::garg(list(mle=TRUE), y=self$Z), silent = T)
                                   if (inherits(ga.try, "try-error")) {
                                     # warning("Adding noise to ga in laGP"); # Not too important a warning
-                                    ga <- laGP::garg(list(mle=TRUE), y=self$Z+rnorm(length(self$Z),0,1e-2))
+                                    # Sometimes first try doesn't work, so looping with bigger eps
+                                    eps_ga <- 1e-2
+                                    while (TRUE) {
+                                      ga <- try(laGP::garg(list(mle=TRUE),
+                                                           y=self$Z+rnorm(length(self$Z),0,eps_ga)),
+                                                silent=T)
+                                      if (!inherits(ga, "try-error")) {break()}
+                                      eps_ga <- 2 * eps_ga
+                                    }
                                   }
                                   # Follow recommendations for small samples, otherwise use bigger range
                                   drange <- if (nrow(self$X)<20) c(da$min, da$max) else c(1e-3,1e4) #c(da$min, da$max), # Don't like these small ranges
