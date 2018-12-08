@@ -98,7 +98,7 @@ IGP_hetGP <- R6::R6Class(
     .theta = function() {self$mod$theta}, #"function to get theta, exp(-theta*(x-x)^2)
     .nugget = function() {self$mod$g}, #"function to get nugget
     .s2 = function() {self$mod$nu2_hat},
-    .mean = function() {self$mod$trend$m} # function that gives mean (constant, other functions not implemented)
+    .mean = function() {self$mod$beta0} # function that gives mean (constant, other functions not implemented)
 
   )
 )
