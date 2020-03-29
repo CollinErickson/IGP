@@ -44,7 +44,6 @@ IGP_GauPro_kernel <- R6::R6Class(
   inherit = IGP_base,
   public = list(
     .init = function(..., kernel=NULL, theta=NULL) {
-      browser()
       beta_init <- rep(1, ncol(self$X))
       if (!is.null(kernel)) {
         # kernel will be passed in

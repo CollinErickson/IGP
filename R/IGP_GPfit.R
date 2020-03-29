@@ -849,7 +849,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           self$py[[self$pypack]]$exec('y = np.matrix(y1).reshape((-1,1))')
           self$py[[self$pypack]]$exec("gp.fit(X, y)")
         }, #"function to add data to model or reestimate params
-        .predict = function(XX, se.fit, ...) {browser()
+        .predict = function(XX, se.fit, ...) {
           self$py[[self$pypack]]$assign("xp1", XX)
           self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
           self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
@@ -1023,7 +1023,6 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                                 self$py[[self$pypack]]$assign("xp1", XX)
                                 self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
                                 self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
-                                # browser()
                                 y_pred <- unlist(self$py[[self$pypack]]$get("y_pred"))
                                 if (se.fit) {
                                   self$py[[self$pypack]]$exec("std = np.sqrt(sigma2_pred)")
@@ -1043,7 +1042,6 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                               .predict.var = function(XX, ...) {
                                 self$py[[self$pypack]]$assign("xp1", XX)
                                 self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
-                                # if (exists('dbvar') && dbvar) {browser()}
                                 self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
                                 unlist(self$py[[self$pypack]]$get("sigma2_pred"))
                               }, #"function to predict the variance

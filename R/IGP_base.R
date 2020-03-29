@@ -59,7 +59,7 @@ IGP_base <- R6::R6Class(classname = "IGP",
                      estimate.nugget = NULL, #"logical", Should the nugget be estimated?
                      nugget0 = NULL, #"numeric" # What value should the nugget be set to? NOT logical. If estimate.nugget==TRUE, then it's the starting value
 
-                     initialize = function(X=NULL, Z=NULL, package=NULL, corr="gauss", estimate.nugget=TRUE, nugget0=1e-8, ...) {#browser()
+                     initialize = function(X=NULL, Z=NULL, package=NULL, corr="gauss", estimate.nugget=TRUE, nugget0=1e-8, ...) {
                        if (!is.null(X)) {self$X <- if (is.matrix(X)) X else matrix(X, ncol=1)} # Add else for 1D data passed as vector
                        if (!is.null(Z)) {self$Z <- if (is.matrix(Z)) c(Z) else Z}
                        self$package <- package
@@ -73,7 +73,7 @@ IGP_base <- R6::R6Class(classname = "IGP",
                          self$init(...)
                        }
                      }, # end initialize
-                     init = function(X=NULL, Z=NULL, ...) {#browser()
+                     init = function(X=NULL, Z=NULL, ...) {
                        if (!is.null(X)) {self$X <- X}
                        if (!is.null(Z)) {self$Z <- Z}
                        if (length(self$X) == 0 | length(self$Z) == 0) {stop("X or Z not set")}
@@ -82,7 +82,7 @@ IGP_base <- R6::R6Class(classname = "IGP",
 
                        self$.init(...)
                      }, # end init
-                     update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...) {#browser()
+                     update = function(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...) {
                        if (self$n.at.last.update == 0) {
                          #self$init(X = if(!is.null(Xall)) Xall else Xnew, Z = if (!is.null(Zall)) Zall else Znew)
                          x <- if(!is.null(Xall)) Xall else Xnew
@@ -95,7 +95,7 @@ IGP_base <- R6::R6Class(classname = "IGP",
                        }
                        self$n.at.last.update <- nrow(self$X)
                      }, # end update
-                     predict = function(XX, se.fit = FALSE, ...) {#browser()
+                     predict = function(XX, se.fit = FALSE, ...) {
                        if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
                        self$.predict(XX, se.fit=se.fit, ...)
                      },
@@ -107,7 +107,7 @@ IGP_base <- R6::R6Class(classname = "IGP",
                        if(!is.matrix(XX)) XX <- matrix(XX,nrow=1)
                        self$.predict.var(XX, ...=...)
                      },
-                     grad = function (XX, num=FALSE) {#browser() # NUMERICAL GRAD IS OVER 10 TIMES SLOWER
+                     grad = function (XX, num=FALSE) { # NUMERICAL GRAD IS OVER 10 TIMES SLOWER
                        if (!is.matrix(XX)) {
                          if (ncol(self$X) == 1) XX <- matrix(XX, ncol=1)
                          else if (length(XX) == ncol(self$X)) XX <- matrix(XX, nrow=1)
@@ -164,7 +164,7 @@ IGP_base <- R6::R6Class(classname = "IGP",
                        if (D == 1) return(grad1)
                        t(grad1)
                      },
-                     grad_norm = function (XX) {#browser()
+                     grad_norm = function (XX) {
                        grad1 <- self$grad(XX)
                        if (!is.matrix(grad1)) return(abs(grad1))
                        apply(grad1,1, function(xx) {sqrt(sum(xx^2))})
@@ -193,16 +193,16 @@ IGP_base <- R6::R6Class(classname = "IGP",
                      max.var = function() {
                        self$predict.var(matrix(rep(max(abs(self$X)) * 10,ncol(self$X)), nrow=1))
                      },
-                     at.max.var = function(X, val=.9) {#browser() #logical if pred var at least 90% of max var
+                     at.max.var = function(X, val=.9) { #logical if pred var at least 90% of max var
                        maxvar = c(self$max.var())
                        self$predict.var(X) > val * maxvar
                      },
-                     prop.at.max.var =function(Xlims = matrix(c(0,1), nrow=ncol(self$X), ncol=2, byrow=T), n = 200, val=.9) {#browser()
+                     prop.at.max.var =function(Xlims = matrix(c(0,1), nrow=ncol(self$X), ncol=2, byrow=T), n = 200, val=.9) {
                        maxvar = c(self$max.var())
                        X <- apply(Xlims, 1, function(Xlim) {runif(n, Xlim[1], Xlim[2])})
                        sum(self$predict.var(X) > val * maxvar) / n
                      },
-                     plot = function() {#browser()
+                     plot = function() {
                        minx <- min(self$X)
                        maxx <- max(self$X)
                        minxeval <- minx - .03 * (maxx - minx)
