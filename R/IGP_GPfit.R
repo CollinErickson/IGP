@@ -732,6 +732,7 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
 #' u <- IGP_sklearn$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
+#' u$predict.var(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
@@ -751,15 +752,22 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
       public = list(
-        pypack = "PythonInR",
+        pypack = "reticulate", #"PythonInR",
         py = list(
-          PythonInR = list(
-            conn = function() {PythonInR::pyOptions("numpyAlias", "np");if (!PythonInR::pyIsConnected()) {PythonInR::pyConnect()}},
-            exec = PythonInR::pyExec,
-            assign = function(key, value) {PythonInR::pySet(key=key, value=value, useSetPoly = TRUE, useNumpy = TRUE)},
-            get = PythonInR::pyGet,
-            close = PythonInR::pyExit
-          )#,
+          reticulate = list(
+            conn = function() {require(reticulate)},
+            exec = reticulate::py_run_string,
+            assign = function(key, value) {py[[key]] <- value},
+            get = function(key) {py[[key]]},
+            close = function() {}
+          )
+          #   PythonInR = list(
+          #     conn = function() {PythonInR::pyOptions("numpyAlias", "np");if (!PythonInR::pyIsConnected()) {PythonInR::pyConnect()}},
+          #     exec = PythonInR::pyExec,
+          #     assign = function(key, value) {PythonInR::pySet(key=key, value=value, useSetPoly = TRUE, useNumpy = TRUE)},
+          #     get = PythonInR::pyGet,
+          #     close = PythonInR::pyExit
+          #   )#,
           # rPython = list(
           #   conn = function() {},
           #   exec = function() {},#rPython::python.exec,
@@ -841,28 +849,32 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
           self$py[[self$pypack]]$exec('y = np.matrix(y1).reshape((-1,1))')
           self$py[[self$pypack]]$exec("gp.fit(X, y)")
         }, #"function to add data to model or reestimate params
-        .predict = function(XX, se.fit, ...) {
+        .predict = function(XX, se.fit, ...) {browser()
           self$py[[self$pypack]]$assign("xp1", XX)
           self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
           self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
+          y_pred <- unlist(self$py[[self$pypack]]$get("y_pred"))
           if (se.fit) {
-            list(fit=unlist(self$py[[self$pypack]]$get("y_pred.tolist()")),
-                 se.fit=unlist(self$py[[self$pypack]]$get("np.sqrt(sigma2_pred).tolist()")))
+            self$py[[self$pypack]]$exec("std = np.sqrt(sigma2_pred)")
+            list(fit=y_pred,
+                 se.fit=unlist(self$py[[self$pypack]]$get("std"))) #np.sqrt(sigma2_pred).tolist()")))
           } else {
-            unlist(self$py[[self$pypack]]$get("y_pred.tolist()"))
+            y_pred
           }
         }, #"function to predict at new values
         .predict.se = function(XX, ...) {
           self$py[[self$pypack]]$assign("xp1", XX)
           self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
           self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
-          unlist(self$py[[self$pypack]]$get("np.sqrt(sigma2_pred).tolist()"))
+          # unlist(self$py[[self$pypack]]$get("np.sqrt(sigma2_pred).tolist()"))
+          self$py[[self$pypack]]$exec("stdev = np.sqrt(sigma2_pred)")
+          self$py[[self$pypack]]$get("stdev")
         }, #"function predict the standard error/dev
         .predict.var = function(XX, ...) {
           self$py[[self$pypack]]$assign("xp1", XX)
           self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
           self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(xp, return_std=True)")
-          unlist(self$py[[self$pypack]]$get("sigma2_pred.tolist()"))
+          unlist(self$py[[self$pypack]]$get("sigma2_pred"))
         }, #"function to predict the variance
         .grad = NULL, # function to calculate the gradient
         .delete = function(...){
@@ -894,7 +906,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #'
 #' @docType class
 #' @importFrom R6 R6Class
-#' @importFrom PythonInR pyOptions pySet
+# @importFrom PythonInR pyOptions pySet
 #' @export
 #' @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
@@ -914,6 +926,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #' u <- IGP_GPy$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
+#' u$predict.var(XX1)
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
@@ -933,15 +946,22 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #'   updates the model, adding new data if given, then running optimization again.}}
 IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                             public = list(
-                              pypack = "PythonInR",
+                              pypack = "reticulate",
                               py = list(
-                                PythonInR = list(
-                                  conn = function() {PythonInR::pyOptions("numpyAlias", "np");if (!PythonInR::pyIsConnected()) {PythonInR::pyConnect()}},
-                                  exec = PythonInR::pyExec,
-                                  assign = function(key, value) {PythonInR::pySet(key=key, value=value, useSetPoly = TRUE, useNumpy = TRUE)},
-                                  get = PythonInR::pyGet,
-                                  close = PythonInR::pyExit
-                                )#,
+                                reticulate = list(
+                                  conn = function() {require(reticulate)},
+                                  exec = reticulate::py_run_string,
+                                  assign = function(key, value) {py[[key]] <- value},
+                                  get = function(key) {py[[key]]},
+                                  close = function() {}
+                                )
+                                # PythonInR = list(
+                                #   conn = function() {PythonInR::pyOptions("numpyAlias", "np");if (!PythonInR::pyIsConnected()) {PythonInR::pyConnect()}},
+                                #   exec = PythonInR::pyExec,
+                                #   assign = function(key, value) {PythonInR::pySet(key=key, value=value, useSetPoly = TRUE, useNumpy = TRUE)},
+                                #   get = PythonInR::pyGet,
+                                #   close = PythonInR::pyExit
+                                # )#,
                                 # rPython = list(
                                 #   conn = function() {},
                                 #   exec = function() {},#rPython::python.exec,
@@ -1003,24 +1023,29 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
                                 self$py[[self$pypack]]$assign("xp1", XX)
                                 self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
                                 self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
+                                # browser()
+                                y_pred <- unlist(self$py[[self$pypack]]$get("y_pred"))
                                 if (se.fit) {
-                                  list(fit=unlist(self$py[[self$pypack]]$get("y_pred.tolist()")),
-                                       se.fit=unlist(self$py[[self$pypack]]$get("np.sqrt(sigma2_pred).tolist()")))
+                                  self$py[[self$pypack]]$exec("std = np.sqrt(sigma2_pred)")
+                                  list(fit=y_pred,
+                                       se.fit=unlist(self$py[[self$pypack]]$get("std")))
                                 } else {
-                                  unlist(self$py[[self$pypack]]$get("y_pred.tolist()"))
+                                  y_pred
                                 }
                               }, #"function to predict at new values
                               .predict.se = function(XX, ...) {
                                 self$py[[self$pypack]]$assign("xp1", XX)
                                 self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
                                 self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
-                                unlist(self$py[[self$pypack]]$get("np.sqrt(sigma2_pred).tolist()"))
+                                unlist(self$py[[self$pypack]]$exec("std = np.sqrt(sigma2_pred)"))
+                                unlist(self$py[[self$pypack]]$get("std")) #np.sqrt(sigma2_pred).tolist()"))
                               }, #"function predict the standard error/dev
                               .predict.var = function(XX, ...) {
                                 self$py[[self$pypack]]$assign("xp1", XX)
                                 self$py[[self$pypack]]$exec("xp = np.asmatrix(xp1)")
+                                # if (exists('dbvar') && dbvar) {browser()}
                                 self$py[[self$pypack]]$exec("y_pred, sigma2_pred = gp.predict(np.asarray(xp))")
-                                unlist(self$py[[self$pypack]]$get("sigma2_pred.tolist()"))
+                                unlist(self$py[[self$pypack]]$get("sigma2_pred"))
                               }, #"function to predict the variance
                               .grad = NULL, # function to calculate the gradient
                               .delete = function(...){

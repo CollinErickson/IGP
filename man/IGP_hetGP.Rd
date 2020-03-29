@@ -4,9 +4,8 @@
 \name{IGP_hetGP}
 \alias{IGP_hetGP}
 \title{IGP R6 object for fitting hetGP model}
-\format{\code{\link{R6Class}} object.}
-\usage{
-IGP_hetGP
+\format{
+\code{\link{R6Class}} object.
 }
 \value{
 Object of \code{\link{R6Class}} with methods for fitting GP model.
@@ -14,18 +13,6 @@ Object of \code{\link{R6Class}} with methods for fitting GP model.
 \description{
 Class providing object with methods for fitting a GP model
 }
-\section{Fields}{
-
-\describe{
-\item{\code{X}}{Design matrix}
-
-\item{\code{Z}}{Responses}
-
-\item{\code{N}}{Number of data points}
-
-\item{\code{D}}{Dimension of data}
-}}
-
 \section{Methods}{
 
 \describe{
@@ -80,3 +67,202 @@ plot(X1, Z1, col=2); curve(u$predict(matrix(x,ncol=1)), add=TRUE)
 \keyword{kriging,}
 \keyword{process,}
 \keyword{regression}
+\section{Super class}{
+\code{\link[IGP:IGP]{IGP::IGP}} -> \code{IGP_hetGP}
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{X}}{Design matrix}
+
+\item{\code{Z}}{Responses}
+
+\item{\code{N}}{Number of data points}
+
+\item{\code{D}}{Dimension of data}
+}
+\if{html}{\out{</div>}}
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{X}}{Design matrix}
+
+\item{\code{Z}}{Responses}
+
+\item{\code{N}}{Number of data points}
+
+\item{\code{D}}{Dimension of data}
+}
+\if{html}{\out{</div>}}
+}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-.init}{\code{IGP_hetGP$.init()}}
+\item \href{#method-.update}{\code{IGP_hetGP$.update()}}
+\item \href{#method-.predict}{\code{IGP_hetGP$.predict()}}
+\item \href{#method-.predict.se}{\code{IGP_hetGP$.predict.se()}}
+\item \href{#method-.predict.var}{\code{IGP_hetGP$.predict.var()}}
+\item \href{#method-.grad}{\code{IGP_hetGP$.grad()}}
+\item \href{#method-.delete}{\code{IGP_hetGP$.delete()}}
+\item \href{#method-.theta}{\code{IGP_hetGP$.theta()}}
+\item \href{#method-.nugget}{\code{IGP_hetGP$.nugget()}}
+\item \href{#method-.s2}{\code{IGP_hetGP$.s2()}}
+\item \href{#method-.mean}{\code{IGP_hetGP$.mean()}}
+\item \href{#method-clone}{\code{IGP_hetGP$clone()}}
+}
+}
+\if{html}{
+\out{<details ><summary>Inherited methods</summary>}
+\itemize{
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="at.max.var">}\href{../../IGP/html/IGP.html#method-at.max.var}{\code{IGP::IGP$at.max.var()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="delete">}\href{../../IGP/html/IGP.html#method-delete}{\code{IGP::IGP$delete()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="finalize">}\href{../../IGP/html/IGP.html#method-finalize}{\code{IGP::IGP$finalize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad">}\href{../../IGP/html/IGP.html#method-grad}{\code{IGP::IGP$grad()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad_from_theta">}\href{../../IGP/html/IGP.html#method-grad_from_theta}{\code{IGP::IGP$grad_from_theta()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad_norm">}\href{../../IGP/html/IGP.html#method-grad_norm}{\code{IGP::IGP$grad_norm()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad_num">}\href{../../IGP/html/IGP.html#method-grad_num}{\code{IGP::IGP$grad_num()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="init">}\href{../../IGP/html/IGP.html#method-init}{\code{IGP::IGP$init()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="initialize">}\href{../../IGP/html/IGP.html#method-initialize}{\code{IGP::IGP$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="max.var">}\href{../../IGP/html/IGP.html#method-max.var}{\code{IGP::IGP$max.var()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="mean">}\href{../../IGP/html/IGP.html#method-mean}{\code{IGP::IGP$mean()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="nugget">}\href{../../IGP/html/IGP.html#method-nugget}{\code{IGP::IGP$nugget()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="plot">}\href{../../IGP/html/IGP.html#method-plot}{\code{IGP::IGP$plot()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="predict">}\href{../../IGP/html/IGP.html#method-predict}{\code{IGP::IGP$predict()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="predict.se">}\href{../../IGP/html/IGP.html#method-predict.se}{\code{IGP::IGP$predict.se()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="predict.var">}\href{../../IGP/html/IGP.html#method-predict.var}{\code{IGP::IGP$predict.var()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="prop.at.max.var">}\href{../../IGP/html/IGP.html#method-prop.at.max.var}{\code{IGP::IGP$prop.at.max.var()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="s2">}\href{../../IGP/html/IGP.html#method-s2}{\code{IGP::IGP$s2()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="sample">}\href{../../IGP/html/IGP.html#method-sample}{\code{IGP::IGP$sample()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="theta">}\href{../../IGP/html/IGP.html#method-theta}{\code{IGP::IGP$theta()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="update">}\href{../../IGP/html/IGP.html#method-update}{\code{IGP::IGP$update()}}\out{</span>}
+}
+\out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.init"></a>}}
+\if{latex}{\out{\hypertarget{method-.init}{}}}
+\subsection{Method \code{.init()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.init(
+  ...,
+  kernel = "Gaussian",
+  nug.est = self$estimate.nugget,
+  nug = self$nugget0,
+  noiseControl = list(k_theta_g_bounds = c(1, 100), g_max = 100, g_bounds = c(1e-06,
+    1)),
+  lower = rep(1e-06, ncol(self$X)),
+  upper = rep(50, ncol(self$X))
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.update"></a>}}
+\if{latex}{\out{\hypertarget{method-.update}{}}}
+\subsection{Method \code{.update()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.update(...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.predict"></a>}}
+\if{latex}{\out{\hypertarget{method-.predict}{}}}
+\subsection{Method \code{.predict()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.predict(XX, se.fit, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.predict.se"></a>}}
+\if{latex}{\out{\hypertarget{method-.predict.se}{}}}
+\subsection{Method \code{.predict.se()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.predict.se(XX, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.predict.var"></a>}}
+\if{latex}{\out{\hypertarget{method-.predict.var}{}}}
+\subsection{Method \code{.predict.var()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.predict.var(XX, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.grad"></a>}}
+\if{latex}{\out{\hypertarget{method-.grad}{}}}
+\subsection{Method \code{.grad()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.grad(XX)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.delete"></a>}}
+\if{latex}{\out{\hypertarget{method-.delete}{}}}
+\subsection{Method \code{.delete()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.delete(...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.theta"></a>}}
+\if{latex}{\out{\hypertarget{method-.theta}{}}}
+\subsection{Method \code{.theta()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.theta()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.nugget"></a>}}
+\if{latex}{\out{\hypertarget{method-.nugget}{}}}
+\subsection{Method \code{.nugget()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.nugget()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.s2"></a>}}
+\if{latex}{\out{\hypertarget{method-.s2}{}}}
+\subsection{Method \code{.s2()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.s2()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-.mean"></a>}}
+\if{latex}{\out{\hypertarget{method-.mean}{}}}
+\subsection{Method \code{.mean()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$.mean()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{IGP_hetGP$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}

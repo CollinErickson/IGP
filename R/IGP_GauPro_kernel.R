@@ -44,22 +44,24 @@ IGP_GauPro_kernel <- R6::R6Class(
   inherit = IGP_base,
   public = list(
     .init = function(..., kernel=NULL, theta=NULL) {
+      browser()
+      beta_init <- rep(1, ncol(self$X))
       if (!is.null(kernel)) {
         # kernel will be passed in
       } else if (any(c("R6ClassGenerator", "GauPro_kernel")%in% class(self$corr))) {
         kernel <- self$corr
       } else if (self$corr[[1]] == "gauss") {
-        kernel <- GauPro::Gaussian$new(D=ncol(self$X))
+        kernel <- GauPro::Gaussian$new(beta=beta_init) #D=ncol(self$X))
       } else if (self$corr[[1]] == "matern32") {
-        kernel <- GauPro::Matern32$new(D=ncol(self$X))
+        kernel <- GauPro::Matern32$new(beta=beta_init) #D=ncol(self$X))
       } else if (self$corr[[1]] == "matern52") {
-        kernel <- GauPro::Matern52$new(D=ncol(self$X))
+        kernel <- GauPro::Matern52$new(beta=beta_init) #D=ncol(self$X))
       } else if (self$corr[[1]] == "exponential") {
-        kernel <- GauPro::Exponential$new(D=ncol(self$X))
+        kernel <- GauPro::Exponential$new(beta=beta_init) #D=ncol(self$X))
       } else if (self$corr[[1]] == "periodic") {
-        kernel <- GauPro::periodic$new(D=ncol(self$X))
+        kernel <- GauPro::periodic$new(beta=beta_init) #D=ncol(self$X))
       } else if (self$corr[[1]] == "rationalquadratic") {
-        kernel <- GauPro::RatQuad$new(D=ncol(self$X))
+        kernel <- GauPro::RatQuad$new(beta=beta_init) #D=ncol(self$X))
       } else {
         stop("Corr/kernel not recognized in IGP_GauPro_kernel")
       }
