@@ -1,7 +1,7 @@
 Package: IGP
 Type: Package
 Title: Interchangeable Gaussian Process Models
-Version: 0.1.0.9000
+Version: 0.2.0
 Authors@R: 
     c(
     person("Collin", "Erickson", email = "collinberickson@gmail.com", role = c("aut", "cre"))
@@ -12,7 +12,6 @@ Description: Creates a Gaussian process model using the specified package.
     It is essentially a wrapper for the other Gaussian process
     software packages.
 License: GPL-3
-LazyData: TRUE
 Imports: R6, reticulate
 Suggests:
     GPfit,
