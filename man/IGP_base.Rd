@@ -48,11 +48,6 @@ u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
 u$delete()
 }
-\keyword{Gaussian}
-\keyword{data,}
-\keyword{kriging,}
-\keyword{process,}
-\keyword{regression}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{

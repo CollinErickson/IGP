@@ -5,7 +5,7 @@
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @references Ba, S. and V. Roshan Joseph (2012) "Composite Gaussian Process Models for Emulating Expensive Functions". Annals of Applied Statistics, 6, 1838-1860.

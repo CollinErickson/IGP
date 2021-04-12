@@ -62,11 +62,6 @@ curve(predict(h1, matrix(x, ncol=1))$mean, add=TRUE, col=3)
 u <- IGP_hetGP$new(X=X1,Z=Z1)
 plot(X1, Z1, col=2); curve(u$predict(matrix(x,ncol=1)), add=TRUE)
 }
-\keyword{Gaussian}
-\keyword{data,}
-\keyword{kriging,}
-\keyword{process,}
-\keyword{regression}
 \section{Super class}{
 \code{\link[IGP:IGP]{IGP::IGP}} -> \code{IGP_hetGP}
 }

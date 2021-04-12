@@ -62,11 +62,6 @@ u$plot()
 u$mod$tmod$plot1D()
 u$delete()
 }
-\keyword{Gaussian}
-\keyword{data,}
-\keyword{kriging,}
-\keyword{process,}
-\keyword{regression}
 \section{Super class}{
 \code{\link[IGP:IGP]{IGP::IGP}} -> \code{IGP_LOOEC_GauPro_kernel}
 }

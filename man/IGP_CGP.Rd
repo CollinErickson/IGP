@@ -48,11 +48,6 @@ u$delete()
 \references{
 Ba, S. and V. Roshan Joseph (2012) "Composite Gaussian Process Models for Emulating Expensive Functions". Annals of Applied Statistics, 6, 1838-1860.
 }
-\keyword{Gaussian}
-\keyword{data,}
-\keyword{kriging,}
-\keyword{process,}
-\keyword{regression}
 \section{Super class}{
 \code{\link[IGP:IGP]{IGP::IGP}} -> \code{IGP_CGP}
 }

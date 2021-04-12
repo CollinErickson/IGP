@@ -43,11 +43,6 @@ u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
 u$delete()
 }
-\keyword{Gaussian}
-\keyword{data,}
-\keyword{kriging,}
-\keyword{process,}
-\keyword{regression}
 \section{Super class}{
 \code{\link[IGP:IGP]{IGP::IGP}} -> \code{IGP_mlegp}
 }

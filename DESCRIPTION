@@ -28,7 +28,7 @@ Suggests:
     ggplot2,
     reshape,
     numDeriv
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 URL: https://github.com/CollinErickson/IGP
 BugReports: https://github.com/CollinErickson/IGP/issues
 Encoding: UTF-8

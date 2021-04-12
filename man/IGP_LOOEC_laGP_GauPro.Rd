@@ -49,11 +49,6 @@ u$predict(XX1)
 u$delete()
 }
 }
-\keyword{Gaussian}
-\keyword{data,}
-\keyword{kriging,}
-\keyword{process,}
-\keyword{regression}
 \section{Super class}{
 \code{\link[IGP:IGP]{IGP::IGP}} -> \code{IGP_LOOEC_laGP_GauPro}
 }

@@ -5,7 +5,7 @@
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
@@ -88,7 +88,7 @@ IGP_GPfit <- R6::R6Class(classname = "IGP_GPfit", inherit = IGP_base,
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
@@ -350,7 +350,7 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
@@ -446,7 +446,7 @@ IGP_tgp <- R6::R6Class(classname = "IGP_tgp", inherit = IGP_base,
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
@@ -545,7 +545,7 @@ IGP_mlegp <- R6::R6Class(classname = "IGP_mlegp", inherit = IGP_base,
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
@@ -619,7 +619,7 @@ IGP_GauPro <- R6::R6Class(classname = "IGP_GauPro", inherit = IGP_base,
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
@@ -714,7 +714,7 @@ IGP_DiceKriging <- R6::R6Class(classname = "IGP_DiceKriging", inherit = IGP_base
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
@@ -908,7 +908,7 @@ IGP_sklearn <- R6::R6Class(classname = "IGP_sklearn", inherit = IGP_base,
 #' @importFrom R6 R6Class
 # @importFrom PythonInR pyOptions pySet
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
@@ -1081,7 +1081,7 @@ IGP_GPy <- R6::R6Class(classname = "IGP_GPy", inherit = IGP_base,
 #' @docType class
 #' @importFrom R6 R6Class
 #' @export
-#' @keywords data, kriging, Gaussian process, regression
+# @keywords data, kriging, Gaussian process, regression
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
