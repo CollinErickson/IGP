@@ -11,13 +11,47 @@ to update one of my other packages and I ran into some Ubuntu issues.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes on local Windows.
+local Windows:
 
+    0 errors | 0 warnings | 0 notes
 
-0 errors | 0 warnings | 1 note
+R-hub only has harmless notes:
 
-* This is a new release.
+    * checking CRAN incoming feasibility ... NOTE
+    Maintainer: 'Collin Erickson <collinberickson@gmail.com>'
+    
+    New submission
+    Package was archived on CRAN
+    
+    CRAN repository db overrides:
+      X-CRAN-Comment: Archived on 2021-01-28 as requires archived package
+    
+        'PythonInR'.
+
+Winbuilder (win_devel and win_release both) just has 3 NOTES. The same as R-hub, plus some for slow examples:
+
+    Maintainer: 'Collin Erickson <collinberickson@gmail.com>'
+    
+    New submission
+    
+    Package was archived on CRAN
+    
+    CRAN repository db overrides:
+      X-CRAN-Comment: Archived on 2021-01-28 as requires archived package
+        'PythonInR'.
+        
+    
+    * checking examples ...
+    ** running examples for arch 'i386' ... [25s] NOTE
+    Examples with CPU (user + system) or elapsed time > 10s
+                             user system elapsed
+    IGP_LOOEC_GauPro_kernel 10.92   0.01   11.75
+    ** running examples for arch 'x64' ... [27s] NOTE
+    Examples with CPU (user + system) or elapsed time > 10s
+                            user system elapsed
+    IGP_LOOEC_GauPro_kernel 11.7   0.02   13.26
+  
 
 ## Reverse dependencies
 
-This is a new release, so there are no reverse dependencies.
+There are no reverse dependencies.
