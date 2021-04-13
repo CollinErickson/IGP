@@ -43,6 +43,7 @@ u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
 u$delete()
 
+\dontrun{
 # 1D example to see difference
 n <- 9
 d <- 1
@@ -61,6 +62,7 @@ u$update(Xnew=X2,Znew=Z2)
 u$plot()
 u$mod$tmod$plot1D()
 u$delete()
+}
 }
 \section{Super class}{
 \code{\link[IGP:IGP]{IGP::IGP}} -> \code{IGP_LOOEC_GauPro_kernel}

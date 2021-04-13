@@ -27,6 +27,7 @@
 #' u$predict(XX1)
 #' u$delete()
 #'
+#' \dontrun{
 #' # 1D example to see difference
 #' n <- 9
 #' d <- 1
@@ -45,6 +46,7 @@
 #' u$plot()
 #' u$mod$tmod$plot1D()
 #' u$delete()
+#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points
