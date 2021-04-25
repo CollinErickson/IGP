@@ -49,7 +49,8 @@ IGP_CGP <- R6::R6Class(
     .init = function(...) {
       library(CGP) # For some reason gives error if CGP not attached
                    # Can't just use CGP::CGP
-      self$mod <- CGP::CGP(X=self$X, yobs=self$Z)
+      # Suppress warning about recycling array of length 1
+      self$mod <- suppressWarnings({CGP::CGP(X=self$X, yobs=self$Z)})
     },
     .update = function(...){
       self$.init()
