@@ -16,7 +16,6 @@
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
-#' \dontrun{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -33,7 +32,6 @@
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
-#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points
@@ -47,12 +45,13 @@
 #'   The package tells it which package to fit the GP model.}
 #'   \item{\code{update(Xall=NULL, Zall=NULL, Xnew=NULL, Znew=NULL, ...)}}{This method
 #'   updates the model, adding new data if given, then running optimization again.}}
+# LOOEC_laGP_GauPro ----
 IGP_LOOEC_laGP_GauPro <- R6::R6Class(
   classname = "IGP_LOOEC_laGP_GauPro", inherit = IGP_base,
   public = list(
     package2 = NULL, # Package to fit abstvals model to LOOEC
     # Giving own initialize to get package2
-    initialize = function(X=NULL, Z=NULL, package=NULL, corr="gauss", estimate.nugget=TRUE, nugget0=1e-8, package2=NULL, ...) {#browser()
+    initialize = function(X=NULL, Z=NULL, package=NULL, corr="gauss", estimate.nugget=TRUE, nugget0=1e-8, package2=NULL, ...) {
       if (!is.null(X)) {self$X <- if (is.matrix(X)) X else matrix(X, ncol=1)} # Add else for 1D data passed as vector
       if (!is.null(Z)) {self$Z <- if (is.matrix(Z)) c(Z) else Z}
       self$package <- package
@@ -66,7 +65,7 @@ IGP_LOOEC_laGP_GauPro <- R6::R6Class(
         self$init(...)
       }
     }, # end initialize
-    .init = function(..., package2) {#browser()
+    .init = function(..., package2) {
       # Fit model to data with laGP
       self$mod.extra$laGP <- IGP(X=self$X, Z=self$Z, package="laGP",
                                  corr=self$corr,
@@ -84,9 +83,14 @@ IGP_LOOEC_laGP_GauPro <- R6::R6Class(
                                    param.est=FALSE)
 
       # Create a third model to model the t values
-      # browser()
-      abstvals <- abs(self$mod.extra$GauPro$mod$pred_LOO(se.fit=T)$t)
-      if (!missing(package2)) {self$package2 <- package2}
+      # Get warnings for sqrt(-small)
+      abstvals <- suppressWarnings({abs(self$mod.extra$GauPro$mod$pred_LOO(se.fit=T)$t)})
+      # NaN values are sqrt(-small number), so they should be zero
+      # But don't want to make them too small
+      abstvals[is.nan(abstvals)] <- 1e-4 #sqrt(.Machine$double.eps)
+      # if (!missing(package2)) {self$package2 <- package2}
+      if (missing(package2)) {package2 <- "laGP_GauPro"}
+      self$package2 <- package2
       self$mod.extra$tmod <- IGP(X=self$X, Z=abstvals, package=self$package2,
                                  corr=self$corr)
 
@@ -108,12 +112,13 @@ IGP_LOOEC_laGP_GauPro <- R6::R6Class(
                                    no_update=TRUE)
 
       # Update tmod
-      # browser()
-      abstvals <- abs(self$mod.extra$GauPro$mod$pred_LOO(se.fit=TRUE)$t)
+      # Get warnings for sqrt(-small number)
+      abstvals <- suppressWarnings(abs(self$mod.extra$GauPro$mod$pred_LOO(se.fit=TRUE)$t))
+      abstvals[is.nan(abstvals)] <- 1e-4
       self$mod.extra$tmod$update(Xall=self$X, Zall=abstvals, no_update=no_update)
 
     }, #"function to add data to model or reestimate params
-    .predict = function(XX, se.fit, ...) {#browser()
+    .predict = function(XX, se.fit, ...) {
       pr <- self$mod.extra$GauPro$.predict(XX=XX, se.fit=se.fit, ...)
       if (se.fit) {
         pt <- self$mod.extra$tmod$predict(XX)
