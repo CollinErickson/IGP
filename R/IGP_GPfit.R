@@ -935,7 +935,8 @@ IGP_sklearn <- R6::R6Class(
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
-#' \donttest{
+#' \dontrun{
+#' # Require numpy and GPy in Python, called with package reticulate
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
