@@ -27,7 +27,7 @@ Class providing object with methods for fitting a GP model
 
 \examples{
 \dontrun{
-# Require numpy and GPy in Python, called with package reticulate
+# Require numpy and GPy in Python, called with R package reticulate
 n <- 40
 d <- 2
 n2 <- 20

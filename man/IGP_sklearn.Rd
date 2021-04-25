@@ -26,7 +26,8 @@ Class providing object with methods for fitting a GP model
 }
 
 \examples{
-\donttest{
+\dontrun{
+# Require sklearn in Python, called with R package reticulate
 n <- 40
 d <- 2
 n2 <- 20
