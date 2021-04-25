@@ -23,8 +23,10 @@
 #' u <- IGP_LOOEC_GauPro_kernel$new(X=X1,Z=Z1, parallel=FALSE)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
+#' \donttest{
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
+#' }
 #' u$delete()
 #'
 #' \donttest{

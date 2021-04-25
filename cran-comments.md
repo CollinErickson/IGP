@@ -1,13 +1,14 @@
 I submitted this to CRAN on 4/13/21. It was rejected for using dontrun in
 examples instead of donttest. I removed some instances of dontrun where
-the examples could actually be run. I changed of the slow examples to
-donttest so that they all run in 5 seconds.
+the examples could actually be run. I changed the slow examples to
+donttest so that they all run in 5 seconds, leaving as much of the examples
+outside the donttest as possible.
 I had to leave some examples as dontrun, specifically the two that
 call Python through reticulate and will fail if the correct Python
-modules aren't installed..
+modules aren't installed.
 
-In the email from Gregor Sayer, he also asked said I should add any
-references to the description file. But there are not any papers to
+In the email from Gregor Sayer, he also said I should add any
+references to the description file. There are not any papers to
 reference, this is a standalone software project.
 
 I have rerun on all tests on my laptop, R-hub, Travis, and win-devel,
