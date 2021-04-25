@@ -292,9 +292,9 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                     if (nrow(XX) - numneg >= 5) {
                                       newmin <- min(preds$s2[preds$s2 > 0])
                                       preds$s2 <- pmax(newmin, preds$s2)
-                                      warning(paste0("laGP gave ",numneg," s2 preds < 0, setting them to min pos s2 pred of ", newmin))
+                                      message(paste0("laGP gave ",numneg," s2 preds < 0, setting them to min pos s2 pred of ", newmin))
                                     } else {
-                                      warning(paste0("laGP gave ",numneg," s2 preds < 0, setting them to have pos s2 of ", 1e-16))
+                                      message(paste0("laGP gave ",numneg," s2 preds < 0, setting them to have pos s2 of ", 1e-16))
                                       preds$s2 <- pmax(1e-16, preds$s2)
                                     }
                                   }
@@ -319,9 +319,9 @@ IGP_laGP <- R6::R6Class(classname = "IGP_laGP", inherit = IGP_base,
                                   if (nrow(XX) - numneg >= 5) {
                                     newmin <- min(s2[s2 > 0])
                                     s2 <- pmax(newmin, s2)
-                                    warning(paste0("laGP gave ",numneg," s2 preds < 0, setting them to min pos s2 pred of ", newmin))
+                                    message(paste0("laGP gave ",numneg," s2 preds < 0, setting them to min pos s2 pred of ", newmin))
                                   } else {
-                                    warning(paste0("laGP gave ",numneg," s2 preds < 0, setting them to have pos s2 of ", 1e-16))
+                                    message(paste0("laGP gave ",numneg," s2 preds < 0, setting them to have pos s2 of ", 1e-16))
                                     s2 <- pmax(1e-16, s2)
                                   }
                                 }
