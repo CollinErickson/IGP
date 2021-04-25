@@ -26,7 +26,8 @@ Class providing object with methods for fitting a GP model
 }
 
 \examples{
-\dontrun{
+\donttest{
+# Takes 17 seconds
 n <- 20
 d <- 2
 n2 <- 20

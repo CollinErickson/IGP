@@ -10,7 +10,8 @@
 #' @format \code{\link{R6Class}} object.
 #' @references Ba, S. and V. Roshan Joseph (2012) "Composite Gaussian Process Models for Emulating Expensive Functions". Annals of Applied Statistics, 6, 1838-1860.
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' # Takes 17 seconds
 #' n <- 20
 #' d <- 2
 #' n2 <- 20
@@ -72,3 +73,4 @@ IGP_CGP <- R6::R6Class(
 
   )
 )
+

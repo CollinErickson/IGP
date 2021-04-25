@@ -1,3 +1,17 @@
+I submitted this to CRAN on 4/13/21. It was rejected for using dontrun in
+examples instead of donttest. I removed some instances of dontrun where
+the examples could actually be run. I changed the remaining to donttest.
+These are examples that take too long or call Python through reticulate.
+
+In the email from Gregor Sayer, he also asked said I should add any
+references to the description file. But there are not any papers to
+reference, this is a standalone software project.
+
+I have rerun on all tests on my laptop, R-hub, Travis, and win-devel,
+with no new errors, warnings, or notes.
+
+(Below is comment from 4/13)
+
 This was archived on CRAN on 1/28/21 since it used the package PythonInR.
 I switched so it uses reticulate to call Python instead.
 

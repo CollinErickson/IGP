@@ -27,7 +27,7 @@
 #' u$predict(XX1)
 #' u$delete()
 #'
-#' \dontrun{
+#' \donttest{
 #' # 1D example to see difference
 #' n <- 9
 #' d <- 1

@@ -12,7 +12,7 @@
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
-#' \dontrun{
+# \donttest{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -31,7 +31,7 @@
 #' c(u$mod.extra$laGP$theta(), u$mod.extra$laGP$nugget())
 #' c(u$mod.extra$GauPro$theta(), u$mod.extra$GauPro$nugget())
 #' u$delete()
-#' }
+# }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points

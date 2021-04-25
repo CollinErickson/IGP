@@ -28,7 +28,6 @@ then copies the parameters to a GauPro model for prediction.
 }
 
 \examples{
-\dontrun{
 n <- 40
 d <- 2
 n2 <- 20
@@ -47,7 +46,6 @@ u$predict(XX1)
 c(u$mod.extra$laGP$theta(), u$mod.extra$laGP$nugget())
 c(u$mod.extra$GauPro$theta(), u$mod.extra$GauPro$nugget())
 u$delete()
-}
 }
 \section{Super class}{
 \code{\link[IGP:IGP]{IGP::IGP}} -> \code{IGP_laGP_GauPro_kernel}

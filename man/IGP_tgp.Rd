@@ -26,7 +26,6 @@ Class providing object with methods for fitting a GP model
 }
 
 \examples{
-\dontrun{
 n <- 40
 d <- 2
 n2 <- 20
@@ -43,7 +42,6 @@ u$predict.se(XX1)
 u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
 u$delete()
-}
 }
 \section{Super class}{
 \code{\link[IGP:IGP]{IGP::IGP}} -> \code{IGP_tgp}

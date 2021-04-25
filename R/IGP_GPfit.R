@@ -358,7 +358,6 @@ IGP_laGP <- R6::R6Class(
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
-#' \dontrun{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -375,7 +374,6 @@ IGP_laGP <- R6::R6Class(
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
-#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points
@@ -397,7 +395,12 @@ IGP_tgp <- R6::R6Class(
       if (self$corr[[1]] != "gauss") {
         stop("tgp only uses Gaussian correlation")
       }
-      modfunc <-  if (self$package == "blm") tgp::blm
+      if (is.null(self$package)) {
+        self$package <- "btgp"
+        package <- self$package
+      }
+      stopifnot(!is.null(package), length(package) == 1)
+      modfunc <-  if (package == "blm") tgp::blm
       else if (package == "btlm") tgp::btlm
       else if (package == "bcart") tgp::bcart
       else if (package == "bgp") tgp::bgp
@@ -736,7 +739,7 @@ IGP_DiceKriging <- R6::R6Class(
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -932,7 +935,7 @@ IGP_sklearn <- R6::R6Class(
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -1107,7 +1110,6 @@ IGP_GPy <- R6::R6Class(
 #' @return Object of \code{\link{R6Class}} with methods for fitting GP model.
 #' @format \code{\link{R6Class}} object.
 #' @examples
-#' \dontrun{
 #' n <- 40
 #' d <- 2
 #' n2 <- 20
@@ -1124,7 +1126,6 @@ IGP_GPy <- R6::R6Class(
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 #' u$delete()
-#' }
 #' @field X Design matrix
 #' @field Z Responses
 #' @field N Number of data points

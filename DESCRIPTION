@@ -26,6 +26,7 @@ Suggests:
     lhs,
     ggplot2,
     reshape,
+    ContourFunctions,
     numDeriv
 RoxygenNote: 7.1.1
 URL: https://github.com/CollinErickson/IGP

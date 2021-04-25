@@ -39,15 +39,11 @@ ZZ1 <- apply(XX1, 1, f1)
 u <- IGP_hetGP$new(X=X1,Z=Z1)
 cbind(u$predict(XX1), ZZ1)
 u$predict.se(XX1)
-\dontrun{
 ContourFunctions::cf(function(x) u$predict(x), pts=X1)
 ContourFunctions::cf(function(x) u$predict(x, se.fit=TRUE)$se, pts=X1)
-}
 u$update(Xnew=X2,Znew=Z2)
 u$predict(XX1)
-\dontrun{
 ContourFunctions::cf(function(x) u$predict(x), pts=rbind(X1, X2))
-}
 u$delete()
 
 n <- 10

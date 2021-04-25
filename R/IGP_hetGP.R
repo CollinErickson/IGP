@@ -22,15 +22,13 @@
 #' u <- IGP_hetGP$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
-#' \dontrun{
 #' ContourFunctions::cf(function(x) u$predict(x), pts=X1)
 #' ContourFunctions::cf(function(x) u$predict(x, se.fit=TRUE)$se, pts=X1)
-#' }
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
-#' \dontrun{
+# \donttest{
 #' ContourFunctions::cf(function(x) u$predict(x), pts=rbind(X1, X2))
-#' }
+# }
 #' u$delete()
 #'
 #' n <- 10
@@ -79,7 +77,7 @@ IGP_hetGP <- R6::R6Class(
     .update = function(...) {
       # Can't use update, need Xnew and Znew
       # update(objectself$mod, Xall=self$X, Zall=self$Z, ...)
-      warning("hetGP can't update, will start over")
+      # warning("hetGP can't update, will start over")
       self$.delete()
       self$.init()
     }, #"function to add data to model or reestimate params
