@@ -22,8 +22,10 @@
 #' u <- IGP_hetGP$new(X=X1,Z=Z1)
 #' cbind(u$predict(XX1), ZZ1)
 #' u$predict.se(XX1)
+#' \donttest{
 #' ContourFunctions::cf(function(x) u$predict(x), pts=X1)
 #' ContourFunctions::cf(function(x) u$predict(x, se.fit=TRUE)$se, pts=X1)
+#' }
 #' u$update(Xnew=X2,Znew=Z2)
 #' u$predict(XX1)
 # \donttest{
@@ -83,7 +85,7 @@ IGP_hetGP <- R6::R6Class(
     }, #"function to add data to model or reestimate params
     .predict = function(XX, se.fit, ...) {
       if (se.fit) {
-        preds <- predict(object=self$mod, XX)
+        preds <- suppressWarnings(predict(object=self$mod, XX))
         list(fit=preds$mean, se.fit=sqrt(preds$sd2))
       } else {
         c(predict(object=self$mod, XX)$mean)
