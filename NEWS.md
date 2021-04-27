@@ -1,7 +1,11 @@
+# IGP 0.2.0.9000
+
 # IGP 0.2.0
 
 * Python is now called using reticulate. It was taken off of CRAN for using
 PythonInR to call Python on 1/28/2021.
+
+* Accepted to CRAN on 4/26/2021
 
 # IGP 0.1.0
 
