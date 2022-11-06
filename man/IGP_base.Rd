@@ -73,39 +73,39 @@ u$delete()
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-.init}{\code{IGP_base$.init()}}
-\item \href{#method-.update}{\code{IGP_base$.update()}}
-\item \href{#method-.predict}{\code{IGP_base$.predict()}}
-\item \href{#method-.predict.se}{\code{IGP_base$.predict.se()}}
-\item \href{#method-.predict.var}{\code{IGP_base$.predict.var()}}
-\item \href{#method-.delete}{\code{IGP_base$.delete()}}
-\item \href{#method-new}{\code{IGP_base$new()}}
-\item \href{#method-init}{\code{IGP_base$init()}}
-\item \href{#method-update}{\code{IGP_base$update()}}
-\item \href{#method-predict}{\code{IGP_base$predict()}}
-\item \href{#method-predict.se}{\code{IGP_base$predict.se()}}
-\item \href{#method-predict.var}{\code{IGP_base$predict.var()}}
-\item \href{#method-grad}{\code{IGP_base$grad()}}
-\item \href{#method-grad_num}{\code{IGP_base$grad_num()}}
-\item \href{#method-grad_from_theta}{\code{IGP_base$grad_from_theta()}}
-\item \href{#method-grad_norm}{\code{IGP_base$grad_norm()}}
-\item \href{#method-sample}{\code{IGP_base$sample()}}
-\item \href{#method-theta}{\code{IGP_base$theta()}}
-\item \href{#method-nugget}{\code{IGP_base$nugget()}}
-\item \href{#method-s2}{\code{IGP_base$s2()}}
-\item \href{#method-mean}{\code{IGP_base$mean()}}
-\item \href{#method-max.var}{\code{IGP_base$max.var()}}
-\item \href{#method-at.max.var}{\code{IGP_base$at.max.var()}}
-\item \href{#method-prop.at.max.var}{\code{IGP_base$prop.at.max.var()}}
-\item \href{#method-plot}{\code{IGP_base$plot()}}
-\item \href{#method-delete}{\code{IGP_base$delete()}}
-\item \href{#method-finalize}{\code{IGP_base$finalize()}}
-\item \href{#method-clone}{\code{IGP_base$clone()}}
+\item \href{#method-IGP-.init}{\code{IGP_base$.init()}}
+\item \href{#method-IGP-.update}{\code{IGP_base$.update()}}
+\item \href{#method-IGP-.predict}{\code{IGP_base$.predict()}}
+\item \href{#method-IGP-.predict.se}{\code{IGP_base$.predict.se()}}
+\item \href{#method-IGP-.predict.var}{\code{IGP_base$.predict.var()}}
+\item \href{#method-IGP-.delete}{\code{IGP_base$.delete()}}
+\item \href{#method-IGP-new}{\code{IGP_base$new()}}
+\item \href{#method-IGP-init}{\code{IGP_base$init()}}
+\item \href{#method-IGP-update}{\code{IGP_base$update()}}
+\item \href{#method-IGP-predict}{\code{IGP_base$predict()}}
+\item \href{#method-IGP-predict.se}{\code{IGP_base$predict.se()}}
+\item \href{#method-IGP-predict.var}{\code{IGP_base$predict.var()}}
+\item \href{#method-IGP-grad}{\code{IGP_base$grad()}}
+\item \href{#method-IGP-grad_num}{\code{IGP_base$grad_num()}}
+\item \href{#method-IGP-grad_from_theta}{\code{IGP_base$grad_from_theta()}}
+\item \href{#method-IGP-grad_norm}{\code{IGP_base$grad_norm()}}
+\item \href{#method-IGP-sample}{\code{IGP_base$sample()}}
+\item \href{#method-IGP-theta}{\code{IGP_base$theta()}}
+\item \href{#method-IGP-nugget}{\code{IGP_base$nugget()}}
+\item \href{#method-IGP-s2}{\code{IGP_base$s2()}}
+\item \href{#method-IGP-mean}{\code{IGP_base$mean()}}
+\item \href{#method-IGP-max.var}{\code{IGP_base$max.var()}}
+\item \href{#method-IGP-at.max.var}{\code{IGP_base$at.max.var()}}
+\item \href{#method-IGP-prop.at.max.var}{\code{IGP_base$prop.at.max.var()}}
+\item \href{#method-IGP-plot}{\code{IGP_base$plot()}}
+\item \href{#method-IGP-delete}{\code{IGP_base$delete()}}
+\item \href{#method-IGP-finalize}{\code{IGP_base$finalize()}}
+\item \href{#method-IGP-clone}{\code{IGP_base$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.init"></a>}}
-\if{latex}{\out{\hypertarget{method-.init}{}}}
+\if{html}{\out{<a id="method-IGP-.init"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-.init}{}}}
 \subsection{Method \code{.init()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$.init(...)}\if{html}{\out{</div>}}
@@ -113,8 +113,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.update"></a>}}
-\if{latex}{\out{\hypertarget{method-.update}{}}}
+\if{html}{\out{<a id="method-IGP-.update"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-.update}{}}}
 \subsection{Method \code{.update()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$.update(...)}\if{html}{\out{</div>}}
@@ -122,8 +122,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.predict"></a>}}
-\if{latex}{\out{\hypertarget{method-.predict}{}}}
+\if{html}{\out{<a id="method-IGP-.predict"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-.predict}{}}}
 \subsection{Method \code{.predict()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$.predict(...)}\if{html}{\out{</div>}}
@@ -131,8 +131,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.predict.se"></a>}}
-\if{latex}{\out{\hypertarget{method-.predict.se}{}}}
+\if{html}{\out{<a id="method-IGP-.predict.se"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-.predict.se}{}}}
 \subsection{Method \code{.predict.se()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$.predict.se(...)}\if{html}{\out{</div>}}
@@ -140,8 +140,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.predict.var"></a>}}
-\if{latex}{\out{\hypertarget{method-.predict.var}{}}}
+\if{html}{\out{<a id="method-IGP-.predict.var"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-.predict.var}{}}}
 \subsection{Method \code{.predict.var()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$.predict.var(...)}\if{html}{\out{</div>}}
@@ -149,8 +149,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.delete"></a>}}
-\if{latex}{\out{\hypertarget{method-.delete}{}}}
+\if{html}{\out{<a id="method-IGP-.delete"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-.delete}{}}}
 \subsection{Method \code{.delete()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$.delete(...)}\if{html}{\out{</div>}}
@@ -158,8 +158,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-IGP-new"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$new(
@@ -175,8 +175,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-init"></a>}}
-\if{latex}{\out{\hypertarget{method-init}{}}}
+\if{html}{\out{<a id="method-IGP-init"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-init}{}}}
 \subsection{Method \code{init()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$init(X = NULL, Z = NULL, ...)}\if{html}{\out{</div>}}
@@ -184,8 +184,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-update"></a>}}
-\if{latex}{\out{\hypertarget{method-update}{}}}
+\if{html}{\out{<a id="method-IGP-update"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-update}{}}}
 \subsection{Method \code{update()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$update(Xall = NULL, Zall = NULL, Xnew = NULL, Znew = NULL, ...)}\if{html}{\out{</div>}}
@@ -193,8 +193,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict"></a>}}
-\if{latex}{\out{\hypertarget{method-predict}{}}}
+\if{html}{\out{<a id="method-IGP-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-predict}{}}}
 \subsection{Method \code{predict()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$predict(XX, se.fit = FALSE, ...)}\if{html}{\out{</div>}}
@@ -202,8 +202,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict.se"></a>}}
-\if{latex}{\out{\hypertarget{method-predict.se}{}}}
+\if{html}{\out{<a id="method-IGP-predict.se"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-predict.se}{}}}
 \subsection{Method \code{predict.se()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$predict.se(XX, ...)}\if{html}{\out{</div>}}
@@ -211,8 +211,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict.var"></a>}}
-\if{latex}{\out{\hypertarget{method-predict.var}{}}}
+\if{html}{\out{<a id="method-IGP-predict.var"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-predict.var}{}}}
 \subsection{Method \code{predict.var()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$predict.var(XX, ...)}\if{html}{\out{</div>}}
@@ -220,8 +220,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-grad"></a>}}
-\if{latex}{\out{\hypertarget{method-grad}{}}}
+\if{html}{\out{<a id="method-IGP-grad"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-grad}{}}}
 \subsection{Method \code{grad()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$grad(XX, num = FALSE)}\if{html}{\out{</div>}}
@@ -229,8 +229,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-grad_num"></a>}}
-\if{latex}{\out{\hypertarget{method-grad_num}{}}}
+\if{html}{\out{<a id="method-IGP-grad_num"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-grad_num}{}}}
 \subsection{Method \code{grad_num()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$grad_num(XX)}\if{html}{\out{</div>}}
@@ -238,8 +238,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-grad_from_theta"></a>}}
-\if{latex}{\out{\hypertarget{method-grad_from_theta}{}}}
+\if{html}{\out{<a id="method-IGP-grad_from_theta"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-grad_from_theta}{}}}
 \subsection{Method \code{grad_from_theta()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$grad_from_theta(XX, theta)}\if{html}{\out{</div>}}
@@ -247,8 +247,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-grad_norm"></a>}}
-\if{latex}{\out{\hypertarget{method-grad_norm}{}}}
+\if{html}{\out{<a id="method-IGP-grad_norm"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-grad_norm}{}}}
 \subsection{Method \code{grad_norm()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$grad_norm(XX)}\if{html}{\out{</div>}}
@@ -256,8 +256,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-sample"></a>}}
-\if{latex}{\out{\hypertarget{method-sample}{}}}
+\if{html}{\out{<a id="method-IGP-sample"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-sample}{}}}
 \subsection{Method \code{sample()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$sample(XX, n = 1)}\if{html}{\out{</div>}}
@@ -265,8 +265,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-theta"></a>}}
-\if{latex}{\out{\hypertarget{method-theta}{}}}
+\if{html}{\out{<a id="method-IGP-theta"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-theta}{}}}
 \subsection{Method \code{theta()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$theta()}\if{html}{\out{</div>}}
@@ -274,8 +274,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-nugget"></a>}}
-\if{latex}{\out{\hypertarget{method-nugget}{}}}
+\if{html}{\out{<a id="method-IGP-nugget"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-nugget}{}}}
 \subsection{Method \code{nugget()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$nugget()}\if{html}{\out{</div>}}
@@ -283,8 +283,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-s2"></a>}}
-\if{latex}{\out{\hypertarget{method-s2}{}}}
+\if{html}{\out{<a id="method-IGP-s2"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-s2}{}}}
 \subsection{Method \code{s2()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$s2()}\if{html}{\out{</div>}}
@@ -292,8 +292,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-mean"></a>}}
-\if{latex}{\out{\hypertarget{method-mean}{}}}
+\if{html}{\out{<a id="method-IGP-mean"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-mean}{}}}
 \subsection{Method \code{mean()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$mean()}\if{html}{\out{</div>}}
@@ -301,8 +301,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-max.var"></a>}}
-\if{latex}{\out{\hypertarget{method-max.var}{}}}
+\if{html}{\out{<a id="method-IGP-max.var"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-max.var}{}}}
 \subsection{Method \code{max.var()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$max.var()}\if{html}{\out{</div>}}
@@ -310,8 +310,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-at.max.var"></a>}}
-\if{latex}{\out{\hypertarget{method-at.max.var}{}}}
+\if{html}{\out{<a id="method-IGP-at.max.var"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-at.max.var}{}}}
 \subsection{Method \code{at.max.var()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$at.max.var(X, val = 0.9)}\if{html}{\out{</div>}}
@@ -319,8 +319,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-prop.at.max.var"></a>}}
-\if{latex}{\out{\hypertarget{method-prop.at.max.var}{}}}
+\if{html}{\out{<a id="method-IGP-prop.at.max.var"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-prop.at.max.var}{}}}
 \subsection{Method \code{prop.at.max.var()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$prop.at.max.var(
@@ -332,8 +332,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot"></a>}}
-\if{latex}{\out{\hypertarget{method-plot}{}}}
+\if{html}{\out{<a id="method-IGP-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-plot}{}}}
 \subsection{Method \code{plot()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$plot()}\if{html}{\out{</div>}}
@@ -341,8 +341,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete"></a>}}
-\if{latex}{\out{\hypertarget{method-delete}{}}}
+\if{html}{\out{<a id="method-IGP-delete"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-delete}{}}}
 \subsection{Method \code{delete()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$delete(...)}\if{html}{\out{</div>}}
@@ -350,8 +350,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-finalize"></a>}}
-\if{latex}{\out{\hypertarget{method-finalize}{}}}
+\if{html}{\out{<a id="method-IGP-finalize"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-finalize}{}}}
 \subsection{Method \code{finalize()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_base$finalize(...)}\if{html}{\out{</div>}}
@@ -359,8 +359,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-IGP-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

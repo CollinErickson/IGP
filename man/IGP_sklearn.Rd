@@ -79,47 +79,47 @@ u$delete()
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-.init}{\code{IGP_sklearn$.init()}}
-\item \href{#method-.update}{\code{IGP_sklearn$.update()}}
-\item \href{#method-.predict}{\code{IGP_sklearn$.predict()}}
-\item \href{#method-.predict.se}{\code{IGP_sklearn$.predict.se()}}
-\item \href{#method-.predict.var}{\code{IGP_sklearn$.predict.var()}}
-\item \href{#method-.delete}{\code{IGP_sklearn$.delete()}}
-\item \href{#method-.theta}{\code{IGP_sklearn$.theta()}}
-\item \href{#method-.nugget}{\code{IGP_sklearn$.nugget()}}
-\item \href{#method-clone}{\code{IGP_sklearn$clone()}}
+\item \href{#method-IGP_sklearn-.init}{\code{IGP_sklearn$.init()}}
+\item \href{#method-IGP_sklearn-.update}{\code{IGP_sklearn$.update()}}
+\item \href{#method-IGP_sklearn-.predict}{\code{IGP_sklearn$.predict()}}
+\item \href{#method-IGP_sklearn-.predict.se}{\code{IGP_sklearn$.predict.se()}}
+\item \href{#method-IGP_sklearn-.predict.var}{\code{IGP_sklearn$.predict.var()}}
+\item \href{#method-IGP_sklearn-.delete}{\code{IGP_sklearn$.delete()}}
+\item \href{#method-IGP_sklearn-.theta}{\code{IGP_sklearn$.theta()}}
+\item \href{#method-IGP_sklearn-.nugget}{\code{IGP_sklearn$.nugget()}}
+\item \href{#method-IGP_sklearn-clone}{\code{IGP_sklearn$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="at.max.var">}\href{../../IGP/html/IGP.html#method-at.max.var}{\code{IGP::IGP$at.max.var()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="delete">}\href{../../IGP/html/IGP.html#method-delete}{\code{IGP::IGP$delete()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="finalize">}\href{../../IGP/html/IGP.html#method-finalize}{\code{IGP::IGP$finalize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad">}\href{../../IGP/html/IGP.html#method-grad}{\code{IGP::IGP$grad()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad_from_theta">}\href{../../IGP/html/IGP.html#method-grad_from_theta}{\code{IGP::IGP$grad_from_theta()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad_norm">}\href{../../IGP/html/IGP.html#method-grad_norm}{\code{IGP::IGP$grad_norm()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad_num">}\href{../../IGP/html/IGP.html#method-grad_num}{\code{IGP::IGP$grad_num()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="init">}\href{../../IGP/html/IGP.html#method-init}{\code{IGP::IGP$init()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="initialize">}\href{../../IGP/html/IGP.html#method-initialize}{\code{IGP::IGP$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="max.var">}\href{../../IGP/html/IGP.html#method-max.var}{\code{IGP::IGP$max.var()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="mean">}\href{../../IGP/html/IGP.html#method-mean}{\code{IGP::IGP$mean()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="nugget">}\href{../../IGP/html/IGP.html#method-nugget}{\code{IGP::IGP$nugget()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="plot">}\href{../../IGP/html/IGP.html#method-plot}{\code{IGP::IGP$plot()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="predict">}\href{../../IGP/html/IGP.html#method-predict}{\code{IGP::IGP$predict()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="predict.se">}\href{../../IGP/html/IGP.html#method-predict.se}{\code{IGP::IGP$predict.se()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="predict.var">}\href{../../IGP/html/IGP.html#method-predict.var}{\code{IGP::IGP$predict.var()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="prop.at.max.var">}\href{../../IGP/html/IGP.html#method-prop.at.max.var}{\code{IGP::IGP$prop.at.max.var()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="s2">}\href{../../IGP/html/IGP.html#method-s2}{\code{IGP::IGP$s2()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="sample">}\href{../../IGP/html/IGP.html#method-sample}{\code{IGP::IGP$sample()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="theta">}\href{../../IGP/html/IGP.html#method-theta}{\code{IGP::IGP$theta()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="update">}\href{../../IGP/html/IGP.html#method-update}{\code{IGP::IGP$update()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="at.max.var"><a href='../../IGP/html/IGP.html#method-IGP-at.max.var'><code>IGP::IGP$at.max.var()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="delete"><a href='../../IGP/html/IGP.html#method-IGP-delete'><code>IGP::IGP$delete()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="finalize"><a href='../../IGP/html/IGP.html#method-IGP-finalize'><code>IGP::IGP$finalize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad"><a href='../../IGP/html/IGP.html#method-IGP-grad'><code>IGP::IGP$grad()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad_from_theta"><a href='../../IGP/html/IGP.html#method-IGP-grad_from_theta'><code>IGP::IGP$grad_from_theta()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad_norm"><a href='../../IGP/html/IGP.html#method-IGP-grad_norm'><code>IGP::IGP$grad_norm()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="grad_num"><a href='../../IGP/html/IGP.html#method-IGP-grad_num'><code>IGP::IGP$grad_num()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="init"><a href='../../IGP/html/IGP.html#method-IGP-init'><code>IGP::IGP$init()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="initialize"><a href='../../IGP/html/IGP.html#method-IGP-initialize'><code>IGP::IGP$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="max.var"><a href='../../IGP/html/IGP.html#method-IGP-max.var'><code>IGP::IGP$max.var()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="mean"><a href='../../IGP/html/IGP.html#method-IGP-mean'><code>IGP::IGP$mean()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="nugget"><a href='../../IGP/html/IGP.html#method-IGP-nugget'><code>IGP::IGP$nugget()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="plot"><a href='../../IGP/html/IGP.html#method-IGP-plot'><code>IGP::IGP$plot()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="predict"><a href='../../IGP/html/IGP.html#method-IGP-predict'><code>IGP::IGP$predict()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="predict.se"><a href='../../IGP/html/IGP.html#method-IGP-predict.se'><code>IGP::IGP$predict.se()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="predict.var"><a href='../../IGP/html/IGP.html#method-IGP-predict.var'><code>IGP::IGP$predict.var()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="prop.at.max.var"><a href='../../IGP/html/IGP.html#method-IGP-prop.at.max.var'><code>IGP::IGP$prop.at.max.var()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="s2"><a href='../../IGP/html/IGP.html#method-IGP-s2'><code>IGP::IGP$s2()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="sample"><a href='../../IGP/html/IGP.html#method-IGP-sample'><code>IGP::IGP$sample()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="theta"><a href='../../IGP/html/IGP.html#method-IGP-theta'><code>IGP::IGP$theta()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="IGP" data-topic="IGP" data-id="update"><a href='../../IGP/html/IGP.html#method-IGP-update'><code>IGP::IGP$update()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.init"></a>}}
-\if{latex}{\out{\hypertarget{method-.init}{}}}
+\if{html}{\out{<a id="method-IGP_sklearn-.init"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP_sklearn-.init}{}}}
 \subsection{Method \code{.init()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_sklearn$.init(...)}\if{html}{\out{</div>}}
@@ -127,8 +127,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.update"></a>}}
-\if{latex}{\out{\hypertarget{method-.update}{}}}
+\if{html}{\out{<a id="method-IGP_sklearn-.update"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP_sklearn-.update}{}}}
 \subsection{Method \code{.update()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_sklearn$.update(...)}\if{html}{\out{</div>}}
@@ -136,8 +136,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.predict"></a>}}
-\if{latex}{\out{\hypertarget{method-.predict}{}}}
+\if{html}{\out{<a id="method-IGP_sklearn-.predict"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP_sklearn-.predict}{}}}
 \subsection{Method \code{.predict()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_sklearn$.predict(XX, se.fit, ...)}\if{html}{\out{</div>}}
@@ -145,8 +145,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.predict.se"></a>}}
-\if{latex}{\out{\hypertarget{method-.predict.se}{}}}
+\if{html}{\out{<a id="method-IGP_sklearn-.predict.se"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP_sklearn-.predict.se}{}}}
 \subsection{Method \code{.predict.se()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_sklearn$.predict.se(XX, ...)}\if{html}{\out{</div>}}
@@ -154,8 +154,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.predict.var"></a>}}
-\if{latex}{\out{\hypertarget{method-.predict.var}{}}}
+\if{html}{\out{<a id="method-IGP_sklearn-.predict.var"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP_sklearn-.predict.var}{}}}
 \subsection{Method \code{.predict.var()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_sklearn$.predict.var(XX, ...)}\if{html}{\out{</div>}}
@@ -163,8 +163,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.delete"></a>}}
-\if{latex}{\out{\hypertarget{method-.delete}{}}}
+\if{html}{\out{<a id="method-IGP_sklearn-.delete"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP_sklearn-.delete}{}}}
 \subsection{Method \code{.delete()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_sklearn$.delete(...)}\if{html}{\out{</div>}}
@@ -172,8 +172,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.theta"></a>}}
-\if{latex}{\out{\hypertarget{method-.theta}{}}}
+\if{html}{\out{<a id="method-IGP_sklearn-.theta"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP_sklearn-.theta}{}}}
 \subsection{Method \code{.theta()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_sklearn$.theta()}\if{html}{\out{</div>}}
@@ -181,8 +181,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-.nugget"></a>}}
-\if{latex}{\out{\hypertarget{method-.nugget}{}}}
+\if{html}{\out{<a id="method-IGP_sklearn-.nugget"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP_sklearn-.nugget}{}}}
 \subsection{Method \code{.nugget()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{IGP_sklearn$.nugget()}\if{html}{\out{</div>}}
@@ -190,8 +190,8 @@ u$delete()
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-IGP_sklearn-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-IGP_sklearn-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
