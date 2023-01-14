@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 [![Travis-CI Build Status](https://travis-ci.org/CollinErickson/IGP.svg?branch=master)](https://travis-ci.org/CollinErickson/IGP)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/IGP)](https://cran.r-project.org/package=IGP)
-[![codecov](https://codecov.io/gh/CollinErickson/IGP/branch/master/graph/badge.svg)](https://codecov.io/gh/CollinErickson/IGP)
+[![codecov](https://app.codecov.io/gh/CollinErickson/IGP/branch/master/graph/badge.svg)](https://app.codecov.io/gh/CollinErickson/IGP)
 
 
 This is an R package that provides a single interface for many different Gaussian process modeling software options.

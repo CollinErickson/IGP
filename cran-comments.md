@@ -1,32 +1,5 @@
-I submitted this to CRAN on 4/13/21. It was rejected for using dontrun in
-examples instead of donttest. I removed some instances of dontrun where
-the examples could actually be run. I changed the slow examples to
-donttest so that they all run in 5 seconds, leaving as much of the examples
-outside the donttest as possible.
-I had to leave some examples as dontrun, specifically the two that
-call Python through reticulate and will fail if the correct Python
-modules aren't installed.
-
-In the email from Gregor Sayer, he also said I should add any
-references to the description file. There are not any papers to
-reference, this is a standalone software project.
-
-I have rerun on all tests on my laptop, R-hub, Travis, and win-devel,
-with no new errors, warnings, or notes.
-
-(Below is comment from 4/13)
-
-This was archived on CRAN on 1/28/21 since it used the package PythonInR.
-I switched so it uses reticulate to call Python instead.
-
-It took me longer than expected to get this submitted again because I had
-to update one of my other packages and I ran into some Ubuntu issues.
-
-I submitted this on 4/12/21, but it was rejected by the auto test
-because there was a NOTE for an example that took more than 10 seconds.
-I have changed the example to avoid this issue. Now there is only a note
-saying that it was archived on CRAN.
-
+This packaged was archived by CRAN after I failed to update it on 10/3/22.
+I have updated everything so now it should be good to go back on CRAN.
 
 ## Test environments
 * local Windows 10 install, R 4.0.5
@@ -36,36 +9,32 @@ saying that it was archived on CRAN.
 
 ## R CMD check results
 
-local Windows:
+local Windows 11 R 4.2.2 (12/29/22):
 
     0 errors | 0 warnings | 0 notes
 
-R-hub only has one NOTE for all three:
-  
-    * checking CRAN incoming feasibility ... NOTE
-    Maintainer: ‘Collin Erickson <collinberickson@gmail.com>’
-    
-    New submission
-    
-    Package was archived on CRAN
-    
-    CRAN repository db overrides:
-      X-CRAN-Comment: Archived on 2021-01-28 as requires archived package
-        'PythonInR'.
+R-hub Ubuntu 20.04 and R-hub Fedora Linux (12/29/22) have notes for a slow example,
+being archived from CRAN, and potentially misspelled words that are fine.
+None of these are problems.
+
+R-hub Windows Server (12/29/22) has OK.
 
 Winbuilder (win_devel and win_release both) just has 1 NOTE. 
 
-    * package encoding: UTF-8
-    * checking CRAN incoming feasibility ... NOTE
+    * checking CRAN incoming feasibility ... [9s] NOTE
     Maintainer: 'Collin Erickson <collinberickson@gmail.com>'
     
     New submission
     
     Package was archived on CRAN
     
+    Possibly misspelled words in DESCRIPTION:
+      al (15:30)
+      et (15:27)
+    
     CRAN repository db overrides:
-      X-CRAN-Comment: Archived on 2021-01-28 as requires archived package
-        'PythonInR'.
+      X-CRAN-Comment: Archived on 2022-10-03 as check issues were not
+        corrected despite reminders.
   
 
 ## Reverse dependencies

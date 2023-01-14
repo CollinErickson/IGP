@@ -87,7 +87,10 @@ IGP_LOOEC_GauPro_kernel <- R6::R6Class(
         stop("Corr/kernel not recognized in IGP_GauPro_kernel")
       }
       if (!is.null(theta)) {kernel$beta <- log(theta, 10)}
-      m <- GauPro::GauPro_kernel_model_LOO$new(X=self$X, Z=self$Z, kernel=kernel, nug.est=self$estimate.nugget, nug=self$nugget0, ...)
+      m <- GauPro::GauPro_kernel_model_LOO$new(
+        X=self$X, Z=self$Z, kernel=kernel, nug.est=self$estimate.nugget,
+        nug=self$nugget0, ...
+      )
       self$mod <- m
     }, #"function to initialize model with data
     .update = function(...) {

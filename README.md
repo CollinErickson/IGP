@@ -1,26 +1,31 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-IGP: Interchangeable Gaussian Processes
-=======================================
 
-[![Travis-CI Build Status](https://travis-ci.org/CollinErickson/IGP.svg?branch=master)](https://travis-ci.org/CollinErickson/IGP) [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/IGP)](https://cran.r-project.org/package=IGP) [![codecov](https://codecov.io/gh/CollinErickson/IGP/branch/master/graph/badge.svg)](https://codecov.io/gh/CollinErickson/IGP)
+# IGP: Interchangeable Gaussian Processes
 
-This is an R package that provides a single interface for many different Gaussian process modeling software options.
+[![Travis-CI Build
+Status](https://travis-ci.org/CollinErickson/IGP.svg?branch=master)](https://travis-ci.org/CollinErickson/IGP)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/IGP)](https://cran.r-project.org/package=IGP)
+[![codecov](https://app.codecov.io/gh/CollinErickson/IGP/branch/master/graph/badge.svg)](https://app.codecov.io/gh/CollinErickson/IGP)
 
-This package was formerly called UGP, for Universal Gaussian processes, but universal has a different meaning in kriging so the name was changed for clarity.
+This is an R package that provides a single interface for many different
+Gaussian process modeling software options.
 
-Installation
-------------
+This package was formerly called UGP, for Universal Gaussian processes,
+but universal has a different meaning in kriging so the name was changed
+for clarity.
+
+## Installation
 
 You can install IGP from GitHub with:
 
     # install.packages("devtools")
     devtools::install_github("CollinErickson/IGP")
 
-Example
--------
+## Example
 
-The following shows a simple example using the R package `laGP` as the GP code.
+The following shows a simple example using the R package `laGP` as the
+GP code.
 
 ``` r
 set.seed(0)
@@ -40,9 +45,11 @@ curve(gp$predict(matrix(x, ncol=1)), col=2, add=T)
 points(X1, Z1, pch=19)
 ```
 
-![](tools/README-example1D-1.png)
+![](tools/README-example1D-1.png)<!-- -->
 
-Below is the exact same thing except using the R package `GauPro`. The predictions made are indistinguishable, meaning that they have fit approximately the same parameter values.
+Below is the exact same thing except using the R package `GauPro`. The
+predictions made are indistinguishable, meaning that they have fit
+approximately the same parameter values.
 
 ``` r
 set.seed(0)
@@ -56,12 +63,21 @@ curve(gp$predict(matrix(x, ncol=1)), col=2, add=T)
 points(X1, Z1, pch=19)
 ```
 
-![](tools/README-example1D_2-1.png)
+![](tools/README-example1D_2-1.png)<!-- -->
 
-Package options
----------------
+## Package options
 
-The available packages and the platform they run on are shown below. The R packages should run easily. The MATLAB packages are called using the `R.matlab` R package and have to open a connection to MATLAB. Thus you need to have MATLAB on your computer, it will be slow, and is likely to have problems. Currently the MATLAB packages are not included in the CRAN version of the package, but they can be found on the GitHub repository. The Python packages are called using the R package `Python.In.R`. It will open a connection to Python and probably will be slow. In addition to requiring that you already have the package (GPy or sklearn) installed, and must be accessible through your default Python path.
+The available packages and the platform they run on are shown below. The
+R packages should run easily. The MATLAB packages are called using the
+`R.matlab` R package and have to open a connection to MATLAB. Thus you
+need to have MATLAB on your computer, it will be slow, and is likely to
+have problems. Currently the MATLAB packages are not included in the
+CRAN version of the package, but they can be found on the GitHub
+repository. The Python packages are called using the R package
+`Python.In.R`. It will open a connection to Python and probably will be
+slow. In addition to requiring that you already have the package (GPy or
+sklearn) installed, and must be accessible through your default Python
+path.
 
 | Package            | Platform |
 |--------------------|----------|

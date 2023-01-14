@@ -1,7 +1,7 @@
 Package: IGP
 Type: Package
 Title: Interchangeable Gaussian Process Models
-Version: 0.2.0.9000
+Version: 0.2.1
 Authors@R: 
     c(
     person("Collin", "Erickson", email = "collinberickson@gmail.com", role = c("aut", "cre"))
@@ -11,6 +11,8 @@ Description: Creates a Gaussian process model using the specified package.
     package argument needs to be changed.
     It is essentially a wrapper for the other Gaussian process
     software packages.
+    For more info about Gaussian process software and comparison of various
+    options, see Erickson et al. (2018) <doi:10.1016/j.ejor.2017.10.002>.
 License: GPL-3
 Imports: R6, reticulate
 Suggests:
@@ -28,7 +30,7 @@ Suggests:
     reshape,
     ContourFunctions,
     numDeriv
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 URL: https://github.com/CollinErickson/IGP
 BugReports: https://github.com/CollinErickson/IGP/issues
 Encoding: UTF-8

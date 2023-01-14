@@ -767,6 +767,7 @@ IGP_DiceKriging <- R6::R6Class(
 #' @field Z Responses
 #' @field N Number of data points
 #' @field D Dimension of data
+#' @importFrom reticulate py_run_string
 #' @section Methods:
 #' \describe{
 #'   \item{Documentation}{For full documentation of each method go to https://github.com/CollinErickson/IGP/}
