@@ -1,4 +1,8 @@
-# IGP 0.2.0.9000
+# IGP 0.2.1
+
+* The package was taken off of CRAN due to failure to make necessary changes
+to the package before the deadline. The fixes have been completed, so it is
+back onto CRAN.
 
 # IGP 0.2.0
 
