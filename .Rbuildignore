@@ -8,3 +8,4 @@ InputStreamByteWrapper.class
 MatlabServer.m
 ^cran-comments\.md$
 ^CRAN-RELEASE$
+^CRAN-SUBMISSION$
